@@ -77,7 +77,7 @@ export default class Main extends React.Component {
         return (
             <App centered={false}>
                 <Header direction="row" justify="between" pad={{horizontal: 'medium'}}>
-                    <Title>Poor Man's Tunes</Title>
+                    <Title>Poor Man&rsquo;s Tunes</Title>
                 </Header>
                 <Columns>
                     <Box>
