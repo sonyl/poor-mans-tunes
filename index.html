@@ -2,9 +2,19 @@
 <html>
 <head>
   <title>Poor Man's Tunes</title>
+  <style type='text/css'>
+    .selected:before {
+      content: ">";
+      margin-right: 6px;
+    }
+    .selected {
+        font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <div id='app' />
+<div id='app' />
   <script src='bundle.js'></script>
+  <noscript>Nix geht</noscript>
 </body>
 </html>

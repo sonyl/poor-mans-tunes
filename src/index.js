@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './components/app'
+import Main from './components/Main'
+
+import 'grommet/scss/vanilla/index';
 
 
-
-
-render(<App />, document.getElementById('app'));
+render(<Main />, document.getElementById('app'));

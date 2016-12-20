@@ -6,11 +6,11 @@ export default class SongView extends React.Component {
     render() {
 
         return (
-            <h1>
+            <h4>
                 <span>{this.props.artist.name}</span>&nbsp;
                 <span>{this.props.album.name}</span>&nbsp;
                 <span>{this.props.song.name}</span>
-            </h1>
+            </h4>
         );
     }
 }
