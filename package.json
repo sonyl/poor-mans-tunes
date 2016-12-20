@@ -17,7 +17,6 @@
     "lodash": "^4.17.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
-    "react-media-player": "^0.6.0",
     "react-player": "^0.13.0",
     "whatwg-fetch": "^2.0.1"
   },
