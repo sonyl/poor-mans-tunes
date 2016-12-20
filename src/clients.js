@@ -11,7 +11,7 @@ export function createMp3Url(part) {
 
 export function getAlbumIndex() {
 
-    const url = 'public/files-full.json';
+    const url = 'public/files.json';
 
     return fetch(url)
         .then(response => response.json())
