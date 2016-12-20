@@ -24,7 +24,18 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "src"),
                 ],
-                loaders: ['react-hot', 'babel?presets[]=react,presets[]=es2015,plugins[]=transform-object-rest-spread']
+                loader: 'react-hot'
+            },
+            {
+                test: /\.jsx?$/,
+                include: [
+                    path.resolve(__dirname, "src"),
+                ],
+                loader: 'babel',
+                query: {
+                    presets: ['react', 'es2015'],
+                    plugins: ['transform-object-rest-spread']
+                }
             },
             {
                 test: /\.scss$/,
