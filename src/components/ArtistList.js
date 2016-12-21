@@ -45,7 +45,7 @@ export default class ArtistList extends React.Component {
         return category.map((c, i) => {
             const artist = c.artist.artist;
             const selected = this.props.currentArtist.name === artist;
-            const classNames = selected ? "selected" : "";
+            const classNames = selected ? 'selected' : '';
             return (
                 <div
                     id={`ar-${c.index}`}
@@ -55,25 +55,25 @@ export default class ArtistList extends React.Component {
                 >
                     {artist}
                 </div>
-            )
+            );
         });
     }
 
     renderPanels(categories, partCategories) {
         const panels = [];
         partCategories.forEach(c => {
-                const category = categories[c];
-                if(category) {
-                    panels.push(<Tab title={c} key={c} ><Box>{this.renderArtistNames(category)}</Box></Tab>);
-                }
-            });
+            const category = categories[c];
+            if(category) {
+                panels.push(<Tab title={c} key={c} ><Box>{this.renderArtistNames(category)}</Box></Tab>);
+            }
+        });
 
         return panels;
     }
 
     render() {
         const categories = categorize(this.props.artists);
-        console.log("ArtistList.render:", categories);
+        console.log('ArtistList.render:', categories);
 
         return (
             <div>
@@ -89,7 +89,7 @@ export default class ArtistList extends React.Component {
         const target = event.target;
         const artistId = target.id;
         const artistIndex = artistId.substring(3);
-        console.log("ClickHandler", artistIndex);
+        console.log('ClickHandler', artistIndex);
         this.props.setArtist(artistIndex);
     }
 }

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 
 
-class Song extends React.Component {
+class Song extends Component {
 
     render() {
-        const classNames = this.props.isSelected ? "selected" : "";
+        const classNames = this.props.isSelected ? 'selected' : '';
 
         return (
             <div id={this.props.id} onClick={(event) => this.onClick(event)} className={classNames}>
@@ -17,7 +17,7 @@ class Song extends React.Component {
         const target = event.currentTarget;
         const songId = target.id;
         const songIndex = songId.substring(3);
-        console.log("Song selected:", songIndex);
+        console.log('Song selected:', songIndex);
         this.props.setSong(songIndex);
     }
 }
@@ -38,7 +38,7 @@ export default class AlbumView extends React.Component {
                               track={s.track}
                               isSelected={selected}
                               title={s.title}
-                              setSong={this.props.setSong}/>
+                              setSong={this.props.setSong}/>;
 
             });
         }
@@ -46,7 +46,7 @@ export default class AlbumView extends React.Component {
     }
 
     render() {
-        console.log("AlbumView.render:", this.props);
+        console.log('AlbumView.render:', this.props);
         return (
             <div>
                 <h3>{this.props.album.name}</h3>

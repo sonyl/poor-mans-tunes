@@ -28,7 +28,7 @@ export default class LastFmView extends React.Component {
     }
 
     render() {
-        console.log("LastFmView:", this.props);
+        console.log('LastFmView:', this.props);
         const album = this.props.album;
         const albumName = album && album.name || '';
         const artistName = album && album.artist || '';

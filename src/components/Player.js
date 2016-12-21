@@ -1,4 +1,4 @@
-import React, { Component, PropTypes }  from 'react'
+import React, { Component, PropTypes }  from 'react';
 
 import Button from 'grommet/components/Button';
 import Meter from 'grommet/components/Meter';
@@ -9,8 +9,8 @@ import RefreshIcon from 'grommet/components/icons/base/Refresh';
 import UpdateIcon from 'grommet/components/icons/base/Update';
 
 
-import ReactPlayer from 'react-player'
-import Slider from './Slider'
+import ReactPlayer from 'react-player';
+import Slider from './Slider';
 
 function MyPlayIcon(props) {
     return props.playing ? <PauseIcon size='large'/> : <PlayIcon size='large'/>;
@@ -32,22 +32,21 @@ function Duration ({ className, seconds }) {
         const mm = date.getUTCMinutes();
         const ss = pad(date.getUTCSeconds());
         if (hh) {
-            return `${hh}:${pad(mm)}:${ss}`
+            return `${hh}:${pad(mm)}:${ss}`;
         }
-        return `${mm}:${ss}`
+        return `${mm}:${ss}`;
     }
 
     function pad (string) {
-        return ('0' + string).slice(-2)
+        return ('0' + string).slice(-2);
     }
 
     return (
         <time dateTime={`P${Math.round(seconds)}S`} className={className}>
             {format(seconds)}
         </time>
-    )
+    );
 }
-
 
 
 export default class Player extends Component {
@@ -80,7 +79,7 @@ export default class Player extends Component {
         this.setState({ url: null, playing: false });
     }
     setVolume(e) {
-        console.log("setVolume:", e.target.value);
+        console.log('setVolume:', e.target.value);
         this.setState({ volume: parseFloat(e.target.value) });
     }
     onSeekMouseDown(e) {
@@ -107,14 +106,14 @@ export default class Player extends Component {
     }
 
     onEnded() {
-        console.log("onEnded");
+        console.log('onEnded');
         if(this.state.loop) {
-            this.setState({ playing: true })
+            this.setState({ playing: true });
         }
     }
     onPause() {
-        console.log("onPause");
-        this.setState({ playing: false })
+        console.log('onPause');
+        this.setState({ playing: false });
     }
 
     render () {
@@ -134,7 +133,7 @@ export default class Player extends Component {
                 <section className='section'>
                     <h1>Player:</h1>
                     <ReactPlayer
-                        ref={player => { this.player = player }}
+                        ref={player => { this.player = player; }}
                         className='react-player'
                         hidden={true}
                         url={url}
@@ -209,7 +208,7 @@ export default class Player extends Component {
                     </tbody></table>
                 </section>
             </div>
-        )
+        );
     }
 }
 

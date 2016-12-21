@@ -19,19 +19,19 @@ export function getAlbumIndex() {
             console.log('parsed json', json);
             return json;
         }).catch(e => {
-            console.log('parsing failed', e)
+            console.log('parsing failed', e);
         });
 }
 
 
 export function getLastFMInfo(artist, album) {
     const params = {
-        method:  "album.getinfo",
+        method:  'album.getinfo',
         api_key: lastFmApi,
         artist:  artist,
         album:   album,
-        autocorrect: "1",
-        format:  "json"
+        autocorrect: '1',
+        format:  'json'
     };
 
     const esc = encodeURIComponent;
@@ -39,13 +39,13 @@ export function getLastFMInfo(artist, album) {
         .map(k => esc(k) + '=' + esc(params[k]))
         .join('&');
 
-    const url = "http://ws.audioscrobbler.com/2.0/?" + query;
+    const url = 'http://ws.audioscrobbler.com/2.0/?' + query;
     return fetch(url)
         .then(response => response.json())
         .then(json => {
-            console.log("Response-json", json);
+            console.log('Response-json', json);
             return json.album;
         }).catch(e => {
             console.log('parsing failed', e);
-        })
+        });
 }

@@ -2,7 +2,7 @@ import React from 'react';
 
 function Album({id, album, isSelected, setAlbum}) {
 
-    const classNames = isSelected ? "selected" : "";
+    const classNames = isSelected ? 'selected' : '';
 
     return (
         <div id={id} onClick={onClick} className={classNames}>
@@ -15,7 +15,7 @@ function Album({id, album, isSelected, setAlbum}) {
         const target = event.currentTarget;
         const albumId = target.id;
         const albumIndex = albumId.substring(3);
-        console.log("Album selected:", albumIndex);
+        console.log('Album selected:', albumIndex);
         setAlbum(albumIndex);
     }
 }
@@ -32,12 +32,12 @@ export default function ArtistView(props) {
                               key={a.album}
                               album={a}
                               isSelected={selected}
-                              setAlbum={setAlbum}/>
+                              setAlbum={setAlbum}/>;
             });
         }
     }
 
-    console.log("ArtistView:", props);
+    console.log('ArtistView:', props);
     return (
         <div>
             <h2>{props.artist.artist}</h2>

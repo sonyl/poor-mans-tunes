@@ -1,6 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
-import {getAlbumIndex, getLastFMInfo, createMp3Url} from '../clients'
+import {getAlbumIndex, getLastFMInfo, createMp3Url} from '../clients';
 
 import App from 'grommet/components/App';
 import Header from 'grommet/components/Header';
@@ -31,17 +31,17 @@ export default class Main extends React.Component {
     componentDidMount() {
         getAlbumIndex().then(artists => {
             if(artists) {
-                console.log("Albums read: ", artists.length);
+                console.log('Albums read: ', artists.length);
                 this.setState({artists: artists});
             } else {
-                console.log("Albums read: transport error");
+                console.log('Albums read: transport error');
             }
         });
     }
 
     componentDidUpdate(prevProps, prevState){
         const state = this.state;
-        console.log("componentDidUpdate new state: ", this.state);
+        console.log('componentDidUpdate new state: ', this.state);
         if(state.currentArtist.name && state.currentAlbum.name &&
             (state.currentArtist.name !== prevState.currentArtist.name ||
              state.currentAlbum.name !== prevState.currentAlbum.name)
@@ -52,17 +52,17 @@ export default class Main extends React.Component {
 
     updateLastFmInfo() {
         const state = this.state;
-        console.log("updateLastFmInfo:", state);
+        console.log('updateLastFmInfo:', state);
 
         if (state.currentArtist.name && state.currentAlbum.name) {
             getLastFMInfo(state.currentArtist.name, state.currentAlbum.name)
                 .then(album => {
-                    console.log("The lastFM info is:", album);
+                    console.log('The lastFM info is:', album);
                     album = album || {
                         artist: state.currentArtist.name,
                         name: state.currentAlbum.name,
                         wiki: {
-                            summary: "no Info available"
+                            summary: 'no Info available'
                         }
                     };
                     const currentAlbum = update(state.currentAlbum, {lastFm: {$set: album}});
@@ -110,12 +110,12 @@ export default class Main extends React.Component {
                 />
 
             </App>
-        )
+        );
     }
 
     setCurrentArtist(index) {
         const state = this.state;
-        console.log("setCurrentArtist", index);
+        console.log('setCurrentArtist', index);
 
         if(state.artists[index] && state.currentArtist.index !== index) {
             this.setState({
@@ -127,7 +127,7 @@ export default class Main extends React.Component {
 
     setCurrentAlbum(index) {
         const state = this.state;
-        console.log("setCurrentAlbum", index);
+        console.log('setCurrentAlbum', index);
 
         if(state.currentArtist.index >= 0) {
             const artist = state.artists[state.currentArtist.index];
@@ -146,7 +146,7 @@ export default class Main extends React.Component {
 
     setCurrentSong(index) {
         const state = this.state;
-        console.log("setCurrentSong", index);
+        console.log('setCurrentSong', index);
 
         if(state.currentArtist.index >= 0 && state.currentAlbum.index >= 0) {
             const artist = state.artists[state.currentArtist.index];
