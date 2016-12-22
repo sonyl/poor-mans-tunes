@@ -1,6 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
-import {getAlbumIndex, getLastFMInfo, createMp3Url} from '../clients';
+import {getAlbumIndex, getLastFmAlbumInfo, getLastFmArtistInfo, createMp3Url} from '../clients';
 
 import App from 'grommet/components/App';
 import Header from 'grommet/components/Header';
@@ -47,32 +47,43 @@ export default class Main extends React.Component {
     componentDidUpdate(prevProps, prevState){
         const state = this.state;
         console.log('componentDidUpdate new state: ', this.state);
+
+        if(state.currentArtist.name && state.currentArtist.name !== prevState.currentArtist.name) {
+            this.updateLastFmArtistInfo();
+        }
+
         if(state.currentArtist.name && state.currentAlbum.name &&
             (state.currentArtist.name !== prevState.currentArtist.name ||
              state.currentAlbum.name !== prevState.currentAlbum.name)
         ) {
-            this.updateLastFmInfo();
+            this.updateLastFmAlbumInfo();
         }
     }
 
-    updateLastFmInfo() {
-        const state = this.state;
-        console.log('updateLastFmInfo:', state);
+    updateLastFmAlbumInfo() {
+        const {currentArtist, currentAlbum} = this.state;
 
-        if (state.currentArtist.name && state.currentAlbum.name) {
-            getLastFMInfo(state.currentArtist.name, state.currentAlbum.name)
+        if (currentArtist.name && currentAlbum.name) {
+            getLastFmAlbumInfo(currentArtist.name, currentAlbum.name)
                 .then(album => {
                     console.log('The lastFM info is:', album);
                     album = album || {
-                        artist: state.currentArtist.name,
-                        name: state.currentAlbum.name,
+                        artist: currentArtist.name,
+                        name: currentAlbum.name,
                         wiki: {
                             summary: 'no Info available'
                         }
                     };
-                    const currentAlbum = update(state.currentAlbum, {lastFm: {$set: album}});
-                    this.setState({currentAlbum});
+                    const newCurAlbum = update(currentAlbum, {lastFm: {$set: album}});
+                    this.setState({currentAlbum: newCurAlbum});
                 });
+        }
+    }
+
+    updateLastFmArtistInfo() {
+        const {currentArtist} = this.state;
+        if (currentArtist.name) {
+            getLastFmArtistInfo(currentArtist.name);
         }
     }
 

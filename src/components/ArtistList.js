@@ -27,24 +27,31 @@ function getCategory(name) {
 }
 
 function categorize(artists) {
-    const catgegories = {};
+    const catgegoryMap = {};
     artists.forEach((a, i) => {
         const catgeory = getCategory(a.artist);
-        catgegories[catgeory] = catgegories[catgeory] || [];
-        catgegories[catgeory].push({artist: a, index: i});
+        catgegoryMap[catgeory] = catgegoryMap[catgeory] || [];
+        catgegoryMap[catgeory].push({artist: a, index: i});
     });
-    return catgegories;
+    const categories = [];
+    CATEGORIES.forEach(c => {
+        const artists = catgegoryMap[c];
+        if(artists) {
+            categories.push({category: c, artists});
+        }
+    });
+
+    return categories;
 }
 
-function getActiveIndex(name) {
-    if(name) {
-        const category = getCategory(name);
-        const index = _.findIndex(CATEGORIES, (c) => c === category);
-        if(index >= 0) {
-            return index;
-        }
+function getActiveIndex(categories, name) {
+    if(!name) {
+        return 0;
     }
-    return 0;
+
+    const category = getCategory(name);
+    const index = _.findIndex(categories, c => c.category === category);
+    return index > 0 ? index : 0;
 }
 
 
@@ -52,8 +59,10 @@ export default class ArtistList extends React.Component {
 
     constructor(props) {
         super(props);
+        const categories = categorize(props.artists);
         this.state = {
-            activeIndex: getActiveIndex(props.currentArtist && props.currentArtist.name)
+            categories,
+            activeIndex: getActiveIndex(categories, props.currentArtist && props.currentArtist.name)
         };
 
         this.onTabChange = this.onTabChange.bind(this);
@@ -61,11 +70,14 @@ export default class ArtistList extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.currentArtist !== this.props.currentArtist) {
-            this.state = {
-                activeIndex: getActiveIndex(nextProps.currentArtist && nextProps.currentArtist.name)
-            };
+        if(nextProps.artists !== this.props.artists
+            || nextProps.currentArtist !== this.props.currentArtist) {
 
+            const categories = categorize(nextProps.artists);
+            this.setState( {
+                categories,
+                activeIndex: getActiveIndex(categories, nextProps.currentArtist && nextProps.currentArtist.name)
+            });
         }
     }
 
@@ -87,33 +99,27 @@ export default class ArtistList extends React.Component {
         });
     }
 
-    renderPanels(categories, partCategories) {
-        const panels = [];
-        partCategories.forEach(c => {
-            const category = categories[c];
-            if(category) {
-                panels.push(<Tab title={c} key={c} ><Box>{this.renderArtistNames(category)}</Box></Tab>);
-            }
-        });
+    renderPanels() {
+        const {categories} = this.state;
 
-        return panels;
+        return categories.map(c => {
+            return <Tab title={c.category} key={c.category} ><Box>{this.renderArtistNames(c.artists)}</Box></Tab>;
+        });
     }
 
     render() {
-        const categories = categorize(this.props.artists);
-        console.log('ArtistList.render:', categories);
+        const {activeIndex} = this.state;
         return (
             <div>
                 <Heading>All artists:</Heading>
-                <Tabs justify='start' activeIndex={this.state.activeIndex} onActive={this.onTabChange}>
-                    {this.renderPanels(categories, CATEGORIES)}
+                <Tabs justify='start' activeIndex={activeIndex} onActive={this.onTabChange}>
+                    {this.renderPanels()}
                 </Tabs>
             </div>
         );
     }
 
     onTabChange(index) {
-        console.log('onTabChange', index);
         this.setState({
             activeIndex: index
         });
@@ -123,7 +129,6 @@ export default class ArtistList extends React.Component {
         const target = event.target;
         const artistId = target.id;
         const artistIndex = artistId.substring(3);
-        console.log('ClickHandler', artistIndex);
         this.props.setArtist(artistIndex);
     }
 }
