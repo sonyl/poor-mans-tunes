@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
+import _ from 'lodash';
 
 import Box from 'grommet/components/Box';
 import Heading from 'grommet/components/Heading';
@@ -35,14 +36,41 @@ function categorize(artists) {
     return catgegories;
 }
 
+function getActiveIndex(name) {
+    if(name) {
+        const category = getCategory(name);
+        const index = _.findIndex(CATEGORIES, (c) => c === category);
+        if(index >= 0) {
+            return index;
+        }
+    }
+    return 0;
+}
+
+
 export default class ArtistList extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            activeIndex: getActiveIndex(props.currentArtist && props.currentArtist.name)
+        };
+
+        this.onTabChange = this.onTabChange.bind(this);
+        this.onClick = this.onClick.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.currentArtist !== this.props.currentArtist) {
+            this.state = {
+                activeIndex: getActiveIndex(nextProps.currentArtist && nextProps.currentArtist.name)
+            };
+
+        }
     }
 
     renderArtistNames(category) {
-        return category.map((c, i) => {
+        return category.map(c => {
             const artist = c.artist.artist;
             const selected = this.props.currentArtist.name === artist;
             const classNames = selected ? 'selected' : '';
@@ -51,7 +79,7 @@ export default class ArtistList extends React.Component {
                     id={`ar-${c.index}`}
                     className={classNames}
                     key={artist}
-                    onClick={(event) => this.onClick(event)}
+                    onClick={ this.onClick}
                 >
                     {artist}
                 </div>
@@ -74,15 +102,21 @@ export default class ArtistList extends React.Component {
     render() {
         const categories = categorize(this.props.artists);
         console.log('ArtistList.render:', categories);
-
         return (
             <div>
-                <Heading>All interprets:</Heading>
-                <Tabs justify='start'>
+                <Heading>All artists:</Heading>
+                <Tabs justify='start' activeIndex={this.state.activeIndex} onActive={this.onTabChange}>
                     {this.renderPanels(categories, CATEGORIES)}
                 </Tabs>
             </div>
         );
+    }
+
+    onTabChange(index) {
+        console.log('onTabChange', index);
+        this.setState({
+            activeIndex: index
+        });
     }
 
     onClick(event) {
@@ -94,3 +128,8 @@ export default class ArtistList extends React.Component {
     }
 }
 
+ArtistList.propTypes = {
+    artists: PropTypes.arrayOf(PropTypes.object),
+    currentArtist: PropTypes.object,
+    setArtist: React.PropTypes.func
+};

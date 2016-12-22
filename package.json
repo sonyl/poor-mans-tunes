@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-      "build": "NODE_ENV=production node node_modules/.bin/webpack && cp index.html public/index.html",
+    "build": "NODE_ENV=production node node_modules/.bin/webpack && cp index.html public/index.html",
     "devserver": "webpack-dev-server",
     "lint": "node_modules/.bin/eslint src"
   },
@@ -15,7 +15,7 @@
   "dependencies": {
     "grommet": "^1.1.0",
     "immutability-helper": "^2.0.0",
-    "lodash": "^4.17.2",
+    "lodash-es": "^4.17.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-player": "^0.13.0",
@@ -83,7 +83,7 @@
         "never"
       ],
       "quotes": [
-        "warn",
+        "error",
         "single"
       ],
       "no-console": [
@@ -92,10 +92,6 @@
       "linebreak-style": [
         "error",
         "unix"
-      ],
-      "quotes": [
-        "error",
-        "single"
       ],
       "semi": [
         "error",

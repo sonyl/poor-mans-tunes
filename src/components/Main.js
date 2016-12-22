@@ -14,6 +14,7 @@ import ArtistView from 'components/ArtistView';
 import LastFmView from 'components/LastFmView';
 import AlbumView from 'components/AlbumView';
 import Player from 'components/Player';
+import ArtistSearch from 'components/ArtistSearch';
 
 
 export default class Main extends React.Component {
@@ -26,6 +27,10 @@ export default class Main extends React.Component {
             currentAlbum: {},
             currentSong: {}
         };
+
+        this.setCurrentArtist = this.setCurrentArtist.bind(this);
+        this.setCurrentAlbum = this.setCurrentAlbum.bind(this);
+        this.setCurrentSong = this.setCurrentSong.bind(this);
     }
 
     componentDidMount() {
@@ -78,6 +83,7 @@ export default class Main extends React.Component {
             <App centered={false}>
                 <Header direction="row" justify="between" pad={{horizontal: 'medium'}}>
                     <Title>Poor Man&rsquo;s Tunes</Title>
+                    <ArtistSearch artists={artists} setArtist={this.setCurrentArtist}/>
                 </Header>
                 <Columns>
                     <Box>
@@ -92,21 +98,21 @@ export default class Main extends React.Component {
                         />
                         <ArtistView artist={ artists[currentArtist.index] || {} }
                                     currentAlbum={ currentAlbum }
-                                    setAlbum={ this.setCurrentAlbum.bind(this) }
+                                    setAlbum={ this.setCurrentAlbum }
                         />
                     </Box>
                     <Box>
                         <AlbumView
                                    album={ currentAlbum }
                                    currentSong={ currentSong }
-                                   setSong={ this.setCurrentSong.bind(this) }
+                                   setSong={ this.setCurrentSong }
                         />
                         <Player url={createMp3Url(currentSong && currentSong.song && currentSong.song.mp3)}/>
                     </Box>
                 </Columns>
                 <ArtistList artists={artists}
                             currentArtist={currentArtist}
-                            setArtist={this.setCurrentArtist.bind(this)}
+                            setArtist={this.setCurrentArtist}
                 />
 
             </App>
