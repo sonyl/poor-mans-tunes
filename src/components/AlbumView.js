@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 
 class Song extends Component {
@@ -22,7 +22,7 @@ class Song extends Component {
     }
 }
 
-export default class AlbumView extends React.Component {
+export default class AlbumView extends Component {
 
     constructor(props) {
         super(props);

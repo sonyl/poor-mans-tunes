@@ -29,7 +29,7 @@ export function getLastFmArtistInfo(artist) {
     'use strict';
 
     const params = {
-        method:  'artist.getinfo',
+        method:  'artist.getcorrection',
         api_key: lastFmApi,
         artist:  artist,
         format:  'json'
@@ -37,11 +37,33 @@ export function getLastFmArtistInfo(artist) {
 
     const url = buildUrl(lastFmBase, params);
     return fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if(response.ok) return response.json();
+            return Promise.reject(`api call returned: ${response.statusText}`);
+        })
+        .then(json => {
+            console.log('Response-json', json);
+            if(json.corrections && json.corrections.correction && json.corrections.correction.artist
+                && json.corrections.correction.artist.name) {
+                return json.corrections.correction.artist.name;
+            }
+            return Promise.reject(`no correction found for: ${artist}`);
+        })
+        .then(artist => {
+            params.method = 'artist.getInfo';
+            params.artist = artist;
+            const url = buildUrl(lastFmBase, params);
+            return fetch(url);
+        })
+        .then(response => {
+            if(response.ok) return response.json();
+            return Promise.reject(`api call returned: ${response.statusText}`);
+        })
         .then(json => {
             console.log('Response-json', json);
             return json.artist;
-        }).catch(e => {
+        })
+        .catch(e => {
             console.log('parsing failed', e);
         });
 }

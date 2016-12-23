@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import Search from 'grommet/components/Search';
 import _ from 'lodash';
 
@@ -9,7 +9,16 @@ function reorganize(artists) {
     return artists ? artists.map((a, i) => ({label: a.artist, index: i})) : [];
 }
 
-export default class ArtistSearch extends React.Component {
+export default class ArtistSearch extends Component {
+    static propTypes = {
+        artists: PropTypes.arrayOf(
+            PropTypes.shape({
+                artist: PropTypes.string.required
+            })
+        ),
+        setArtist: React.PropTypes.func.required
+    };
+
     constructor(props) {
         super(props);
 
@@ -77,13 +86,3 @@ export default class ArtistSearch extends React.Component {
         );
     }
 }
-
-
-ArtistSearch.propTypes = {
-    artists: PropTypes.arrayOf(
-        PropTypes.shape({
-            artist: PropTypes.string
-        })
-    ),
-    setArtist: React.PropTypes.func
-};

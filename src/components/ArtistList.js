@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
 
 import Box from 'grommet/components/Box';
@@ -55,7 +55,13 @@ function getActiveIndex(categories, name) {
 }
 
 
-export default class ArtistList extends React.Component {
+export default class ArtistList extends Component {
+
+    static propTypes = {
+        artists: PropTypes.arrayOf(PropTypes.object),
+        currentArtist: PropTypes.object,
+        setArtist: React.PropTypes.func
+    };
 
     constructor(props) {
         super(props);
@@ -132,9 +138,3 @@ export default class ArtistList extends React.Component {
         this.props.setArtist(artistIndex);
     }
 }
-
-ArtistList.propTypes = {
-    artists: PropTypes.arrayOf(PropTypes.object),
-    currentArtist: PropTypes.object,
-    setArtist: React.PropTypes.func
-};

@@ -50,6 +50,11 @@ function Duration ({ className, seconds }) {
 
 
 export default class Player extends Component {
+
+    static propTypes = {
+        url: PropTypes.string.required
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -59,6 +64,17 @@ export default class Player extends Component {
             played: 0,
             duration: 0
         };
+
+        this.playPause = this.playPause.bind(this);
+        this.toggleLoop = this.toggleLoop.bind(this);
+        this.stop = this.stop.bind(this);
+        this.setVolume = this.setVolume.bind(this);
+        this.onSeekMouseDown = this.onSeekMouseDown.bind(this);
+        this.onSeekChange = this.onSeekChange.bind(this);
+        this.onSeekMouseUp = this.onSeekMouseUp.bind(this);
+        this.onProgress = this.onProgress.bind(this);
+        this.onEnded = this.onEnded.bind(this);
+        this.onPause = this.onPause.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -70,16 +86,13 @@ export default class Player extends Component {
     playPause() {
         this.setState({ playing: !this.state.playing });
     }
-
     toggleLoop() {
         this.setState({ loop: !this.state.loop });
     }
-
     stop() {
         this.setState({ url: null, playing: false });
     }
     setVolume(e) {
-        console.log('setVolume:', e.target.value);
         this.setState({ volume: parseFloat(e.target.value) });
     }
     onSeekMouseDown(e) {
@@ -104,15 +117,12 @@ export default class Player extends Component {
 
         }
     }
-
     onEnded() {
-        console.log('onEnded');
         if(this.state.loop) {
             this.setState({ playing: true });
         }
     }
     onPause() {
-        console.log('onPause');
         this.setState({ playing: false });
     }
 
@@ -142,26 +152,26 @@ export default class Player extends Component {
                         onReady={() => console.log('onReady')}
                         onStart={() => console.log('onStart')}
                         onPlay={() => this.setState({ playing: true })}
-                        onPause={ this.onPause.bind(this) }
+                        onPause={ this.onPause }
                         onBuffer={() => console.log('onBuffer')}
-                        onEnded={this.onEnded.bind(this)}
+                        onEnded={this.onEnded}
                         onError={e => console.log('onError', e)}
-                        onProgress={this.onProgress.bind(this)}
+                        onProgress={this.onProgress}
                         onDuration={duration => this.setState({ duration })}
                     />
 
                     <table><tbody>
                     <tr>
                         <td>
-                            <Button onClick={this.stop.bind(this)}>
+                            <Button onClick={this.stop}>
                                 <MyStopIcon/>
                             </Button>
                             &nbsp;
-                            <Button onClick={this.playPause.bind(this)}>
+                            <Button onClick={this.playPause}>
                                 <MyPlayIcon playing={playing}/>
                             </Button>
                             &nbsp;
-                            <Button onClick={this.toggleLoop.bind(this)}>
+                            <Button onClick={this.toggleLoop}>
                                 <LoopIcon loop={loop}/>
                             </Button>
                         </td>
@@ -172,9 +182,9 @@ export default class Player extends Component {
                             <Slider
                                 min={0} max={1} step={0.01}
                                 value={played}
-                                onMouseDown={this.onSeekMouseDown.bind(this)}
-                                onChange={this.onSeekChange.bind(this)}
-                                onMouseUp={this.onSeekMouseUp.bind(this)}
+                                onMouseDown={this.onSeekMouseDown}
+                                onChange={this.onSeekChange}
+                                onMouseUp={this.onSeekMouseUp}
                             />
                         </td>
                     </tr>
@@ -186,7 +196,7 @@ export default class Player extends Component {
                                 max={1}
                                 step={0.1}
                                 value={volume}
-                                onChange={this.setVolume.bind(this)} />
+                                onChange={this.setVolume} />
                         </td>
                     </tr>
                     <tr>
@@ -212,6 +222,3 @@ export default class Player extends Component {
     }
 }
 
-Player.propTypes = {
-    url: PropTypes.string
-};

@@ -66,7 +66,7 @@ export default class Main extends React.Component {
         if (currentArtist.name && currentAlbum.name) {
             getLastFmAlbumInfo(currentArtist.name, currentAlbum.name)
                 .then(album => {
-                    console.log('The lastFM info is:', album);
+                    console.log('The lastFM album info is:', album);
                     album = album || {
                         artist: currentArtist.name,
                         name: currentAlbum.name,
@@ -83,7 +83,15 @@ export default class Main extends React.Component {
     updateLastFmArtistInfo() {
         const {currentArtist} = this.state;
         if (currentArtist.name) {
-            getLastFmArtistInfo(currentArtist.name);
+            getLastFmArtistInfo(currentArtist.name)
+            .then(artist => {
+                console.log('The lastFM artist info is:', artist);
+                artist = artist || {
+                };
+                const newCurArtist = update(currentArtist, {lastFm: {$set: artist}});
+                console.log('The new currentArtist will be set:', newCurArtist);
+                this.setState({currentArtist: newCurArtist});
+            });
         }
     }
 
@@ -97,21 +105,14 @@ export default class Main extends React.Component {
                     <ArtistSearch artists={artists} setArtist={this.setCurrentArtist}/>
                 </Header>
                 <Columns>
-                    <Box>
-                        <LastFmView artist={currentArtist}
-                                    album={currentAlbum.lastFm}
-                        />
-                    </Box>
-                    <Box>
-                        <SongView artist={currentArtist}
-                                  album={currentAlbum}
-                                  song={currentSong}
-                        />
                         <ArtistView artist={ artists[currentArtist.index] || {} }
+                                    currentArtist={ currentArtist }
                                     currentAlbum={ currentAlbum }
                                     setAlbum={ this.setCurrentAlbum }
                         />
-                    </Box>
+                        <LastFmView artist={currentArtist}
+                                    album={currentAlbum.lastFm}
+                        />
                     <Box>
                         <AlbumView
                                    album={ currentAlbum }

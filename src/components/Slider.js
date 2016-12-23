@@ -5,6 +5,18 @@ const INPUT = CSSClassnames.INPUT;
 
 export default class Slider extends Component {
 
+    static propTypes = {
+        defaultValue: PropTypes.number,
+        disabled: PropTypes.bool,
+        id: PropTypes.string,
+        max: PropTypes.number,
+        min: PropTypes.number,
+        name: PropTypes.string,
+        onChange: PropTypes.func,
+        step: PropTypes.number,
+        value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    };
+
     constructor(props) {
         super(props);
 
@@ -50,15 +62,3 @@ export default class Slider extends Component {
         );
     }
 }
-
-Slider.propTypes = {
-    defaultValue: PropTypes.number,
-    disabled: PropTypes.bool,
-    id: PropTypes.string,
-    max: PropTypes.number,
-    min: PropTypes.number,
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    step: PropTypes.number,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-};
