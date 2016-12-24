@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import Card from 'grommet/components/Card';
+import Markdown from 'grommet/components/Markdown';
 
 function getThumbnail(artist) {
     if(artist && artist.image) {
@@ -71,6 +72,7 @@ export default class ArtistView extends Component {
                 heading={ artist.artist }
                 thumbnail={getThumbnail(currentArtist.lastFm)}
             >
+                <Markdown content={currentArtist.lastFm && currentArtist.lastFm.bio && currentArtist.lastFm.bio.summary}/>
                 { this.renderAlbums() }
             </Card>
         );
