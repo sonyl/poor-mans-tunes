@@ -52,7 +52,7 @@ function Duration ({ className, seconds }) {
 export default class Player extends Component {
 
     static propTypes = {
-        url: PropTypes.string.required
+        url: PropTypes.string
     };
 
     constructor(props) {

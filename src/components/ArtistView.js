@@ -44,6 +44,13 @@ function Album({id, album, isSelected, setAlbum}) {
 
 export default class ArtistView extends Component {
 
+        static propTypes = {
+        artist: PropTypes.object.isRequired,
+        currentArtist: PropTypes.object.isRequired,
+        currentAlbum: PropTypes.object.isRequired,
+        setAlbum: React.PropTypes.func.isRequired
+    };
+
     componentWillReceiveProps(nextProps){
         console.log('ArtistView.componentWillReceiveProps:', nextProps);
 
@@ -68,6 +75,7 @@ export default class ArtistView extends Component {
         console.log('ArtistView.render:', this.props);
         return (
             <Card
+                contentPad='small'
                 label='Artist Info:'
                 heading={ artist.artist }
                 thumbnail={getThumbnail(currentArtist.lastFm)}
@@ -78,10 +86,3 @@ export default class ArtistView extends Component {
         );
     }
 }
-
-ArtistView.propTypes = {
-    artist: PropTypes.object,
-    currentArtist: PropTypes.object,
-    currentAlbum: PropTypes.object,
-    setAlbum: React.PropTypes.func
-};

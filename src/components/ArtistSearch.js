@@ -13,10 +13,10 @@ export default class ArtistSearch extends Component {
     static propTypes = {
         artists: PropTypes.arrayOf(
             PropTypes.shape({
-                artist: PropTypes.string.required
-            })
-        ),
-        setArtist: React.PropTypes.func.required
+                    artist: PropTypes.string.isRequired
+            }).isRequired
+        ).isRequired,
+        setArtist: React.PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -72,7 +72,7 @@ export default class ArtistSearch extends Component {
     }
 
     render() {
-        console.log('ArtistSearch.render:');
+        console.log('ArtistSearch.render:', this.props);
         return (
             <Search
 //                dropAlign={{right: 'right', bottom: 'top'}}

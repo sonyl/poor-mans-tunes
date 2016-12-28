@@ -9,7 +9,6 @@ import Box from 'grommet/components/Box';
 import Columns from 'grommet/components/Columns';
 
 import ArtistList from 'components/ArtistList';
-import SongView from 'components/SongView';
 import ArtistView from 'components/ArtistView';
 import LastFmView from 'components/LastFmView';
 import AlbumView from 'components/AlbumView';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 
 import Card from 'grommet/components/Card';
 import Markdown from 'grommet/components/Markdown';
@@ -23,24 +23,29 @@ function getThumbnail(album) {
 
 export default class LastFmView extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
+    static propTypes = {
+        album: PropTypes.shape({
+            name: PropTypes.string,
+            artist: PropTypes.string,
+            wiki: PropTypes.object
+        })
+    };
 
     render() {
         console.log('LastFmView:', this.props);
-        const album = this.props.album;
+        const { album } = this.props;
         const albumName = album && album.name || '';
         const artistName = album && album.artist || '';
         const heading = artistName || albumName ? artistName + ' - ' + albumName : '';
 
         return (
             <Card
+                contentPad='small'
                 label='LastFM Info:'
                 heading={ heading }
                 thumbnail={getThumbnail(album)}
             >
-                <Markdown content={this.props.album && this.props.album.wiki && this.props.album.wiki.summary}/>
+                <Markdown content={album && album.wiki && album.wiki.summary}/>
             </Card>
         );
     }
