@@ -1,3 +1,4 @@
+/* eslint-env node */
 const webpack = require('webpack');
 const path = require('path');
 
@@ -22,28 +23,25 @@ module.exports = {
             {
                 test: /\.jsx?$/,
                 include: [
-                    path.resolve(__dirname, "src"),
+                    path.resolve(__dirname, 'src')
                 ],
                 loader: 'react-hot'
-            },
-            {
+            }, {
                 test: /\.jsx?$/,
                 include: [
-                    path.resolve(__dirname, "src"),
+                    path.resolve(__dirname, 'src')
                 ],
                 loader: 'babel',
                 query: {
                     presets: ['react', 'es2015'],
                     plugins: ['transform-object-rest-spread', 'transform-class-properties']
                 }
-            },
-            {
+            }, {
                 test: /\.scss$/,
                 loader: 'style!css!sass?outputStyle=compressed'
-            },
-            {
+            }, {
                 test: /\.json$/,
-                loader: "json-loader"
+                loader: 'json-loader'
             }
         ]
     },
