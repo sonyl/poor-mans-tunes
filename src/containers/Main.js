@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import { fetchPosts } from '../actions';
 import update from 'immutability-helper';
-import {getAlbumIndex, getLastFmAlbumInfo, getLastFmArtistInfo, createMp3Url} from '../clients';
+import {getLastFmAlbumInfo, getLastFmArtistInfo, createMp3Url} from '../clients';
 
 import App from 'grommet/components/App';
 import Header from 'grommet/components/Header';
@@ -16,12 +18,11 @@ import Player from 'components/Player';
 import ArtistSearch from 'components/ArtistSearch';
 
 
-export default class Main extends React.Component {
+class Main extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            artists: [],
             currentArtist: {},
             currentAlbum: {},
             currentSong: {}
@@ -33,17 +34,12 @@ export default class Main extends React.Component {
     }
 
     componentDidMount() {
-        getAlbumIndex().then(artists => {
-            if(artists) {
-                console.log('Albums read: ', artists.length);
-                this.setState({artists: artists});
-            } else {
-                console.log('Albums read: transport error');
-            }
-        });
+        const { dispatch } = this.props;
+        dispatch(fetchPosts());
     }
 
     componentDidUpdate(prevProps, prevState){
+        console.log('Main.componentDidUpdate: props=', this.props);
         const state = this.state;
         console.log('componentDidUpdate new state: ', this.state);
 
@@ -96,7 +92,8 @@ export default class Main extends React.Component {
 
 
     render() {
-        const { artists, currentSong, currentArtist, currentAlbum } = this.state;
+        const { currentSong, currentArtist, currentAlbum } = this.state;
+        const { artists } = this.props;
         return (
             <App centered={false}>
                 <Header direction="row" justify="between" pad={{horizontal: 'medium'}}>
@@ -131,23 +128,26 @@ export default class Main extends React.Component {
     }
 
     setCurrentArtist(index) {
-        const state = this.state;
+        const {artists} = this.props;
+        const {currentArtist} = this.state;
         console.log('setCurrentArtist', index);
 
-        if(state.artists[index] && state.currentArtist.index !== index) {
+        if(artists[index] && currentArtist.index !== index) {
             this.setState({
-                currentArtist: {index, name: this.state.artists[index].artist},
+                currentArtist: {index, name: artists[index].artist},
                 currentAlbum: {}
             });
         }
     }
 
     setCurrentAlbum(index) {
-        const state = this.state;
+        const {artists} = this.props;
+        const {currentArtist} = this.state;
+
         console.log('setCurrentAlbum', index);
 
-        if(state.currentArtist.index >= 0) {
-            const artist = state.artists[state.currentArtist.index];
+        if(currentArtist.index >= 0) {
+            const artist = artists[currentArtist.index];
 
             if(artist.albums[index]) {
                 this.setState({
@@ -162,13 +162,15 @@ export default class Main extends React.Component {
     }
 
     setCurrentSong(index) {
-        const state = this.state;
+        const {artists} = this.props;
+        const {currentArtist, currentAlbum} = this.state;
+
         console.log('setCurrentSong', index);
 
-        if(state.currentArtist.index >= 0 && state.currentAlbum.index >= 0) {
-            const artist = state.artists[state.currentArtist.index];
+        if(currentArtist.index >= 0 && currentAlbum.index >= 0) {
+            const artist = artists[currentArtist.index];
             if(artist) {
-                const album = artist.albums[state.currentAlbum.index];
+                const album = artist.albums[currentAlbum.index];
 
                 if (album && album.songs && album.songs[index]) {
                     this.setState({
@@ -183,3 +185,16 @@ export default class Main extends React.Component {
         }
     }
 }
+
+const mapStateToProps = state => {
+    const { albums } = state;
+
+    const props =  {
+        artists: albums.artists
+    };
+
+    console.log('mapStateToProps:', state, '=>', props);
+    return props;
+};
+
+export default connect(mapStateToProps)(Main);

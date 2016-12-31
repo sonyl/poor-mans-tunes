@@ -11,20 +11,6 @@ export function createMp3Url(part) {
     return null;
 }
 
-export function getAlbumIndex() {
-
-    const url = 'public/files.json';
-
-    return fetch(url)
-        .then(response => response.json())
-        .then(json => {
-            console.log('parsed json', json);
-            return json;
-        }).catch(e => {
-            console.log('parsing failed', e);
-        });
-}
-
 export function getLastFmArtistInfo(artist) {
     'use strict';
 
