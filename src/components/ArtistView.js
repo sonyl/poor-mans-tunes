@@ -44,7 +44,7 @@ function Album({id, album, isSelected, setAlbum}) {
 
 export default class ArtistView extends Component {
 
-        static propTypes = {
+    static propTypes = {
         artist: PropTypes.object.isRequired,
         currentArtist: PropTypes.object.isRequired,
         currentAlbum: PropTypes.object.isRequired,
@@ -78,9 +78,9 @@ export default class ArtistView extends Component {
                 contentPad='small'
                 label='Artist Info:'
                 heading={ artist.artist }
-                thumbnail={getThumbnail(currentArtist.lastFm)}
+                thumbnail={getThumbnail(currentArtist.lastFmInfo)}
             >
-                <Markdown content={currentArtist.lastFm && currentArtist.lastFm.bio && currentArtist.lastFm.bio.summary}/>
+                <Markdown content={currentArtist.lastFmInfo && currentArtist.lastFmInfo.bio && currentArtist.lastFmInfo.bio.summary}/>
                 { this.renderAlbums() }
             </Card>
         );

@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { fetchPosts } from '../actions';
-import update from 'immutability-helper';
-import {getLastFmAlbumInfo, getLastFmArtistInfo, createMp3Url} from '../clients';
+import { fetchAllAlbums, selectNewArtist, selectNewAlbum, selectSong} from '../actions';
 
 import App from 'grommet/components/App';
 import Header from 'grommet/components/Header';
@@ -18,15 +16,20 @@ import Player from 'components/Player';
 import ArtistSearch from 'components/ArtistSearch';
 
 
+const baseUrl = 'http://www';
+
+export function createMp3Url(part) {
+    if(part) {
+        return baseUrl + part;
+    }
+    return null;
+}
+
+
 class Main extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            currentArtist: {},
-            currentAlbum: {},
-            currentSong: {}
-        };
 
         this.setCurrentArtist = this.setCurrentArtist.bind(this);
         this.setCurrentAlbum = this.setCurrentAlbum.bind(this);
@@ -35,65 +38,12 @@ class Main extends Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(fetchPosts());
+        dispatch(fetchAllAlbums());
     }
-
-    componentDidUpdate(prevProps, prevState){
-        console.log('Main.componentDidUpdate: props=', this.props);
-        const state = this.state;
-        console.log('componentDidUpdate new state: ', this.state);
-
-        if(state.currentArtist.name && state.currentArtist.name !== prevState.currentArtist.name) {
-            this.updateLastFmArtistInfo();
-        }
-
-        if(state.currentArtist.name && state.currentAlbum.name &&
-            (state.currentArtist.name !== prevState.currentArtist.name ||
-             state.currentAlbum.name !== prevState.currentAlbum.name)
-        ) {
-            this.updateLastFmAlbumInfo();
-        }
-    }
-
-    updateLastFmAlbumInfo() {
-        const {currentArtist, currentAlbum} = this.state;
-
-        if (currentArtist.name && currentAlbum.name) {
-            getLastFmAlbumInfo(currentArtist.name, currentAlbum.name)
-                .then(album => {
-                    console.log('The lastFM album info is:', album);
-                    album = album || {
-                        artist: currentArtist.name,
-                        name: currentAlbum.name,
-                        wiki: {
-                            summary: 'no Info available'
-                        }
-                    };
-                    const newCurAlbum = update(currentAlbum, {lastFm: {$set: album}});
-                    this.setState({currentAlbum: newCurAlbum});
-                });
-        }
-    }
-
-    updateLastFmArtistInfo() {
-        const {currentArtist} = this.state;
-        if (currentArtist.name) {
-            getLastFmArtistInfo(currentArtist.name)
-            .then(artist => {
-                console.log('The lastFM artist info is:', artist);
-                artist = artist || {
-                };
-                const newCurArtist = update(currentArtist, {lastFm: {$set: artist}});
-                console.log('The new currentArtist will be set:', newCurArtist);
-                this.setState({currentArtist: newCurArtist});
-            });
-        }
-    }
-
 
     render() {
-        const { currentSong, currentArtist, currentAlbum } = this.state;
-        const { artists } = this.props;
+        const {artists, currentArtist, currentAlbum, currentSong} = this.props;
+
         return (
             <App centered={false}>
                 <Header direction="row" justify="between" pad={{horizontal: 'medium'}}>
@@ -101,14 +51,14 @@ class Main extends Component {
                     <ArtistSearch artists={artists} setArtist={this.setCurrentArtist}/>
                 </Header>
                 <Columns>
-                        <ArtistView artist={ artists[currentArtist.index] || {} }
-                                    currentArtist={ currentArtist }
-                                    currentAlbum={ currentAlbum }
-                                    setAlbum={ this.setCurrentAlbum }
-                        />
-                        <LastFmView artist={currentArtist}
-                                    album={currentAlbum.lastFm}
-                        />
+                    <ArtistView artist={ artists[currentArtist.index] || {} }
+                                currentArtist={ currentArtist }
+                                currentAlbum={ currentAlbum }
+                                setAlbum={ this.setCurrentAlbum }
+                    />
+                    <LastFmView artist={currentArtist}
+                                album={currentAlbum.lastFmInfo}
+                    />
                     <Box>
                         <AlbumView
                                    album={ currentAlbum }
@@ -128,21 +78,16 @@ class Main extends Component {
     }
 
     setCurrentArtist(index) {
-        const {artists} = this.props;
-        const {currentArtist} = this.state;
+        const {artists, currentArtist, dispatch} = this.props;
         console.log('setCurrentArtist', index);
 
         if(artists[index] && currentArtist.index !== index) {
-            this.setState({
-                currentArtist: {index, name: artists[index].artist},
-                currentAlbum: {}
-            });
+            dispatch(selectNewArtist(index, artists[index].artist));
         }
     }
 
     setCurrentAlbum(index) {
-        const {artists} = this.props;
-        const {currentArtist} = this.state;
+        const {artists, currentArtist, dispatch} = this.props;
 
         console.log('setCurrentAlbum', index);
 
@@ -150,36 +95,22 @@ class Main extends Component {
             const artist = artists[currentArtist.index];
 
             if(artist.albums[index]) {
-                this.setState({
-                    currentAlbum: {
-                        index,
-                        name: artist.albums[index].album,
-                        album: artist.albums[index]
-                    }
-                });
+                dispatch(selectNewAlbum(index, artist.albums[index].album, artist.albums[index]));
             }
         }
     }
 
     setCurrentSong(index) {
-        const {artists} = this.props;
-        const {currentArtist, currentAlbum} = this.state;
-
         console.log('setCurrentSong', index);
 
+        const {artists, currentArtist, currentAlbum, dispatch} = this.props;
         if(currentArtist.index >= 0 && currentAlbum.index >= 0) {
             const artist = artists[currentArtist.index];
             if(artist) {
                 const album = artist.albums[currentAlbum.index];
 
                 if (album && album.songs && album.songs[index]) {
-                    this.setState({
-                        currentSong: {
-                            index,
-                            name: album.songs[index].title,
-                            song: album.songs[index]
-                        }
-                    });
+                    dispatch(selectSong(index, album.songs[index].title, album.songs[index]));
                 }
             }
         }
@@ -187,10 +118,13 @@ class Main extends Component {
 }
 
 const mapStateToProps = state => {
-    const { albums } = state;
+    const { albums, currentArtist, currentAlbum, currentSong } = state;
 
     const props =  {
-        artists: albums.artists
+        artists: albums.artists,
+        currentArtist,
+        currentAlbum,
+        currentSong
     };
 
     console.log('mapStateToProps:', state, '=>', props);

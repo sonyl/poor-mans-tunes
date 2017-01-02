@@ -35,6 +35,7 @@ const AlbumView = ({album, currentSong, setSong}) =>  {
         }
     }
 
+    console.log('AlbumView.render()', album);
     return (
         <div>
             <h3>{album.name}</h3>
