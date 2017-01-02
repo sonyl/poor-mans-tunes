@@ -5,6 +5,7 @@ import Box from 'grommet/components/Box';
 import Heading from 'grommet/components/Heading';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
+import NavLink from './NavLink';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -90,17 +91,10 @@ export default class ArtistList extends Component {
     renderArtistNames(category) {
         return category.map(c => {
             const artist = c.artist.artist;
-            const selected = this.props.currentArtist.name === artist;
-            const classNames = selected ? 'selected' : '';
             return (
-                <div
-                    id={`ar-${c.index}`}
-                    className={classNames}
-                    key={artist}
-                    onClick={ this.onClick}
-                >
+                <NavLink to={`/${artist}`} key={artist} >
                     {artist}
-                </div>
+                </NavLink>
             );
         });
     }

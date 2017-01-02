@@ -1,12 +1,30 @@
 import React, {PropTypes} from 'react';
 
+import Card from 'grommet/components/Card';
+import Markdown from 'grommet/components/Markdown';
 
-const Song = ({id, isSelected, title, setSong}) => {
 
-    const classNames = isSelected ? 'selected' : '';
+function getThumbnail(album) {
+    if(album && album.image) {
+        if (album.image.length > 3 && album.image[3]['#text'].length > 0) {
+            return album.image[3]['#text'];
+        }
+        if (album.image.length > 2 && album.image[2]['#text'].length > 0) {
+            return album.image[2]['#text'];
+        }
+        if (album.image.length > 1 && album.image[1]['#text'].length > 0) {
+            return album.image[1]['#text'];
+        }
+        if (album.image.length > 0 && album.image[0]['#text'].length > 0) {
+            return album.image[0]['#text'];
+        }
+    }
+}
+
+const Song = ({id, title, setSong}) => {
 
     return (
-        <div id={id} onClick={onClick} className={classNames}>
+        <div id={id} onClick={onClick}>
             {title}
         </div>
     );
@@ -19,37 +37,55 @@ const Song = ({id, isSelected, title, setSong}) => {
     }
 };
 
-const AlbumView = ({album, currentSong, setSong}) =>  {
+const AlbumView = ({artist, album, setSong}) => {
+
+    console.log('LastFmView.render() artist=%o, album=%o', artist, album);
+    const albumName = album && album.name || '';
+    const artistName = artist && artist.name || '';
+    const heading = artistName || albumName ? artistName + ' - ' + albumName : '';
 
     function renderSongs () {
-        if(album.album && album.album.songs){
+        if(album && album.album && album.album.songs){
             return album.album.songs.map((s, i) => {
-                const selected = currentSong.name === s.title;
                 return <Song id={`so-${i}`}
-                              key={i}
-                              track={s.track}
-                              isSelected={selected}
-                              title={s.title}
-                              setSong={setSong}/>;
+                             key={i}
+                             track={s.track}
+                             title={s.title}
+                             setSong={setSong}/>;
             });
         }
     }
 
-    console.log('AlbumView.render()', album);
     return (
-        <div>
-            <h3>{album.name}</h3>
+        <Card
+            contentPad='small'
+            label='Album Info:'
+            heading={ heading }
+            thumbnail={getThumbnail(album)}
+        >
+            <Markdown content={album && album.lastFmInfo && album.lastFmInfo.wiki && album.lastFmInfo.wiki.summary}/>
             { renderSongs() }
-        </div>
+        </Card>
     );
 };
 
-AlbumView.propTypes = {
-    album: PropTypes.object.isRequired,
-    currentSong: PropTypes.object.isRequired,
-    setSong: React.PropTypes.func.isRequired
-};
 
+AlbumView.propTypes = {
+    album: PropTypes.shape({
+        album: PropTypes.shape({
+            album: PropTypes.string,
+            artist: PropTypes.string
+        }),
+        lastFmInfo: PropTypes.shape({
+            name: PropTypes.string,
+            artist: PropTypes.string,
+            wiki: PropTypes.object
+        })
+    }),
+    artist: PropTypes.shape({
+    }),
+    setSong: PropTypes.func.isRequired,
+};
 
 export default AlbumView;
 

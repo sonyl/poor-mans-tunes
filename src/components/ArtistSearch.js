@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import { browserHistory } from 'react-router';
 import Search from 'grommet/components/Search';
 import _ from 'lodash';
 
@@ -15,8 +16,7 @@ export default class ArtistSearch extends Component {
             PropTypes.shape({
                     artist: PropTypes.string.isRequired
             }).isRequired
-        ).isRequired,
-        setArtist: React.PropTypes.func.isRequired
+        ).isRequired
     };
 
     constructor(props) {
@@ -60,14 +60,12 @@ export default class ArtistSearch extends Component {
     }
 
     handleSelect(target, selected) {
-        const { setArtist } = this.props;
         const { suggestion } = target;
 
         if(suggestion) {
             this.setState({value: suggestion.label});
-            if(setArtist) {
-                setArtist(suggestion.index);
-            }
+            const path = `/${suggestion.label}`;
+            browserHistory.push(path);
         }
     }
 

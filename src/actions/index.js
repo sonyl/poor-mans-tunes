@@ -28,7 +28,7 @@ export const receiveAlbums = (artists, error) => ({
 });
 
 export const fetchAllAlbums = () => dispatch => {
-    const url = 'public/files.json';
+    const url = '/public/files.json';
 
     dispatch(requestAlbums());
 
@@ -44,7 +44,7 @@ export const fetchAllAlbums = () => dispatch => {
             dispatch(receiveAlbums(json));
         }).catch(e => {
             console.log('parsing failed', e);
-            dispatch(receiveAlbums({}, e));
+            dispatch(receiveAlbums([], e));
         });
 };
 
@@ -75,9 +75,12 @@ export const invalidateArtist = (index) => ({
 
 export const selectNewArtist = (index, artist) => (dispatch, getState) => {
 
-    const {currentArtist} = getState();
-    if(currentArtist.index) {
+    const {currentArtist, currentAlbum} = getState();
+    if(currentArtist.index >= 0) {
         dispatch(invalidateArtist(currentArtist.index));
+        if(currentAlbum.index >= 0) {
+            dispatch(invalidateAlbum(currentAlbum.index));
+        }
     }
     dispatch(selectArtist(index, artist));
     dispatch(requestArtist(index, artist));
@@ -114,10 +117,10 @@ export const selectNewArtist = (index, artist) => (dispatch, getState) => {
     });
 };
 
-export const selectAlbum = (index, name, album) => ({
+export const selectAlbum = (index, album) => ({
     type: SELECT_ALBUM,
     index,
-    name,
+    name: album.album,
     album
 });
 
@@ -140,17 +143,17 @@ export const invalidateAlbum = (index) => ({
     index
 });
 
-export const selectNewAlbum = (index, name, album) => (dispatch, getState) => {
+export const selectNewAlbum = (index, album) => (dispatch, getState) => {
 
     const {currentArtist, currentAlbum} = getState();
     if(currentAlbum.index != index) {
         console.log('dispatching:', INVALIDATE_ALBUM);
         dispatch(invalidateAlbum(currentAlbum.index));
     }
-    dispatch(selectAlbum(index, name, album));
-    dispatch(requestAlbum(index, name));
+    dispatch(selectAlbum(index, album));
+    dispatch(requestAlbum(index, album.album));
 
-    return fetchLastFm('album.getinfo', {artist:currentArtist.name, album: name, autocorrect: '1'})
+    return fetchLastFm('album.getinfo', {artist:currentArtist.name, album: album.album, autocorrect: '1'})
     .then(response => {
         if(!response.ok) {
             throw new Error(`api call returned: ${response.statusText}`);

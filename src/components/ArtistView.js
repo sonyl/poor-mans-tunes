@@ -3,6 +3,8 @@ import React, {Component, PropTypes} from 'react';
 import Card from 'grommet/components/Card';
 import Markdown from 'grommet/components/Markdown';
 
+import NavLink from './NavLink';
+
 function getThumbnail(artist) {
     if(artist && artist.image) {
         if (artist.image.length > 3 && artist.image[3]['#text'].length > 0) {
@@ -20,35 +22,11 @@ function getThumbnail(artist) {
     }
 }
 
-function Album({id, album, isSelected, setAlbum}) {
-
-    const classNames = isSelected ? 'selected' : '';
-
-    return (
-        <div id={id} onClick={onClick} className={classNames}>
-            {album.album}
-        </div>
-    );
-
-
-    function onClick(event) {
-        const target = event.currentTarget;
-        const albumId = target.id;
-        const albumIndex = albumId.substring(3);
-        console.log('Album selected:', albumIndex);
-        if(setAlbum) {
-            setAlbum(albumIndex);
-        }
-    }
-}
-
 export default class ArtistView extends Component {
 
     static propTypes = {
         artist: PropTypes.object.isRequired,
         currentArtist: PropTypes.object.isRequired,
-        currentAlbum: PropTypes.object.isRequired,
-        setAlbum: React.PropTypes.func.isRequired
     };
 
     componentWillReceiveProps(nextProps){
@@ -56,16 +34,15 @@ export default class ArtistView extends Component {
 
     }
     renderAlbums() {
-        const { artist, currentAlbum, setAlbum } = this.props;
+        const { artist } = this.props;
 
         if(artist.albums && artist.albums.length) {
             return artist.albums.map((a, i) => {
-                const selected = currentAlbum.name === a.album;
-                return <Album id={`al-${i}`}
-                              key={a.album}
-                              album={a}
-                              isSelected={selected}
-                              setAlbum={setAlbum}/>;
+                return (
+                    <NavLink key={i} to={`/${artist.artist}/${a.album}`}>
+                        {a.album}
+                    </NavLink>
+                );
             });
         }
     }

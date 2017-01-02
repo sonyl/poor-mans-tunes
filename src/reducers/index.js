@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import {
     REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, SELECT_ARTIST, REQUEST_ARTIST, RECEIVE_ARTIST,
-    SELECT_ALBUM, REQUEST_ALBUM, RECEIVE_ALBUM, SELECT_SONG
+    SELECT_ALBUM, REQUEST_ALBUM, INVALIDATE_ALBUM, RECEIVE_ALBUM, SELECT_SONG
 } from '../actions';
 
 const albums = (
@@ -14,7 +14,7 @@ const albums = (
     case INVALIDATE_ALBUMS:
         return {
             ...state,
-            didInvalidate: true
+            didInvalidate: true,
         };
     case REQUEST_ALBUMS:
         return {
@@ -82,6 +82,9 @@ const currentAlbum = (state = {}, action) => {
             didInvalidate: false,
             lastFmInfo: action.lastFmInfo,
             error: action.error
+        };
+    case INVALIDATE_ALBUM:
+        return {
         };
     }
     return state;

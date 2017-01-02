@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { fetchAllAlbums, selectNewArtist, selectNewAlbum, selectSong} from '../actions';
+import _ from 'lodash';
 
 import App from 'grommet/components/App';
 import Header from 'grommet/components/Header';
@@ -10,19 +11,27 @@ import Columns from 'grommet/components/Columns';
 
 import ArtistList from 'components/ArtistList';
 import ArtistView from 'components/ArtistView';
-import LastFmView from 'components/LastFmView';
 import AlbumView from 'components/AlbumView';
+import PlaylistView from 'components/PlaylistView';
 import Player from 'components/Player';
 import ArtistSearch from 'components/ArtistSearch';
 
 
 const baseUrl = 'http://www';
 
-export function createMp3Url(part) {
+function createMp3Url(part) {
     if(part) {
         return baseUrl + part;
     }
     return null;
+}
+
+function getArtistIndex(artists, artist) {
+    return _.findIndex(artists, {artist});
+}
+
+function getAlbumIndex(albums, album) {
+    return _.findIndex(albums, {album});
 }
 
 
@@ -31,17 +40,35 @@ class Main extends Component {
     constructor(props) {
         super(props);
 
-        this.setCurrentArtist = this.setCurrentArtist.bind(this);
-        this.setCurrentAlbum = this.setCurrentAlbum.bind(this);
         this.setCurrentSong = this.setCurrentSong.bind(this);
     }
 
     componentDidMount() {
-        const { dispatch } = this.props;
+        const {dispatch} = this.props;
         dispatch(fetchAllAlbums());
     }
 
+    componentWillReceiveProps(nextProps) {
+        const {params, artists, currentArtist, currentAlbum, dispatch} = nextProps;
+        console.log('Main.componentWillReceiveProps() nextProps:', nextProps, params, artists, params.artist);
+        if(params.artist && params.artist != currentArtist.name ) {
+            const index = getArtistIndex(artists, params.artist);
+            if(index >= 0) {
+                dispatch(selectNewArtist(index, artists[index].artist));
+            }
+        }
+        if(currentArtist.index && params.album && params.album != currentAlbum.name ) {
+            const artist = artists[currentArtist.index];
+            const index = getAlbumIndex(artist.albums, params.album);
+            if(index >= 0) {
+                dispatch(selectNewAlbum(index, artist.albums[index]));
+            }
+        }
+    }
+
+
     render() {
+        console.log('Main.render() props=', this.props);
         const {artists, currentArtist, currentAlbum, currentSong} = this.props;
 
         return (
@@ -53,17 +80,13 @@ class Main extends Component {
                 <Columns>
                     <ArtistView artist={ artists[currentArtist.index] || {} }
                                 currentArtist={ currentArtist }
-                                currentAlbum={ currentAlbum }
-                                setAlbum={ this.setCurrentAlbum }
                     />
-                    <LastFmView artist={currentArtist}
-                                album={currentAlbum.lastFmInfo}
+                    <AlbumView artist={currentArtist}
+                                album={currentAlbum}
+                                setSong={ this.setCurrentSong }
                     />
                     <Box>
-                        <AlbumView
-                                   album={ currentAlbum }
-                                   currentSong={ currentSong }
-                                   setSong={ this.setCurrentSong }
+                        <PlaylistView
                         />
                         <Player url={createMp3Url(currentSong && currentSong.song && currentSong.song.mp3)}/>
                     </Box>
@@ -75,29 +98,6 @@ class Main extends Component {
 
             </App>
         );
-    }
-
-    setCurrentArtist(index) {
-        const {artists, currentArtist, dispatch} = this.props;
-        console.log('setCurrentArtist', index);
-
-        if(artists[index] && currentArtist.index !== index) {
-            dispatch(selectNewArtist(index, artists[index].artist));
-        }
-    }
-
-    setCurrentAlbum(index) {
-        const {artists, currentArtist, dispatch} = this.props;
-
-        console.log('setCurrentAlbum', index);
-
-        if(currentArtist.index >= 0) {
-            const artist = artists[currentArtist.index];
-
-            if(artist.albums[index]) {
-                dispatch(selectNewAlbum(index, artist.albums[index].album, artist.albums[index]));
-            }
-        }
     }
 
     setCurrentSong(index) {

@@ -1,6 +1,7 @@
 /* global process:false */
 
 import React from 'react';
+import { Router, Route, browserHistory } from 'react-router';
 import { render } from 'react-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
@@ -30,7 +31,13 @@ console.log('Store:', store);
 render(
     <Provider store={store}>
         <div>
-            <Main />
+            <Router history={browserHistory} >
+                <Route path="/" component={Main}>
+                    <Route path="/:artist" component={Main}>
+                        <Route path="/:artist/:album" component={Main}/>
+                    </Route>
+                </Route>
+            </Router>
             <DevTools />
         </div>
     </Provider>, document.getElementById('app')
