@@ -26,7 +26,7 @@ const AlbumView = ({album, currentSong, setSong}) =>  {
             return album.album.songs.map((s, i) => {
                 const selected = currentSong.name === s.title;
                 return <Song id={`so-${i}`}
-                              key={s.title}
+                              key={i}
                               track={s.track}
                               isSelected={selected}
                               title={s.title}
