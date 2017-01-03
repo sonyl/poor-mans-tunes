@@ -59,7 +59,7 @@ export default class ArtistSearch extends Component {
         }
     }
 
-    handleSelect(target, selected) {
+    handleSelect(target) {
         const { suggestion } = target;
 
         if(suggestion) {

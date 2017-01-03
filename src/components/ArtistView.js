@@ -22,20 +22,8 @@ function getThumbnail(artist) {
     }
 }
 
-export default class ArtistView extends Component {
-
-    static propTypes = {
-        artist: PropTypes.object.isRequired,
-        currentArtist: PropTypes.object.isRequired
-    };
-
-    componentWillReceiveProps(nextProps){
-        console.log('ArtistView.componentWillReceiveProps:', nextProps);
-
-    }
-    renderAlbums() {
-        const { artist } = this.props;
-
+const ArtistView = ({artist, selectedArtist}) => {
+    function renderAlbums() {
         if(artist.albums && artist.albums.length) {
             return artist.albums.map((a, i) => {
                 return (
@@ -47,19 +35,23 @@ export default class ArtistView extends Component {
         }
     }
 
-    render() {
-        const {artist, currentArtist} = this.props;
-        console.log('ArtistView.render:', this.props);
-        return (
-            <Card
-                contentPad='small'
-                label='Artist Info:'
-                heading={ artist.artist }
-                thumbnail={getThumbnail(currentArtist.lastFmInfo)}
-            >
-                <Markdown content={currentArtist.lastFmInfo && currentArtist.lastFmInfo.bio && currentArtist.lastFmInfo.bio.summary}/>
-                { this.renderAlbums() }
-            </Card>
-        );
-    }
-}
+    console.log('ArtistView.render() artist: %o, selectedArtist: %o', artist, selectedArtist);
+    return (
+        <Card
+            contentPad='small'
+            label='Artist Info:'
+            heading={ artist.artist }
+            thumbnail={getThumbnail(selectedArtist.lastFmInfo)}
+        >
+            <Markdown content={selectedArtist.lastFmInfo && selectedArtist.lastFmInfo.bio && selectedArtist.lastFmInfo.bio.summary}/>
+            { renderAlbums() }
+        </Card>
+    );
+};
+
+ArtistView.propTypes = {
+    artist: PropTypes.object.isRequired,
+    selectedArtist: PropTypes.object.isRequired
+};
+
+export default ArtistView;

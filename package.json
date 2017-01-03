@@ -68,47 +68,16 @@
       "react"
     ],
     "rules": {
-      "no-unused-vars": [
-        "off"
-      ],
-      "indent": [
-        "error",
-        4
-      ],
-      "max-len": [
-        "error",
-        {
-          "code": 140
-        }
-      ],
-      "no-multiple-empty-lines": [
-        "error",
-        {
-          "max": 2
-        }
-      ],
-      "no-var": [
-        "warn"
-      ],
-      "comma-dangle": [
-        "error",
-        "never"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "no-console": [
-        "off"
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "semi": [
-        "error",
-        "always"
-      ]
+      "no-unused-vars": ["off"],
+      "indent": ["error", 4, { "SwitchCase": 1 }],
+      "max-len": ["error", { "code": 140 } ],
+      "no-multiple-empty-lines": ["error", { "max": 2 }],
+      "no-var": ["warn"],
+      "comma-dangle": ["error", "never"],
+      "quotes": ["error", "single"],
+      "no-console": ["off"],
+      "linebreak-style": ["error", "unix"],
+      "semi": ["error", "always"]
     }
   }
 }

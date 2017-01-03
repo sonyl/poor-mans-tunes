@@ -60,7 +60,7 @@ export default class ArtistList extends Component {
 
     static propTypes = {
         artists: PropTypes.arrayOf(PropTypes.object),
-        currentArtist: PropTypes.object,
+        selectedArtist: PropTypes.object,
         setArtist: React.PropTypes.func
     };
 
@@ -69,7 +69,7 @@ export default class ArtistList extends Component {
         const categories = categorize(props.artists);
         this.state = {
             categories,
-            activeIndex: getActiveIndex(categories, props.currentArtist && props.currentArtist.name)
+            activeIndex: getActiveIndex(categories, props.selectedArtist && props.selectedArtist.name)
         };
 
         this.onTabChange = this.onTabChange.bind(this);
@@ -78,12 +78,12 @@ export default class ArtistList extends Component {
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.artists !== this.props.artists
-            || nextProps.currentArtist !== this.props.currentArtist) {
+            || nextProps.selectedArtist !== this.props.selectedArtist) {
 
             const categories = categorize(nextProps.artists);
             this.setState( {
                 categories,
-                activeIndex: getActiveIndex(categories, nextProps.currentArtist && nextProps.currentArtist.name)
+                activeIndex: getActiveIndex(categories, nextProps.selectedArtist && nextProps.selectedArtist.name)
             });
         }
     }

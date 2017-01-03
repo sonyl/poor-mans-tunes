@@ -1,7 +1,7 @@
 import {ADD_TO_PLAYLIST, REMOVE_FROM_PLAYLIST} from '../actions/playlistActions';
 
 
-export const playlist = (state = [], {type, ...props}) => {
+const playlist = (state = [], {type, ...props}) => {
     switch (type) {
     case ADD_TO_PLAYLIST: {
         const {artistIndex, albumIndex, songIndex} = props;
@@ -23,3 +23,5 @@ export const playlist = (state = [], {type, ...props}) => {
     }
     return state;
 };
+
+export default playlist;

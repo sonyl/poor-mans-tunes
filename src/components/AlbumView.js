@@ -32,7 +32,7 @@ const Song = ({index, title, addToPlaylist}) => {
 
 const AlbumView = ({artist, album, addToPlaylist}) => {
 
-    console.log('LastFmView.render() artist=%o, album=%o', artist, album);
+    console.log('AlbumView.render() artist=%o, album=%o', artist, album);
     const albumName = album && album.name || '';
     const artistName = artist && artist.name || '';
     const heading = artistName || albumName ? artistName + ' - ' + albumName : '';
