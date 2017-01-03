@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Component} from 'react';
 
 import Card from 'grommet/components/Card';
 import Markdown from 'grommet/components/Markdown';
@@ -21,23 +21,16 @@ function getThumbnail(album) {
     }
 }
 
-const Song = ({id, title, setSong}) => {
+const Song = ({index, title, addToPlaylist}) => {
 
     return (
-        <div id={id} onClick={onClick}>
+        <div onClick={() => addToPlaylist(index)}>
             {title}
         </div>
     );
-
-    function onClick(event) {
-        const target = event.currentTarget;
-        const songId = target.id;
-        const songIndex = songId.substring(3);
-        setSong(songIndex);
-    }
 };
 
-const AlbumView = ({artist, album, setSong}) => {
+const AlbumView = ({artist, album, addToPlaylist}) => {
 
     console.log('LastFmView.render() artist=%o, album=%o', artist, album);
     const albumName = album && album.name || '';
@@ -47,11 +40,11 @@ const AlbumView = ({artist, album, setSong}) => {
     function renderSongs () {
         if(album && album.album && album.album.songs){
             return album.album.songs.map((s, i) => {
-                return <Song id={`so-${i}`}
+                return <Song index={i}
                              key={i}
                              track={s.track}
                              title={s.title}
-                             setSong={setSong}/>;
+                             addToPlaylist={addToPlaylist}/>;
             });
         }
     }
@@ -84,7 +77,7 @@ AlbumView.propTypes = {
     }),
     artist: PropTypes.shape({
     }),
-    setSong: PropTypes.func.isRequired,
+    addToPlaylist: PropTypes.func.isRequired
 };
 
 export default AlbumView;

@@ -7,21 +7,23 @@ import PauseIcon from 'grommet/components/icons/base/PauseFill';
 import StopIcon from 'grommet/components/icons/base/StopFill';
 import RefreshIcon from 'grommet/components/icons/base/Refresh';
 import UpdateIcon from 'grommet/components/icons/base/Update';
-
+import FFIcon from 'grommet/components/icons/base/FastForward';
 
 import ReactPlayer from 'react-player';
 import Slider from './Slider';
 
+const ICON_SIZE = 'large';
+
 function MyPlayIcon(props) {
-    return props.playing ? <PauseIcon size='large'/> : <PlayIcon size='large'/>;
+    return props.playing ? <PauseIcon size={ICON_SIZE}/> : <PlayIcon size={ICON_SIZE}/>;
 }
 
 function MyStopIcon() {
-    return <StopIcon size='large'/>;
+    return <StopIcon size={ICON_SIZE}/>;
 }
 
 function LoopIcon(props) {
-    return props.loop ? <UpdateIcon size='large'/> : <RefreshIcon size='large'/>;
+    return props.loop ? <UpdateIcon size={ICON_SIZE}/> : <RefreshIcon size={ICON_SIZE}/>;
 }
 
 
@@ -173,6 +175,10 @@ export default class Player extends Component {
                             &nbsp;
                             <Button onClick={this.toggleLoop}>
                                 <LoopIcon loop={loop}/>
+                            </Button>
+                            &nbsp;
+                            <Button onClick={this.props.fastForward}>
+                                <FFIcon size={ICON_SIZE}/>
                             </Button>
                         </td>
                     </tr>

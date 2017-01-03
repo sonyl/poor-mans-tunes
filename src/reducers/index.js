@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
 import {
     REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, SELECT_ARTIST, REQUEST_ARTIST, RECEIVE_ARTIST,
-    SELECT_ALBUM, REQUEST_ALBUM, INVALIDATE_ALBUM, RECEIVE_ALBUM, SELECT_SONG
+    SELECT_ALBUM, REQUEST_ALBUM, INVALIDATE_ALBUM, RECEIVE_ALBUM
 } from '../actions';
+
+import {playlist} from './playlistReducer';
 
 const albums = (
     state = {
@@ -14,7 +16,7 @@ const albums = (
     case INVALIDATE_ALBUMS:
         return {
             ...state,
-            didInvalidate: true,
+            didInvalidate: true
         };
     case REQUEST_ALBUMS:
         return {
@@ -41,7 +43,7 @@ const currentArtist = (state = {}, action) => {
     case SELECT_ARTIST:
         return {
             index: action.index,
-            name: action.name,
+            name: action.name
         };
     case REQUEST_ARTIST:
         return {
@@ -90,24 +92,12 @@ const currentAlbum = (state = {}, action) => {
     return state;
 };
 
-const currentSong = (state = {}, action) => {
-    switch (action.type) {
-    case SELECT_SONG:
-        return {
-            index: action.index,
-            name: action.name,
-            song: action.song
-        };
-    }
-    return state;
-};
-
 
 const rootReducer = combineReducers({
     albums,
     currentArtist,
     currentAlbum,
-    currentSong
+    playlist
 });
 
 export default rootReducer;

@@ -15,7 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "grommet": "^1.1.0",
-    "immutability-helper": "^2.0.0",
     "lodash-es": "^4.17.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",

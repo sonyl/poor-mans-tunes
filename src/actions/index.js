@@ -10,7 +10,6 @@ export const SELECT_ALBUM = 'SELECT_ALBUM';
 export const REQUEST_ALBUM = 'REQUEST_ALBUM';
 export const RECEIVE_ALBUM = 'RECEIVE_ALBUM';
 export const INVALIDATE_ALBUM = 'INVALIDATE_ALBUM';
-export const SELECT_SONG = 'SELECT_SONG';
 
 export const requestAlbums = () => ({
     type: REQUEST_ALBUMS
@@ -169,10 +168,3 @@ export const selectNewAlbum = (index, album) => (dispatch, getState) => {
         dispatch(receiveAlbum(index, {}, e));
     });
 };
-
-export const selectSong = (index, name, song) => ({
-    type: SELECT_SONG,
-    index,
-    name,
-    song
-});

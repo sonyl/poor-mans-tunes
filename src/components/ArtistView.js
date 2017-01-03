@@ -26,7 +26,7 @@ export default class ArtistView extends Component {
 
     static propTypes = {
         artist: PropTypes.object.isRequired,
-        currentArtist: PropTypes.object.isRequired,
+        currentArtist: PropTypes.object.isRequired
     };
 
     componentWillReceiveProps(nextProps){

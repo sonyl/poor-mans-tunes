@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { fetchAllAlbums, selectNewArtist, selectNewAlbum, selectSong} from '../actions';
+import { fetchAllAlbums, selectNewArtist, selectNewAlbum} from '../actions';
+import { addToPlaylist, removeFromPlaylist } from '../actions/playlistActions';
 import _ from 'lodash';
 
 import App from 'grommet/components/App';
@@ -40,7 +41,9 @@ class Main extends Component {
     constructor(props) {
         super(props);
 
-        this.setCurrentSong = this.setCurrentSong.bind(this);
+        this.addEntryToPlaylist = this.addEntryToPlaylist.bind(this);
+        this.removeEntryFromPlaylist = this.removeEntryFromPlaylist.bind(this);
+        this.fastForward = this.fastForward.bind(this);
     }
 
     componentDidMount() {
@@ -69,7 +72,7 @@ class Main extends Component {
 
     render() {
         console.log('Main.render() props=', this.props);
-        const {artists, currentArtist, currentAlbum, currentSong} = this.props;
+        const {artists, currentArtist, currentAlbum, currentSong, playlist} = this.props;
 
         return (
             <App centered={false}>
@@ -83,12 +86,14 @@ class Main extends Component {
                     />
                     <AlbumView artist={currentArtist}
                                 album={currentAlbum}
-                                setSong={ this.setCurrentSong }
+                                addToPlaylist={ this.addEntryToPlaylist }
                     />
                     <Box>
-                        <PlaylistView
+                        <Player
+                            url={this.getCurrentUrl()}
+                            fastForward={this.fastForward}
                         />
-                        <Player url={createMp3Url(currentSong && currentSong.song && currentSong.song.mp3)}/>
+                        <PlaylistView playlist={playlist} artists={artists} removeEntry={this.removeEntryFromPlaylist}/>
                     </Box>
                 </Columns>
                 <ArtistList artists={artists}
@@ -100,8 +105,20 @@ class Main extends Component {
         );
     }
 
-    setCurrentSong(index) {
-        console.log('setCurrentSong', index);
+    getCurrentUrl() {
+        const { playlist, artists } = this.props;
+        const currentSong = playlist[0];
+        const artist = currentSong && artists[currentSong.artistIndex];
+        const album = artist && artist.albums[currentSong.albumIndex];
+        const song = album && album.songs[currentSong.songIndex];
+        if (song) {
+            return createMp3Url(song.mp3);
+        }
+        return null;
+    }
+
+    addEntryToPlaylist(index) {
+        console.log('addEntryToPlaylist', index);
 
         const {artists, currentArtist, currentAlbum, dispatch} = this.props;
         if(currentArtist.index >= 0 && currentAlbum.index >= 0) {
@@ -110,21 +127,31 @@ class Main extends Component {
                 const album = artist.albums[currentAlbum.index];
 
                 if (album && album.songs && album.songs[index]) {
-                    dispatch(selectSong(index, album.songs[index].title, album.songs[index]));
+                    dispatch(addToPlaylist(currentArtist.index, currentAlbum.index, index));
                 }
             }
         }
     }
+
+    removeEntryFromPlaylist(index) {
+        console.log('removeEntryFromPlaylist', index);
+        const {dispatch} = this.props;
+        dispatch(removeFromPlaylist(index));
+    }
+
+    fastForward() {
+        this.removeEntryFromPlaylist(0);
+    }
 }
 
 const mapStateToProps = state => {
-    const { albums, currentArtist, currentAlbum, currentSong } = state;
+    const { albums, currentArtist, currentAlbum, currentSong, playlist } = state;
 
     const props =  {
         artists: albums.artists,
         currentArtist,
         currentAlbum,
-        currentSong
+        playlist
     };
 
     console.log('mapStateToProps:', state, '=>', props);

@@ -14,7 +14,7 @@ export default class ArtistSearch extends Component {
     static propTypes = {
         artists: PropTypes.arrayOf(
             PropTypes.shape({
-                    artist: PropTypes.string.isRequired
+                artist: PropTypes.string.isRequired
             }).isRequired
         ).isRequired
     };
