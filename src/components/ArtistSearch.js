@@ -1,13 +1,17 @@
 import React, {Component, PropTypes} from 'react';
 import { browserHistory } from 'react-router';
 import Search from 'grommet/components/Search';
-import _ from 'lodash';
 
 
-function reorganize(artists) {
-    'use strict';
-
-    return artists ? artists.map((a, i) => ({label: a.artist, index: i})) : [];
+function reorganize(artists = []) {
+    const db = artists.map(a => ({label: a.artist, artist: a.artist}));
+    artists.forEach(a => {
+        const albums = a.albums || [];
+        albums.forEach(al => {
+            db.push({label: `${a.artist} : ${al.album}`, artist: a.artist, album: al.album});
+        });
+    });
+    return db;
 }
 
 export default class ArtistSearch extends Component {
@@ -24,7 +28,7 @@ export default class ArtistSearch extends Component {
 
 
         this.state = {
-            artists: reorganize(props.artists),
+            db: reorganize(props.artists),
             value: ''
         };
 
@@ -34,20 +38,30 @@ export default class ArtistSearch extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({artists: reorganize(nextProps.artists)});
-
+        this.setState({db: reorganize(nextProps.artists)});
     }
 
     getSuggestions() {
-        const {value, artists} = this.state;
+        const {value, db} = this.state;
         if( !value ) {
             return [];
         }
 
         const regExp = new RegExp(value, 'i');
-        return _.take(_.filter(artists, (a) => {
-            return regExp.test(a.label);
-        }), 20);
+        const suggestions = [], MAX=20;
+        for(let i = 0; i < db.length && suggestions.length < MAX; i++) {
+            const entry = db[i];
+            if(entry.album) {
+                if(regExp.test(entry.album)) {
+                    suggestions.push(entry);
+                }
+            } else {
+                if(regExp.test(entry.artist)) {
+                    suggestions.push(entry);
+                }
+            }
+        }
+        return suggestions;
     }
 
 
@@ -64,7 +78,10 @@ export default class ArtistSearch extends Component {
 
         if(suggestion) {
             this.setState({value: suggestion.label});
-            const path = `/${suggestion.label}`;
+            let path = `/${suggestion.artist}`;
+            if(suggestion.album) {
+                path += `/${suggestion.album}`
+            }
             browserHistory.push(path);
         }
     }

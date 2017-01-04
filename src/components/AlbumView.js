@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 
 import Card from 'grommet/components/Card';
+import Anchor from 'grommet/components/Anchor';
 import Markdown from 'grommet/components/Markdown';
 
 
@@ -33,9 +34,13 @@ const Song = ({index, title, addToPlaylist}) => {
 const AlbumView = ({artist, album, addToPlaylist}) => {
 
     console.log('AlbumView.render() artist=%o, album=%o', artist, album);
-    const albumName = album && album.name || '';
-    const artistName = artist && artist.name || '';
-    const heading = artistName || albumName ? artistName + ' - ' + albumName : '';
+    const artistName = artist && artist.name;
+    const albumName = album && album.name;
+    const heading = artistName && albumName && (artistName + ':' + albumName);
+
+    function allIndexs() {
+        return album && album.album && album.album.songs ? album.album.songs.map((s, i) => i) : [];
+    }
 
     function renderSongs () {
         if(album && album.album && album.album.songs){
@@ -49,6 +54,12 @@ const AlbumView = ({artist, album, addToPlaylist}) => {
         }
     }
 
+    const renderAnchor = () => {
+        if(heading) {
+            return <Anchor onClick={() => addToPlaylist(allIndexs())}>Add album to playlist</Anchor>;
+        }
+    };
+
     return (
         <Card
             contentPad='small'
@@ -56,8 +67,8 @@ const AlbumView = ({artist, album, addToPlaylist}) => {
             heading={ heading }
             thumbnail={getThumbnail(album)}
         >
-            <Markdown content={album && album.lastFmInfo && album.lastFmInfo.wiki && album.lastFmInfo.wiki.summary}/>
             { renderSongs() }
+            { renderAnchor() }
         </Card>
     );
 };

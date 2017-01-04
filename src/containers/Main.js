@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { fetchAllAlbums } from '../actions/albumsActions';
-import { selectNewArtist } from '../actions/artistActions';
-import { selectNewAlbum } from '../actions/albumActions';
+import { selectNewArtist, unselectArtist } from '../actions/artistActions';
+import { selectNewAlbum, unselectAlbum } from '../actions/albumActions';
 import { addToPlaylist, removeFromPlaylist } from '../actions/playlistActions';
 import { getSongUrl } from '../reducers';
 import _ from 'lodash';
@@ -48,17 +48,29 @@ class Main extends Component {
     componentWillReceiveProps(nextProps) {
         const {params, artists, selectedArtist, selectedAlbum, dispatch} = nextProps;
         console.log('Main.componentWillReceiveProps() nextProps:', nextProps, params, artists, params.artist);
-        if(params.artist && params.artist != selectedArtist.name ) {
-            const index = getArtistIndex(artists, params.artist);
-            if(index >= 0) {
-                dispatch(selectNewArtist(index, artists[index].artist));
+
+        if(params.artist !== selectedArtist.name) {
+            if(params.artist) {
+                const index = getArtistIndex(artists, params.artist);
+                if (index >= 0) {
+                    dispatch(selectNewArtist(index, artists[index].artist));
+                }
+            } else {
+                dispatch(unselectArtist());
             }
+
         }
-        if(selectedArtist.index && params.album && params.album != selectedAlbum.name ) {
-            const artist = artists[selectedArtist.index];
-            const index = getAlbumIndex(artist.albums, params.album);
-            if(index >= 0) {
-                dispatch(selectNewAlbum(index, artist.albums[index]));
+        if(params.album !== selectedAlbum.name ) {
+            if(params.album) {
+                if(selectedArtist.index) {
+                    const artist = artists[selectedArtist.index];
+                    const index = getAlbumIndex(artist.albums, params.album);
+                    if (index >= 0) {
+                        dispatch(selectNewAlbum(index, artist.albums[index]));
+                    }
+                }
+            } else {
+                dispatch(unselectAlbum());
             }
         }
     }
@@ -107,9 +119,10 @@ class Main extends Component {
             const artist = artists[selectedArtist.index];
             if(artist) {
                 const album = artist.albums[selectedAlbum.index];
-
-                if (album && album.songs && album.songs[index]) {
-                    dispatch(addToPlaylist(selectedArtist.index, selectedAlbum.index, index));
+                if (album && album.songs) {
+                    const indexes = Array.isArray(index) ? index : [index];
+                    const validIndexs = indexes.filter(i => album.songs[i]);
+                    dispatch(addToPlaylist(selectedArtist.index, selectedAlbum.index, validIndexs));
                 }
             }
         }

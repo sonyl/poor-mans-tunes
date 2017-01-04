@@ -1,9 +1,9 @@
 import {fetchLastFm} from './utils';
 
 export const SELECT_ALBUM = 'SELECT_ALBUM';
+export const UNSELECT_ALBUM = 'UNSELECT_ALBUM';
 export const REQUEST_ALBUM = 'REQUEST_ALBUM';
 export const RECEIVE_ALBUM = 'RECEIVE_ALBUM';
-export const INVALIDATE_ALBUM = 'INVALIDATE_ALBUM';
 
 export const selectAlbum = (index, album) => ({
     type: SELECT_ALBUM,
@@ -26,18 +26,13 @@ export const receiveAlbum = (index, lastFmInfo, error) => ({
     receivedAt: Date.now()
 });
 
-export const invalidateAlbum = (index) => ({
-    type: INVALIDATE_ALBUM,
-    index
+export const unselectAlbum = () => ({
+    type: UNSELECT_ALBUM
 });
 
 export const selectNewAlbum = (index, album) => (dispatch, getState) => {
 
-    const {selectedArtist, selectedAlbum} = getState();
-    if(selectedAlbum.index != index) {
-        console.log('dispatching:', INVALIDATE_ALBUM);
-        dispatch(invalidateAlbum(selectedAlbum.index));
-    }
+    const {selectedArtist} = getState();
     dispatch(selectAlbum(index, album));
     dispatch(requestAlbum(index, album.album));
 

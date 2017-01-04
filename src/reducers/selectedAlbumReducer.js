@@ -1,4 +1,4 @@
-import {SELECT_ALBUM, REQUEST_ALBUM, INVALIDATE_ALBUM, RECEIVE_ALBUM} from '../actions/albumActions';
+import {SELECT_ALBUM, REQUEST_ALBUM, UNSELECT_ALBUM, RECEIVE_ALBUM} from '../actions/albumActions';
 
 const selectedAlbum = (state = {}, action) => {
     switch (action.type) {
@@ -22,7 +22,7 @@ const selectedAlbum = (state = {}, action) => {
                 lastFmInfo: action.lastFmInfo,
                 error: action.error
             };
-        case INVALIDATE_ALBUM:
+        case UNSELECT_ALBUM:
             return {
             };
     }

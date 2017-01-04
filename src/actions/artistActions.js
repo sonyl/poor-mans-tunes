@@ -1,15 +1,19 @@
 import {fetchLastFm} from './utils';
-import {invalidateAlbum} from './albumActions';
+import {unselectAlbum} from './albumActions';
 
 export const SELECT_ARTIST = 'SELECT_ARTIST';
+export const UNSELECT_ARTIST = 'UNSELECT_ARTIST';
 export const REQUEST_ARTIST = 'REQUEST_ARTIST';
 export const RECEIVE_ARTIST = 'RECEIVE_ARTIST';
-export const INVALIDATE_ARTIST = 'INVALIDATE_ARTIST';
 
 export const selectArtist = (index, name) => ({
     type: SELECT_ARTIST,
     index,
     name
+});
+
+export const unselectArtist = () => ({
+    type: UNSELECT_ARTIST
 });
 
 export const requestArtist = (index, name) => ({
@@ -26,19 +30,11 @@ export const receiveArtist = (index, lastFmInfo, error) => ({
     receivedAt: Date.now()
 });
 
-export const invalidateArtist = (index) => ({
-    type: INVALIDATE_ARTIST,
-    index
-});
-
 export const selectNewArtist = (index, artist) => (dispatch, getState) => {
 
-    const {selectedArtist, selectedAlbum} = getState();
-    if(selectedArtist.index >= 0) {
-        dispatch(invalidateArtist(selectedArtist.index));
-        if(selectedAlbum.index >= 0) {
-            dispatch(invalidateAlbum(selectedAlbum.index));
-        }
+    const {selectedAlbum} = getState();
+    if(selectedAlbum.index >= 0) {
+        dispatch(unselectAlbum());
     }
     dispatch(selectArtist(index, artist));
     dispatch(requestArtist(index, artist));

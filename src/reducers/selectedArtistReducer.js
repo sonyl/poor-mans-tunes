@@ -1,4 +1,4 @@
-import {SELECT_ARTIST, REQUEST_ARTIST, RECEIVE_ARTIST} from '../actions/artistActions';
+import {SELECT_ARTIST, REQUEST_ARTIST, RECEIVE_ARTIST, UNSELECT_ARTIST} from '../actions/artistActions';
 
 
 const selectedArtist = (state = {}, action) => {
@@ -22,6 +22,9 @@ const selectedArtist = (state = {}, action) => {
                 lastFmInfo: action.lastFmInfo,
                 error: action.error
             };
+        case UNSELECT_ARTIST:
+            return {
+            }
     }
     return state;
 };
