@@ -36,7 +36,7 @@ class Main extends Component {
         super(props);
 
         this.addEntryToPlaylist = this.addEntryToPlaylist.bind(this);
-        this.fastForward = this.removeEntryFromPlaylist.bind(this, 0);
+        this.nextSong = this.removeEntryFromPlaylist.bind(this, 0);
         this.removeEntryFromPlaylist = this.removeEntryFromPlaylist.bind(this);
     }
 
@@ -97,7 +97,7 @@ class Main extends Component {
                     <Box>
                         <Player
                             url={songUrl}
-                            fastForward={this.fastForward}
+                            nextSong={this.nextSong}
                         />
                         <PlaylistView playlist={playlist} artists={artists} removeEntry={this.removeEntryFromPlaylist}/>
                     </Box>

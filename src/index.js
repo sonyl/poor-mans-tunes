@@ -10,20 +10,15 @@ import thunk from 'redux-thunk';
 
 import reducer from './reducers';
 import Main from './containers/Main';
-import DevTools from './containers/DevTools';
 
 import 'grommet/scss/vanilla/index';
 
-const store = createStore(
-    reducer,
-    compose(
-        applyMiddleware(thunk, createLogger()),
-        DevTools.instrument()
-    )
-);
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk, createLogger())));
 
 // Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(browserHistory, store);
 
 console.log('Store:', store);
 render(
@@ -36,7 +31,6 @@ render(
                     </Route>
                 </Route>
             </Router>
-            <DevTools />
         </div>
     </Provider>, document.getElementById('app')
 );

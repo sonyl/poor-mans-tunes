@@ -5,8 +5,6 @@ import Meter from 'grommet/components/Meter';
 import PlayIcon from 'grommet/components/icons/base/PlayFill';
 import PauseIcon from 'grommet/components/icons/base/PauseFill';
 import StopIcon from 'grommet/components/icons/base/StopFill';
-import RefreshIcon from 'grommet/components/icons/base/Refresh';
-import UpdateIcon from 'grommet/components/icons/base/Update';
 import FFIcon from 'grommet/components/icons/base/FastForward';
 
 import ReactPlayer from 'react-player';
@@ -21,11 +19,6 @@ function MyPlayIcon(props) {
 function MyStopIcon() {
     return <StopIcon size={ICON_SIZE}/>;
 }
-
-function LoopIcon(props) {
-    return props.loop ? <UpdateIcon size={ICON_SIZE}/> : <RefreshIcon size={ICON_SIZE}/>;
-}
-
 
 function Duration ({ className, seconds }) {
     function format (seconds) {
@@ -54,21 +47,20 @@ function Duration ({ className, seconds }) {
 export default class Player extends Component {
 
     static propTypes = {
-        url: PropTypes.string
+        url: PropTypes.string,
+        nextSong: PropTypes.func
     };
 
     constructor(props) {
         super(props);
         this.state = {
             playing: true,
-            loop: false,
             volume: 0.8,
             played: 0,
             duration: 0
         };
 
         this.playPause = this.playPause.bind(this);
-        this.toggleLoop = this.toggleLoop.bind(this);
         this.stop = this.stop.bind(this);
         this.setVolume = this.setVolume.bind(this);
         this.onSeekMouseDown = this.onSeekMouseDown.bind(this);
@@ -77,6 +69,7 @@ export default class Player extends Component {
         this.onProgress = this.onProgress.bind(this);
         this.onEnded = this.onEnded.bind(this);
         this.onPause = this.onPause.bind(this);
+        this.nextSong = this.nextSong.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -87,9 +80,6 @@ export default class Player extends Component {
 
     playPause() {
         this.setState({ playing: !this.state.playing });
-    }
-    toggleLoop() {
-        this.setState({ loop: !this.state.loop });
     }
     stop() {
         this.setState({ url: null, playing: false });
@@ -120,17 +110,24 @@ export default class Player extends Component {
         }
     }
     onEnded() {
-        if(this.state.loop) {
-            this.setState({ playing: true });
-        }
+        console.log('onEnded');
+        this.setState({ playing: false });
+        this.nextSong();
     }
     onPause() {
         this.setState({ playing: false });
     }
 
+    nextSong() {
+        const { nextSong } = this.props;
+        if(nextSong) {
+            nextSong();
+        }
+    }
+
     render () {
         const {
-            playing, volume, played, duration, loop
+            playing, volume, played, duration
         } = this.state;
 
         const { url } = this.props;
@@ -173,11 +170,7 @@ export default class Player extends Component {
                                 <MyPlayIcon playing={playing}/>
                             </Button>
                             &nbsp;
-                            <Button onClick={this.toggleLoop}>
-                                <LoopIcon loop={loop}/>
-                            </Button>
-                            &nbsp;
-                            <Button onClick={this.props.fastForward}>
+                            <Button onClick={this.nextSong}>
                                 <FFIcon size={ICON_SIZE}/>
                             </Button>
                         </td>
