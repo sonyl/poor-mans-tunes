@@ -1,7 +1,4 @@
 import React, { Component, PropTypes }  from 'react';
-import CSSClassnames from 'grommet/utils/CSSClassnames';
-
-const INPUT = CSSClassnames.INPUT;
 
 export default class Slider extends Component {
 
@@ -48,11 +45,9 @@ export default class Slider extends Component {
 
         return (
             <span className={className}>
-                <input className={INPUT}
+                <input
                     type='range'
-                    ref={ref => this._inputRef = ref}
                     {...props}
-                    tabIndex="0"
                     disabled={disabled}
                     onChange={ handleChange }
                     onInput={ handleChange }

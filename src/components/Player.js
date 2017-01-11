@@ -1,23 +1,24 @@
 import React, { Component, PropTypes }  from 'react';
 
-import Button from 'grommet/components/Button';
-import Meter from 'grommet/components/Meter';
-import PlayIcon from 'grommet/components/icons/base/PlayFill';
-import PauseIcon from 'grommet/components/icons/base/PauseFill';
-import StopIcon from 'grommet/components/icons/base/StopFill';
-import FFIcon from 'grommet/components/icons/base/FastForward';
-
 import ReactPlayer from 'react-player';
 import Slider from './Slider';
+import ProgressBar from './ProgressBar';
+import GlyphIcon from './GlyphIcon';
 
-const ICON_SIZE = 'large';
-
-function MyPlayIcon(props) {
-    return props.playing ? <PauseIcon size={ICON_SIZE}/> : <PlayIcon size={ICON_SIZE}/>;
+function PlayIcon(props) {
+    return <GlyphIcon iconName={props.playing ? 'pause' : 'play'}/>;
 }
 
-function MyStopIcon() {
-    return <StopIcon size={ICON_SIZE}/>;
+function StopIcon() {
+    return <GlyphIcon iconName='stop'/>;
+}
+
+function PlayNextIcon() {
+    return <GlyphIcon iconName='fast-forward'/>;
+}
+
+function Button({children, onClick}) {
+    return <button className="btn btn-lg" onClick={onClick}>{children}</button>;
 }
 
 function Duration ({ className, seconds }) {
@@ -81,22 +82,28 @@ export default class Player extends Component {
     playPause() {
         this.setState({ playing: !this.state.playing });
     }
+
     stop() {
         this.setState({ url: null, playing: false });
     }
+
     setVolume(e) {
         this.setState({ volume: parseFloat(e.target.value) });
     }
+
     onSeekMouseDown(e) {
         this.setState({ seeking: true });
     }
+
     onSeekChange(e) {
         this.setState({ played: parseFloat(e.target.value) });
     }
+
     onSeekMouseUp(e) {
         this.setState({ seeking: false });
         this.player.seekTo(parseFloat(e.target.value));
     }
+
     onProgress(state) {
 
         // We only want to update time slider if we are not currently seeking
@@ -109,11 +116,12 @@ export default class Player extends Component {
 
         }
     }
+
     onEnded() {
-        console.log('onEnded');
         this.setState({ playing: false });
         this.nextSong();
     }
+
     onPause() {
         this.setState({ playing: false });
     }
@@ -132,15 +140,12 @@ export default class Player extends Component {
 
         const { url } = this.props;
 
-        if(!url) {
-            return null;
-        }
-
-
         return (
-            <div className='app'>
-                <section className='section'>
-                    <h1>Player:</h1>
+            <div className="panel panel-default">
+                <div className="panel-heading">
+                    <h3>Player</h3>
+                </div>
+                <div className="panel-body">
                     <ReactPlayer
                         ref={player => { this.player = player; }}
                         className='react-player'
@@ -148,74 +153,73 @@ export default class Player extends Component {
                         url={url}
                         playing={playing}
                         volume={volume}
-                        onReady={() => console.log('onReady')}
-                        onStart={() => console.log('onStart')}
                         onPlay={() => this.setState({ playing: true })}
                         onPause={ this.onPause }
-                        onBuffer={() => console.log('onBuffer')}
                         onEnded={this.onEnded}
                         onError={e => console.log('onError', e)}
                         onProgress={this.onProgress}
                         onDuration={duration => this.setState({ duration })}
                     />
 
-                    <table><tbody>
-                    <tr>
-                        <td>
-                            <Button onClick={this.stop}>
-                                <MyStopIcon/>
-                            </Button>
-                            &nbsp;
-                            <Button onClick={this.playPause}>
-                                <MyPlayIcon playing={playing}/>
-                            </Button>
-                            &nbsp;
-                            <Button onClick={this.nextSong}>
-                                <FFIcon size={ICON_SIZE}/>
-                            </Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Seek</th>
-                        <td>
-                            <Slider
-                                min={0} max={1} step={0.01}
-                                value={played}
-                                onMouseDown={this.onSeekMouseDown}
-                                onChange={this.onSeekChange}
-                                onMouseUp={this.onSeekMouseUp}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Volume</th>
-                        <td>
-                            <Slider
-                                min={0}
-                                max={1}
-                                step={0.1}
-                                value={volume}
-                                onChange={this.setVolume} />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Played</th>
-                        <td><Meter max={1} value={played} /></td>
-                    </tr>
-                    <tr>
-                        <th>duration</th>
-                        <td><Duration seconds={duration} /></td>
-                    </tr>
-                    <tr>
-                        <th>elapsed</th>
-                        <td><Duration seconds={duration * played} /></td>
-                    </tr>
-                    <tr>
-                        <th>remaining</th>
-                        <td><Duration seconds={duration * (1 - played)} /></td>
-                    </tr>
-                    </tbody></table>
-                </section>
+                    <div>
+                        <Button onClick={this.stop}>
+                            <StopIcon/>
+                        </Button>
+                        &nbsp;
+                        <Button onClick={this.playPause}>
+                            <PlayIcon playing={playing}/>
+                        </Button>
+                        &nbsp;
+                        <Button onClick={this.nextSong}>
+                            <PlayNextIcon/>
+                        </Button>
+                    </div>
+                    <div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Seek</th>
+                                    <td>
+                                        <Slider
+                                            min={0} max={1} step={0.01}
+                                            value={played}
+                                            onMouseDown={this.onSeekMouseDown}
+                                            onChange={this.onSeekChange}
+                                            onMouseUp={this.onSeekMouseUp}
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Volume</th>
+                                    <td>
+                                        <Slider
+                                            min={0}
+                                            max={1}
+                                            step={0.1}
+                                            value={volume}
+                                            onChange={this.setVolume} />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Played</th>
+                                    <td><ProgressBar maxValue={1} value={played} /></td>
+                                </tr>
+                                <tr>
+                                    <th>duration</th>
+                                    <td><Duration seconds={duration} /></td>
+                                </tr>
+                                <tr>
+                                    <th>elapsed</th>
+                                    <td><Duration seconds={duration * played} /></td>
+                                </tr>
+                                <tr>
+                                    <th>remaining</th>
+                                    <td><Duration seconds={duration * (1 - played)} /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         );
     }

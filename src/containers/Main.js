@@ -5,28 +5,24 @@ import { selectNewArtist, unselectArtist } from '../actions/artistActions';
 import { selectNewAlbum, unselectAlbum } from '../actions/albumActions';
 import { addToPlaylist, removeFromPlaylist } from '../actions/playlistActions';
 import { getSongUrl } from '../reducers';
-import _ from 'lodash';
+import findIndex from 'lodash/findIndex';
 
-import App from 'grommet/components/App';
-import Header from 'grommet/components/Header';
-import Title from 'grommet/components/Title';
-import Box from 'grommet/components/Box';
-import Columns from 'grommet/components/Columns';
+import Navbar from '../components/Navbar';
+import ArtistList from '../components/ArtistList';
+import ArtistView from '../components/ArtistView';
+import AlbumView from '../components/AlbumView';
+import PlaylistView from '../components/PlaylistView';
+import Player from '../components/Player';
 
-import ArtistList from 'components/ArtistList';
-import ArtistView from 'components/ArtistView';
-import AlbumView from 'components/AlbumView';
-import PlaylistView from 'components/PlaylistView';
-import Player from 'components/Player';
-import ArtistSearch from 'components/ArtistSearch';
+import ArtistSearch from './ArtistSearch';
 
 
 function getArtistIndex(artists, artist) {
-    return _.findIndex(artists, {artist});
+    return findIndex(artists, {artist});
 }
 
 function getAlbumIndex(albums, album) {
-    return _.findIndex(albums, {album});
+    return findIndex(albums, {album});
 }
 
 
@@ -81,33 +77,35 @@ class Main extends Component {
         const {artists, selectedArtist, selectedAlbum, playlist, songUrl} = this.props;
 
         return (
-            <App centered={false}>
-                <Header direction="row" justify="between" pad={{horizontal: 'medium'}}>
-                    <Title>Poor Man&rsquo;s Tunes</Title>
-                    <ArtistSearch artists={artists} />
-                </Header>
-                <Columns>
-                    <ArtistView artist={ artists[selectedArtist.index] || {} }
-                                selectedArtist={ selectedArtist }
-                    />
-                    <AlbumView artist={selectedArtist}
-                                album={selectedAlbum}
-                                addToPlaylist={ this.addEntryToPlaylist }
-                    />
-                    <Box>
+            <div className="container-fluid">
+                <Navbar />
+                <div className="row">
+                    <div className="col-md-4">
+                        <ArtistView artist={ artists[selectedArtist.index] || {} }
+                                    selectedArtist={ selectedArtist }
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <AlbumView album={selectedAlbum}
+                                   addToPlaylist={ this.addEntryToPlaylist }
+                       />
+                    </div>
+                    <div className="col-md-4">
                         <Player
                             url={songUrl}
                             nextSong={this.nextSong}
                         />
-                        <PlaylistView playlist={playlist} artists={artists} removeEntry={this.removeEntryFromPlaylist}/>
-                    </Box>
-                </Columns>
+                        <PlaylistView
+                                    playlist={playlist}
+                                    artists={artists}
+                                    removeEntry={this.removeEntryFromPlaylist}
+                        />
+                    </div>
+                </div>
                 <ArtistList artists={artists}
                             selectedArtist={selectedArtist}
-                            selectArtist={this.selectArtist}
                 />
-
-            </App>
+            </div>
         );
     }
 

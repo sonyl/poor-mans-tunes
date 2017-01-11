@@ -24,7 +24,7 @@ const selectedArtist = (state = {}, action) => {
             };
         case UNSELECT_ARTIST:
             return {
-            }
+            };
     }
     return state;
 };

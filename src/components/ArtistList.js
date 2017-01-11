@@ -1,10 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
 
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
-import Tabs from 'grommet/components/Tabs';
-import Tab from 'grommet/components/Tab';
 import NavLink from './NavLink';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
@@ -55,13 +51,32 @@ function getActiveIndex(categories, name) {
     return index > 0 ? index : 0;
 }
 
+function Tab({index, active, onTabChange, children}) {
+
+    const onClick = (e) => {
+        e.preventDefault();
+        if(onTabChange) { onTabChange(index); }
+    };
+
+    return (
+        <li className={active ? 'active' : ''}>
+            <a onClick={onClick}>{ children }</a>
+        </li>
+    );
+}
+
+function TabContent({id, active, children}) {
+    const className = 'tab-pane' + (active ? ' active': '');
+    return (
+        <div role="tabpanel" className={className} id={id}>{children}</div>
+    );
+}
 
 export default class ArtistList extends Component {
 
     static propTypes = {
         artists: PropTypes.arrayOf(PropTypes.object),
-        selectedArtist: PropTypes.object,
-        setArtist: React.PropTypes.func
+        selectedArtist: PropTypes.object
     };
 
     constructor(props) {
@@ -73,7 +88,6 @@ export default class ArtistList extends Component {
         };
 
         this.onTabChange = this.onTabChange.bind(this);
-        this.onClick = this.onClick.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -92,29 +106,39 @@ export default class ArtistList extends Component {
         return category.map(c => {
             const artist = c.artist.artist;
             return (
-                <NavLink to={`/${artist}`} key={artist} >
-                    {artist}
-                </NavLink>
+                <div key={artist}>
+                    <NavLink to={`/${artist}`}> {artist} </NavLink>
+                </div>
             );
         });
     }
 
-    renderPanels() {
-        const {categories} = this.state;
+    renderTabs() {
+        const {activeIndex, categories} = this.state;
+        return categories.map((c, i) => {
+            return <Tab key={c.category} index={i} active={activeIndex === i} onTabChange={this.onTabChange}>{c.category}</Tab>;
+        });
+    }
 
-        return categories.map(c => {
-            return <Tab title={c.category} key={c.category} ><Box>{this.renderArtistNames(c.artists)}</Box></Tab>;
+    renderTabsContent() {
+        const {activeIndex, categories} = this.state;
+        return categories.map((c, i) => {
+            return <TabContent key={c.category} active={activeIndex === i}>{this.renderArtistNames(c.artists)}</TabContent>;
         });
     }
 
     render() {
-        const {activeIndex} = this.state;
         return (
             <div>
-                <Heading>All artists:</Heading>
-                <Tabs justify='start' activeIndex={activeIndex} onActive={this.onTabChange}>
-                    {this.renderPanels()}
-                </Tabs>
+                <h3>All artists:</h3>
+                <nav>
+                    <ul className="nav nav-tabs">
+                        {this.renderTabs()}
+                    </ul>
+                    <div className="tab-content">
+                        {this.renderTabsContent()}
+                    </div>
+                </nav>
             </div>
         );
     }
@@ -123,12 +147,5 @@ export default class ArtistList extends Component {
         this.setState({
             activeIndex: index
         });
-    }
-
-    onClick(event) {
-        const target = event.target;
-        const artistId = target.id;
-        const artistIndex = artistId.substring(3);
-        this.props.setArtist(artistIndex);
     }
 }

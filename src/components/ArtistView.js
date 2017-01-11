@@ -1,9 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
-import Card from 'grommet/components/Card';
-import Markdown from 'grommet/components/Markdown';
-
 import NavLink from './NavLink';
+import { sanitizeHtml } from './utils';
 
 function getThumbnail(artist) {
     if(artist && artist.image) {
@@ -25,27 +23,55 @@ function getThumbnail(artist) {
 const ArtistView = ({artist, selectedArtist}) => {
     function renderAlbums() {
         if(artist.albums && artist.albums.length) {
-            return artist.albums.map((a, i) => {
-                return (
-                    <NavLink key={i} to={`/${artist.artist}/${a.album}`}>
-                        {a.album}
-                    </NavLink>
-                );
-            });
+            return (
+                <div>
+                    <h4>Available Albums:</h4>
+                    {
+                        artist.albums.map((a, i) => (
+                            <div key={i}>
+                                <NavLink to={`/${artist.artist}/${a.album}`}>
+                                    {a.album}
+                                </NavLink>
+                            </div>
+                        ))
+                    }
+                </div>
+            );
         }
     }
 
+    function renderThumbnail() {
+        const url = getThumbnail(selectedArtist.lastFmInfo);
+        if(url) {
+            return (
+                <div className="thumbnail">
+                    <img src={url}/>
+                </div>
+            );
+        }
+    }
+
+    function renderWiki() {
+        if(selectedArtist.lastFmInfo && selectedArtist.lastFmInfo.bio && selectedArtist.lastFmInfo.bio.summary) {
+            return (
+                <div dangerouslySetInnerHTML={sanitizeHtml(selectedArtist.lastFmInfo.bio.summary)}/>
+            );
+        }
+    }
+
+
     console.log('ArtistView.render() artist: %o, selectedArtist: %o', artist, selectedArtist);
     return (
-        <Card
-            contentPad='small'
-            label='Artist Info:'
-            heading={ artist.artist }
-            thumbnail={getThumbnail(selectedArtist.lastFmInfo)}
-        >
-            <Markdown content={selectedArtist.lastFmInfo && selectedArtist.lastFmInfo.bio && selectedArtist.lastFmInfo.bio.summary}/>
-            { renderAlbums() }
-        </Card>
+        <div className="panel panel-default">
+            <div className="panel-heading">
+                <h3>Artist: { artist.artist }</h3>
+                {renderThumbnail()}
+            </div>
+            <div className="panel-body">
+                { renderWiki() }
+                { renderAlbums() }
+            </div>
+        </div>
     );
 };
 

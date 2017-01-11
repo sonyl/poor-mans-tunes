@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
-
-import RemoveIcon from 'grommet/components/icons/base/SubtractCircle';
+import GlyphIcon from './GlyphIcon';
 
 const getEntry = (artists, {artistIndex, albumIndex, songIndex}) => {
 
@@ -24,9 +23,10 @@ const getEntry = (artists, {artistIndex, albumIndex, songIndex}) => {
 const Entry = ({artist, album, title, index, removeEntry}) => {
 
     return (
-        <div onClick={() => removeEntry(index)}>
-            {`${artist} - ${album} - ${title}`}
-            <RemoveIcon size='medium'/>
+        <div>
+            {`${index + 1}. ${artist} - ${album} - ${title}`}
+            &nbsp;
+            <GlyphIcon iconName="trash" onClick={() => removeEntry(index)}/>
         </div>
     );
 };
@@ -42,8 +42,13 @@ const PlaylistView = ({artists, playlist, removeEntry}) => {
     }
 
     return (
-        <div>
-            { renderPlaylist() }
+        <div className="panel panel-default">
+            <div className="panel-heading">
+                <h3>Playlist</h3>
+            </div>
+            <div className="panel-body">
+                { renderPlaylist() }
+            </div>
         </div>
     );
 };

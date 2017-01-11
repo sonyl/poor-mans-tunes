@@ -11,8 +11,6 @@ import thunk from 'redux-thunk';
 import reducer from './reducers';
 import Main from './containers/Main';
 
-import 'grommet/scss/vanilla/index';
-
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk, createLogger())));

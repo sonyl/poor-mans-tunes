@@ -14,9 +14,9 @@
   "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
   "license": "MIT",
   "dependencies": {
-    "grommet": "^1.1.0",
     "lodash-es": "^4.17.2",
     "react": "^15.4.1",
+    "react-autosuggest": "^8.0.0",
     "react-dom": "^15.4.1",
     "react-player": "^0.14.0",
     "react-redux": "^5.0.1",
@@ -24,6 +24,7 @@
     "react-router-redux": "^4.0.7",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
+    "sanitize-html": "^1.13.0",
     "whatwg-fetch": "^2.0.1"
   },
   "devDependencies": {

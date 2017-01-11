@@ -1,8 +1,6 @@
 import React, {PropTypes, Component} from 'react';
-
-import Card from 'grommet/components/Card';
-import Anchor from 'grommet/components/Anchor';
-import Markdown from 'grommet/components/Markdown';
+import GlyphIcon from './GlyphIcon';
+import { sanitizeHtml } from './utils';
 
 
 function getThumbnail(album) {
@@ -22,54 +20,84 @@ function getThumbnail(album) {
     }
 }
 
-const Song = ({index, title, addToPlaylist}) => {
+function PlusIcon() {
+    return <GlyphIcon iconName='plus'/>;
+}
 
+function Song({index, title, addToPlaylist}){
     return (
         <div onClick={() => addToPlaylist(index)}>
-            {title}
+            {title} &nbsp; <PlusIcon/>
         </div>
     );
-};
+}
 
-const AlbumView = ({artist, album, addToPlaylist}) => {
+const AlbumView = ({album, addToPlaylist}) => {
 
-    console.log('AlbumView.render() artist=%o, album=%o', artist, album);
-    const artistName = artist && artist.name;
+    console.log('AlbumView.render() album=%o', album);
     const albumName = album && album.name;
-    const heading = artistName && albumName && (artistName + ':' + albumName);
 
     function allIndexs() {
         return album && album.album && album.album.songs ? album.album.songs.map((s, i) => i) : [];
     }
 
     function renderSongs () {
-        if(album && album.album && album.album.songs){
-            return album.album.songs.map((s, i) => {
-                return <Song index={i}
-                             key={i}
-                             track={s.track}
-                             title={s.title}
-                             addToPlaylist={addToPlaylist}/>;
-            });
+        if(album && album.album && album.album.songs) {
+
+            return (
+                <div>
+                    <h4>Songs:<span className="pull-right">{renderAnchor()}</span></h4>
+                    {
+                        album.album.songs.map((s, i) => (
+                            <Song index={i}
+                                  key={i}
+                                  track={s.track}
+                                  title={s.title}
+                                  addToPlaylist={addToPlaylist}/>
+                        ))
+                    }
+                </div>
+            );
         }
     }
 
     const renderAnchor = () => {
-        if(heading) {
-            return <Anchor onClick={() => addToPlaylist(allIndexs())}>Add album to playlist</Anchor>;
+        if(albumName) {
+            return <button type="button"
+                           className="btn btn-default"
+                           onClick={() => addToPlaylist(allIndexs())}
+                   >Add album to playlist</button>;
+        }
+    };
+
+    const renderThumbnail = () => {
+        const url = getThumbnail(album.lastFmInfo);
+        if(url) {
+            return (
+                <div className="thumbnail">
+                    <img src={url}/>
+                </div>
+            );
+        }
+    };
+
+    const renderWiki = () => {
+        if(album && album.lastFmInfo && album.lastFmInfo.wiki && album.lastFmInfo.wiki.summary) {
+            return  <div dangerouslySetInnerHTML={sanitizeHtml(album.lastFmInfo.wiki.summary)}/>;
         }
     };
 
     return (
-        <Card
-            contentPad='small'
-            label='Album Info:'
-            heading={ heading }
-            thumbnail={getThumbnail(album)}
-        >
-            { renderSongs() }
-            { renderAnchor() }
-        </Card>
+        <div className="panel panel-default">
+            <div className="panel-heading">
+                <h3>Album: { albumName }</h3>
+                {renderThumbnail()}
+            </div>
+            <div className="panel-body">
+                { renderWiki() }
+                { renderSongs() }
+            </div>
+        </div>
     );
 };
 
@@ -85,8 +113,6 @@ AlbumView.propTypes = {
             artist: PropTypes.string,
             wiki: PropTypes.object
         })
-    }),
-    artist: PropTypes.shape({
     }),
     addToPlaylist: PropTypes.func.isRequired
 };
