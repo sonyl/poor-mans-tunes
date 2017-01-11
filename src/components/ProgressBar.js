@@ -6,7 +6,7 @@ function ProgressBar({id, maxValue=100, value, text}) {
     const style = {width: `${percent}%`};
 
     return (
-        <div id={id} className="progress" style={{'margin-bottom': '0px'}}>
+        <div id={id} className="progress" style={{'marginBottom': '0px'}}>
             <div className="progress-bar"
                  role="progressbar"
                  style={style}
