@@ -2,6 +2,8 @@ import {lastFmApi} from '../credentials';
 
 const lastFmBase = 'http://ws.audioscrobbler.com/2.0/';
 
+const DO_NOT_FETCH = true;
+
 
 function buildUrl(baseUrl, params) {
 
@@ -21,6 +23,10 @@ export const fetchLastFm = (method, args) => {
         method,
         ...args
     };
+
+    if(DO_NOT_FETCH) {
+        return Promise.reject(new Error('Fetching is disabled'));
+    }
 
     return fetch(buildUrl(lastFmBase, params));
 };

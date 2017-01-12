@@ -1,5 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import GlyphIcon from './GlyphIcon';
+import SplitButton from './SplitButton';
+
 import { sanitizeHtml } from './utils';
 
 
@@ -21,13 +23,23 @@ function getThumbnail(album) {
 }
 
 function PlusIcon() {
-    return <GlyphIcon iconName='plus'/>;
+    return <GlyphIcon iconName='share-alt'/>;
 }
 
 function Song({index, title, addToPlaylist}){
     return (
-        <div onClick={() => addToPlaylist(index)}>
-            {title} &nbsp; <PlusIcon/>
+        <div>
+            <SplitButton
+                size="extra-small"
+                defaultLabel=""
+                defaultIcon={<PlusIcon/>}
+                defaultOnClick={() => addToPlaylist(index)}
+                actions={ [
+                    { label: 'add songs to end of playlist', onClick: () => addToPlaylist(index, false)},
+                    { label: 'add song to top of playlist', onClick: () => addToPlaylist(index, true)}
+                ] }
+            />
+            &nbsp;&nbsp; {title}
         </div>
     );
 }
@@ -37,16 +49,35 @@ const AlbumView = ({album, addToPlaylist}) => {
     console.log('AlbumView.render() album=%o', album);
     const albumName = album && album.name;
 
-    function allIndexs() {
+    function allIndexes() {
         return album && album.album && album.album.songs ? album.album.songs.map((s, i) => i) : [];
+    }
+
+    function onClick() {
+        console.log('AlbumView.SplitButton.onClick(): ', arguments);
     }
 
     function renderSongs () {
         if(album && album.album && album.album.songs) {
 
+            const splitButtonProps = {
+                actions: [
+                    {label: 'add all songs to end of playlist', onClick: () => addToPlaylist(allIndexes(), false)},
+                    {label: 'add all songs to top of playlist', onClick: () => addToPlaylist(allIndexes(), true)}
+                ],
+                defaultLabel: 'Add album to playlist',
+                defaultIcon: <PlusIcon/>,
+                defaultOnClick: () => addToPlaylist(allIndexes(), false)
+            };
+
             return (
                 <div>
-                    <h4>Songs:<span className="pull-right">{renderAnchor()}</span></h4>
+                    <h4>Songs:
+                        <span className="pull-right">
+                            <SplitButton {...splitButtonProps}/>
+                        </span>
+                    </h4>
+
                     {
                         album.album.songs.map((s, i) => (
                             <Song index={i}
@@ -60,15 +91,6 @@ const AlbumView = ({album, addToPlaylist}) => {
             );
         }
     }
-
-    const renderAnchor = () => {
-        if(albumName) {
-            return <button type="button"
-                           className="btn btn-default"
-                           onClick={() => addToPlaylist(allIndexs())}
-                   >Add album to playlist</button>;
-        }
-    };
 
     const renderThumbnail = () => {
         const url = getThumbnail(album.lastFmInfo);

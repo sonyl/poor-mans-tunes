@@ -18,3 +18,4 @@ const rootReducer = combineReducers({
 export default rootReducer;
 
 export const getSongUrl = (state, ...args) => fromAlbums.getSongUrl(state.albums, ...args);
+export const getSongTitle = (state, ...args) => fromAlbums.getSongTitle(state.albums, ...args);

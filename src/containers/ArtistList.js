@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import _ from 'lodash';
+import { connect } from 'react-redux';
+import findIndex from 'lodash/findIndex';
 
-import NavLink from './NavLink';
+import NavLink from '../components/NavLink';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -47,7 +48,7 @@ function getActiveIndex(categories, name) {
     }
 
     const category = getCategory(name);
-    const index = _.findIndex(categories, c => c.category === category);
+    const index = findIndex(categories, c => c.category === category);
     return index > 0 ? index : 0;
 }
 
@@ -72,12 +73,7 @@ function TabContent({id, active, children}) {
     );
 }
 
-export default class ArtistList extends Component {
-
-    static propTypes = {
-        artists: PropTypes.arrayOf(PropTypes.object),
-        selectedArtist: PropTypes.object
-    };
+class ArtistList extends Component {
 
     constructor(props) {
         super(props);
@@ -149,3 +145,17 @@ export default class ArtistList extends Component {
         });
     }
 }
+
+ArtistList.propTypes = {
+    artists: PropTypes.arrayOf(PropTypes.object),
+    selectedArtist: PropTypes.object
+};
+
+function mapStateToProps({albums, selectedArtist}) {
+    return {
+        artists: albums.artists,
+        selectedArtist
+    };
+}
+
+export default connect(mapStateToProps)(ArtistList);

@@ -3,19 +3,15 @@ import { connect } from 'react-redux';
 import { fetchAllAlbums } from '../actions/albumsActions';
 import { selectNewArtist, unselectArtist } from '../actions/artistActions';
 import { selectNewAlbum, unselectAlbum } from '../actions/albumActions';
-import { addToPlaylist, removeFromPlaylist } from '../actions/playlistActions';
-import { getSongUrl } from '../reducers';
+import { addToPlaylist } from '../actions/playlistActions';
 import findIndex from 'lodash/findIndex';
 
+import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
-import ArtistList from '../components/ArtistList';
+import ArtistList from './ArtistList';
 import ArtistView from '../components/ArtistView';
 import AlbumView from '../components/AlbumView';
-import PlaylistView from '../components/PlaylistView';
-import Player from '../components/Player';
-
-import ArtistSearch from './ArtistSearch';
-
+import Player from './Player';
 
 function getArtistIndex(artists, artist) {
     return findIndex(artists, {artist});
@@ -32,8 +28,6 @@ class Main extends Component {
         super(props);
 
         this.addEntryToPlaylist = this.addEntryToPlaylist.bind(this);
-        this.nextSong = this.removeEntryFromPlaylist.bind(this, 0);
-        this.removeEntryFromPlaylist = this.removeEntryFromPlaylist.bind(this);
     }
 
     componentDidMount() {
@@ -74,7 +68,7 @@ class Main extends Component {
 
     render() {
         console.log('Main.render() props=', this.props);
-        const {artists, selectedArtist, selectedAlbum, playlist, songUrl} = this.props;
+        const {artists, selectedArtist, selectedAlbum } = this.props;
 
         return (
             <div className="container-fluid">
@@ -91,26 +85,17 @@ class Main extends Component {
                        />
                     </div>
                     <div className="col-md-4">
-                        <Player
-                            url={songUrl}
-                            nextSong={this.nextSong}
-                        />
-                        <PlaylistView
-                                    playlist={playlist}
-                                    artists={artists}
-                                    removeEntry={this.removeEntryFromPlaylist}
-                        />
+                        <Player />
+                        <PlaylistView />
                     </div>
                 </div>
-                <ArtistList artists={artists}
-                            selectedArtist={selectedArtist}
-                />
+                <ArtistList />
             </div>
         );
     }
 
-    addEntryToPlaylist(index) {
-        console.log('addEntryToPlaylist', index);
+    addEntryToPlaylist(index, top=false) {
+        console.log('addEntryToPlaylist', index, top);
 
         const {artists, selectedArtist, selectedAlbum, dispatch} = this.props;
         if(selectedArtist.index >= 0 && selectedAlbum.index >= 0) {
@@ -120,16 +105,10 @@ class Main extends Component {
                 if (album && album.songs) {
                     const indexes = Array.isArray(index) ? index : [index];
                     const validIndexs = indexes.filter(i => album.songs[i]);
-                    dispatch(addToPlaylist(selectedArtist.index, selectedAlbum.index, validIndexs));
+                    dispatch(addToPlaylist(selectedArtist.index, selectedAlbum.index, validIndexs, top));
                 }
             }
         }
-    }
-
-    removeEntryFromPlaylist(index) {
-        console.log('removeEntryFromPlaylist', index);
-        const {dispatch} = this.props;
-        dispatch(removeFromPlaylist(index));
     }
 }
 
@@ -139,11 +118,9 @@ const mapStateToProps = state => {
         artists: albums.artists,
         selectedArtist,
         selectedAlbum,
-        playlist,
-        songUrl: getSongUrl(state, playlist[0] || {})
+        playlist
     };
 
-    console.log('mapStateToProps:', state, '=>', props);
     return props;
 };
 

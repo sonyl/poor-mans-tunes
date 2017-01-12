@@ -1,5 +1,6 @@
 import { REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, createMp3Url}  from '../actions/albumsActions';
 
+// -----------------reducer (default export)
 const albums = (
     state = {
         isFetching: false,
@@ -34,6 +35,7 @@ const albums = (
 
 export default albums;
 
+// ------------ selectors
 export const getSongUrl = (state, {artistIndex, albumIndex, songIndex}) => {
     if(artistIndex >= 0 && albumIndex >=0 && songIndex >=0) {
         const artists = state.artists;
@@ -43,6 +45,17 @@ export const getSongUrl = (state, {artistIndex, albumIndex, songIndex}) => {
         if (song) {
             return createMp3Url(song.mp3);
         }
+    }
+    return null;
+};
+
+export const getSongTitle = (state, {artistIndex, albumIndex, songIndex}) => {
+    if(artistIndex >= 0 && albumIndex >=0 && songIndex >=0) {
+        const artists = state.artists;
+        const artist = artists && artists[artistIndex];
+        const album = artist && artist.albums[albumIndex];
+        const song = album && album.songs[songIndex];
+        if(song) return artist.artist + ' - ' + song.title;
     }
     return null;
 };
