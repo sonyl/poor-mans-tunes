@@ -53,5 +53,17 @@ module.exports = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
-    ]
+    ],
+    devServer: {
+        historyApiFallback: {
+            rewrites: [
+                {
+                    from: /^\/app\/.*$/,
+                    to: function() {
+                        return 'index.html';
+                    }
+                }
+            ]
+        }
+    }
 };
