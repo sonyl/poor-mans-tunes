@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
+import { connect } from 'react-redux';
 
-import NavLink from './NavLink';
-import { sanitizeHtml } from './utils';
+import NavLink from '../components/NavLink';
+import { sanitizeHtml, createLinkUrl } from '../components/utils';
 
 function getThumbnail(artist) {
     if(artist && artist.image) {
@@ -29,7 +30,7 @@ const ArtistView = ({artist, selectedArtist}) => {
                     {
                         artist.albums.map((a, i) => (
                             <div key={i}>
-                                <NavLink to={`/${artist.artist}/${a.album}`}>
+                                <NavLink to={createLinkUrl(artist.artist, a.album)}>
                                     {a.album}
                                 </NavLink>
                             </div>
@@ -80,4 +81,11 @@ ArtistView.propTypes = {
     selectedArtist: PropTypes.object.isRequired
 };
 
-export default ArtistView;
+function mapStateToProps({albums, selectedArtist}) {
+    return {
+        artist: albums.artists && albums.artists[selectedArtist.index] || {},
+        selectedArtist
+    };
+}
+
+export default connect(mapStateToProps)(ArtistView);

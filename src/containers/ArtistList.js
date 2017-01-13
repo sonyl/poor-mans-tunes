@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import findIndex from 'lodash/findIndex';
 
 import NavLink from '../components/NavLink';
+import { createLinkUrl } from '../components/utils';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -103,7 +104,7 @@ class ArtistList extends Component {
             const artist = c.artist.artist;
             return (
                 <div key={artist}>
-                    <NavLink to={`/${artist}`}> {artist} </NavLink>
+                    <NavLink to={createLinkUrl(artist)}>{artist}</NavLink>
                 </div>
             );
         });
@@ -112,7 +113,12 @@ class ArtistList extends Component {
     renderTabs() {
         const {activeIndex, categories} = this.state;
         return categories.map((c, i) => {
-            return <Tab key={c.category} index={i} active={activeIndex === i} onTabChange={this.onTabChange}>{c.category}</Tab>;
+            return (
+                <Tab key={c.category} index={i} active={activeIndex === i} onTabChange={this.onTabChange}>
+                    {c.category}&nbsp;
+                </Tab>
+            );
+
         });
     }
 

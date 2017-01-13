@@ -24,8 +24,8 @@ render(
         <div>
             <Router history={history} >
                 <Route path="/" component={Main}>
-                    <Route path="/:artist" component={Main}>
-                        <Route path="/:artist/:album" component={Main}/>
+                    <Route path="/app/:artist" component={Main}>
+                        <Route path="/app/:artist/:album" component={Main}/>
                     </Route>
                 </Route>
             </Router>

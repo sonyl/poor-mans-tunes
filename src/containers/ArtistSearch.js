@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
+import { createLinkUrl } from '../components/utils';
 import GlyphIcon from '../components/GlyphIcon';
 
 const theme = {
@@ -141,11 +142,7 @@ class ArtistSearch extends Component {
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
         console.log('ArtistSearch.onSuggestionSelected:', suggestion, opts);
         if(suggestion) {
-            let path = `/${suggestion.artist}`;
-            if(suggestion.album) {
-                path += `/${suggestion.album}`;
-            }
-            browserHistory.push(path);
+            browserHistory.push(createLinkUrl(suggestion.artist, suggestion.album));
         }
     };
 

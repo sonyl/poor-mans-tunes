@@ -10,3 +10,8 @@ function sanitize(dirty) {
 }
 
 export const sanitizeHtml = dirty => ({__html: sanitize(dirty)});
+
+
+export const createLinkUrl = (artist, album) => {
+    return album ? `/app/${artist}/${album}`: `/app/${artist}`;
+}

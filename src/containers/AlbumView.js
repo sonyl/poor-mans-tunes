@@ -1,8 +1,9 @@
 import React, {PropTypes, Component} from 'react';
-import GlyphIcon from './GlyphIcon';
-import SplitButton from './SplitButton';
-
-import { sanitizeHtml } from './utils';
+import { connect } from 'react-redux';
+import { addToPlaylist } from '../actions/playlistActions';
+import GlyphIcon from '../components/GlyphIcon';
+import SplitButton from '../components/SplitButton';
+import { sanitizeHtml } from '../components/utils';
 
 
 function getThumbnail(album) {
@@ -44,13 +45,15 @@ function Song({index, title, addToPlaylist}){
     );
 }
 
-const AlbumView = ({album, addToPlaylist}) => {
+const AlbumView = ({artists, selectedAlbum, selectedArtist, addToPlaylist}) => {
 
-    console.log('AlbumView.render() album=%o', album);
-    const albumName = album && album.name;
+    console.log('AlbumView.render() album=%o', selectedAlbum);
+    const albumName = selectedAlbum && selectedAlbum.name;
 
     function allIndexes() {
-        return album && album.album && album.album.songs ? album.album.songs.map((s, i) => i) : [];
+        return selectedAlbum && selectedAlbum.album && selectedAlbum.album.songs
+            ? selectedAlbum.album.songs.map((s, i) => i)
+            : [];
     }
 
     function onClick() {
@@ -58,16 +61,16 @@ const AlbumView = ({album, addToPlaylist}) => {
     }
 
     function renderSongs () {
-        if(album && album.album && album.album.songs) {
+        if(selectedAlbum && selectedAlbum.album && selectedAlbum.album.songs) {
 
             const splitButtonProps = {
                 actions: [
-                    {label: 'add all songs to end of playlist', onClick: () => addToPlaylist(allIndexes(), false)},
-                    {label: 'add all songs to top of playlist', onClick: () => addToPlaylist(allIndexes(), true)}
+                    {label: 'add all songs to end of playlist', onClick: () => addEntryToPlaylist(allIndexes(), false)},
+                    {label: 'add all songs to top of playlist', onClick: () => addEntryToPlaylist(allIndexes(), true)}
                 ],
                 defaultLabel: 'Add album to playlist',
                 defaultIcon: <PlusIcon/>,
-                defaultOnClick: () => addToPlaylist(allIndexes(), false)
+                defaultOnClick: () => addEntryToPlaylist(allIndexes(), false)
             };
 
             return (
@@ -79,12 +82,12 @@ const AlbumView = ({album, addToPlaylist}) => {
                     </h4>
 
                     {
-                        album.album.songs.map((s, i) => (
+                        selectedAlbum.album.songs.map((s, i) => (
                             <Song index={i}
                                   key={i}
                                   track={s.track}
                                   title={s.title}
-                                  addToPlaylist={addToPlaylist}/>
+                                  addToPlaylist={addEntryToPlaylist}/>
                         ))
                     }
                 </div>
@@ -93,7 +96,7 @@ const AlbumView = ({album, addToPlaylist}) => {
     }
 
     const renderThumbnail = () => {
-        const url = getThumbnail(album.lastFmInfo);
+        const url = getThumbnail(selectedAlbum.lastFmInfo);
         if(url) {
             return (
                 <div className="thumbnail">
@@ -104,8 +107,24 @@ const AlbumView = ({album, addToPlaylist}) => {
     };
 
     const renderWiki = () => {
-        if(album && album.lastFmInfo && album.lastFmInfo.wiki && album.lastFmInfo.wiki.summary) {
-            return  <div dangerouslySetInnerHTML={sanitizeHtml(album.lastFmInfo.wiki.summary)}/>;
+        if(selectedAlbum && selectedAlbum.lastFmInfo && selectedAlbum.lastFmInfo.wiki && selectedAlbum.lastFmInfo.wiki.summary) {
+            return  <div dangerouslySetInnerHTML={sanitizeHtml(selectedAlbum.lastFmInfo.wiki.summary)}/>;
+        }
+    };
+
+    const addEntryToPlaylist = (index, top=false) => {
+        console.log('AlbumView.addEntryToPlaylist()', index, top);
+
+        if(selectedArtist.index >= 0 && selectedAlbum.index >= 0) {
+            const artist = artists[selectedArtist.index];
+            if(artist) {
+                const album = artist.albums[selectedAlbum.index];
+                if (album && album.songs) {
+                    const indexes = Array.isArray(index) ? index : [index];
+                    const validIndexs = indexes.filter(i => album.songs[i]);
+                    addToPlaylist(selectedArtist.index, selectedAlbum.index, validIndexs, top);
+                }
+            }
         }
     };
 
@@ -125,7 +144,7 @@ const AlbumView = ({album, addToPlaylist}) => {
 
 
 AlbumView.propTypes = {
-    album: PropTypes.shape({
+    selectedAlbum: PropTypes.shape({
         album: PropTypes.shape({
             album: PropTypes.string,
             artist: PropTypes.string
@@ -139,5 +158,13 @@ AlbumView.propTypes = {
     addToPlaylist: PropTypes.func.isRequired
 };
 
-export default AlbumView;
+function mapStateToProps({albums, selectedAlbum, selectedArtist}) {
+    return {
+        artists: albums.artists,
+        selectedAlbum,
+        selectedArtist
+    };
+}
+
+export default connect(mapStateToProps, { addToPlaylist })(AlbumView);
 
