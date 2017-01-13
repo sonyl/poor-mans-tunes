@@ -81,10 +81,10 @@ ArtistView.propTypes = {
     selectedArtist: PropTypes.object.isRequired
 };
 
-function mapStateToProps({albums, selectedArtist}) {
+function mapStateToProps({albums, selection}) {
     return {
-        artist: albums.artists && albums.artists[selectedArtist.index] || {},
-        selectedArtist
+        artist: albums.artists && albums.artists[selection.artist.index] || {},
+        selectedArtist: selection.artist
     };
 }
 

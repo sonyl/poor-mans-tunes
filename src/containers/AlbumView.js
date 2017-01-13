@@ -158,11 +158,11 @@ AlbumView.propTypes = {
     addToPlaylist: PropTypes.func.isRequired
 };
 
-function mapStateToProps({albums, selectedAlbum, selectedArtist}) {
+function mapStateToProps({albums, selection}) {
     return {
         artists: albums.artists,
-        selectedAlbum,
-        selectedArtist
+        selectedAlbum: selection.album,
+        selectedArtist: selection.artist
     };
 }
 

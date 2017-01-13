@@ -3,14 +3,12 @@ import {routerReducer} from 'react-router-redux';
 
 import playlist from './playlistReducer';
 import albums, * as fromAlbums from './albumsReducer';
-import selectedAlbum from './selectedAlbumReducer';
-import selectedArtist from './selectedArtistReducer';
+import selection from './selectionReducer';
 
 
 const rootReducer = combineReducers({
     albums,
-    selectedArtist,
-    selectedAlbum,
+    selection,
     playlist,
     routing: routerReducer
 });

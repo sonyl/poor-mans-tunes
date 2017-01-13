@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import findIndex from 'lodash/findIndex';
 
 import { fetchAllAlbums } from '../actions/albumsActions';
-import { selectNewArtist, unselectArtist } from '../actions/artistActions';
-import { selectNewAlbum, unselectAlbum } from '../actions/albumActions';
+import { selectNewArtist, unselectArtist, selectNewAlbum, unselectAlbum } from '../actions/selectionActions';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -84,11 +83,11 @@ class Main extends Component {
 }
 
 const mapStateToProps = state => {
-    const { albums, selectedArtist, selectedAlbum, playlist } = state;
+    const { albums, selection, playlist } = state;
     const props =  {
         artists: albums.artists,
-        selectedArtist,
-        selectedAlbum,
+        selectedArtist: selection.artist,
+        selectedAlbum: selection.album,
         playlist
     };
 
