@@ -130,6 +130,7 @@ class ArtistList extends Component {
     }
 
     render() {
+        console.log('ArtistList.render()', this.props.selectedArtist);
         return (
             <div>
                 <h3>All artists:</h3>
@@ -157,10 +158,10 @@ ArtistList.propTypes = {
     selectedArtist: PropTypes.object
 };
 
-function mapStateToProps({albums, selectedArtist}) {
+function mapStateToProps({albums, selection}) {
     return {
         artists: albums.artists,
-        selectedArtist
+        selectedArtist: selection.artist
     };
 }
 

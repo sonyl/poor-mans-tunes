@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import findIndex from 'lodash/findIndex';
 
 import { fetchAllAlbums } from '../actions/albumsActions';
-import { selectNewArtist, unselectArtist, selectNewAlbum, unselectAlbum } from '../actions/selectionActions';
+import { selectArtist, unselectArtist, selectAlbum, unselectAlbum, setPlayRandom } from '../actions/selectionActions';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -36,7 +36,7 @@ class Main extends Component {
             if(params.artist) {
                 const index = getArtistIndex(artists, params.artist);
                 if (index >= 0) {
-                    this.props.selectNewArtist(index, artists[index].artist);
+                    this.props.selectArtist(index, artists[index].artist);
                 }
             } else {
                 this.props.unselectArtist();
@@ -49,7 +49,7 @@ class Main extends Component {
                     const artist = artists[selectedArtist.index];
                     const index = getAlbumIndex(artist.albums, params.album);
                     if (index >= 0) {
-                        this.props.selectNewAlbum(index, artist.albums[index]);
+                        this.props.selectAlbum(index, artist.albums[index]);
                     }
                 }
             } else {
@@ -58,12 +58,17 @@ class Main extends Component {
         }
     }
 
+    setRandom(newState) {
+        console.log('setRandom clicked', newState);
+        this.props.setPlayRandom(!!newState);
+    }
+
     render() {
         console.log('Main.render() props=', this.props);
 
         return (
             <div className="container-fluid">
-                <Navbar />
+                <Navbar randomActive={this.props.set.playRandom} setRandom={this.setRandom.bind(this)}/>
                 <div className="row">
                     <div className="col-md-4">
                         <ArtistView />
@@ -88,6 +93,7 @@ const mapStateToProps = state => {
         artists: albums.artists,
         selectedArtist: selection.artist,
         selectedAlbum: selection.album,
+        set: selection.set,
         playlist
     };
 
@@ -97,10 +103,11 @@ const mapStateToProps = state => {
 const mapDispatchToProps = () => {
     return {
         fetchAllAlbums,
-        selectNewArtist,
+        selectArtist,
         unselectArtist,
-        selectNewAlbum,
-        unselectAlbum
+        selectAlbum,
+        unselectAlbum,
+        setPlayRandom
     };
 };
 

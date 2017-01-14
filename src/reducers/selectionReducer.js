@@ -1,10 +1,10 @@
-import {SELECT_ARTIST, REQUEST_ARTIST, RECEIVE_ARTIST, UNSELECT_ARTIST,
-    SELECT_ALBUM, REQUEST_ALBUM, UNSELECT_ALBUM, RECEIVE_ALBUM} from '../actions/selectionActions';
+import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM, SET_PLAY_RANDOM } from '../actions/selectionActions';
 
 
 const defaultState = {
     artist: {},
-    album: {}
+    album: {},
+    set: {}
 };
 
 const selection = (state = defaultState, action) => {
@@ -20,63 +20,31 @@ const selection = (state = defaultState, action) => {
             }
             break;
 
-        case REQUEST_ARTIST:
-            return Object.assign({}, state, {
-                artist: {
-                    ...state.artist,
-                    isFetching: true,
-                    didInvalidate: false
-                }
-            });
-
-        case RECEIVE_ARTIST:
-            return Object.assign({}, state, {
-                artist: {
-                    ...state.artist,
-                    isFetching: false,
-                    didInvalidate: false,
-                    lastFmInfo: action.lastFmInfo,
-                    error: action.error
-                }
-            });
-
         case UNSELECT_ARTIST:
-            return {
-            };
+            return defaultState;
 
         case SELECT_ALBUM:
             return Object.assign({}, state, {
                 album: {
                     index: action.index,
                     name: action.name,
-                    album: action.album
-                }
-            });
-
-        case REQUEST_ALBUM:
-            return Object.assign({}, state, {
-                album: {
-                    ...state.album,
-                    isFetching: true,
-                    didInvalidate: false
-                }
-            });
-
-        case RECEIVE_ALBUM:
-            return Object.assign({}, state, {
-                album: {
-                    ...state.album,
-                    isFetching: false,
-                    didInvalidate: false,
-                    lastFmInfo: action.lastFmInfo,
-                    error: action.error
                 }
             });
 
         case UNSELECT_ALBUM:
             return {
+                ...state,
                 artist: state.artist,
                 album: {}
+            };
+
+        case SET_PLAY_RANDOM:
+            return {
+                ...state,
+                set: {
+                    ...state.playRandom,
+                    playRandom: action.playRandom
+                }
             };
     }
     return state;

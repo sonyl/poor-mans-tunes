@@ -1,18 +1,21 @@
 import { ADD_TO_PLAYLIST, REMOVE_FROM_PLAYLIST, CLEAR_PLAYLIST } from '../actions/playlistActions';
 
 
-const playlist = (state = [], {type, ...props}) => {
-    switch (type) {
+const playlist = (state = [], props) => {
+    switch (props.type) {
         case ADD_TO_PLAYLIST: {
-            const {artistIndex, albumIndex, songIndex, top} = props;
-            const indexes = Array.isArray(songIndex) ? songIndex : [songIndex];
-            const songs = indexes.map(i => ({artistIndex, albumIndex, songIndex: i}));
+            const {artist, album, songs, top} = props;
 
-            if(top) {
-                return [...songs, ...state];
-            } else {
-                return [...state, ...songs];
+            if(artist && album && songs && Array.isArray(songs)) {
+                const entries = songs.map(s => ({artist, album, song: s.song, url: s.url}));
+
+                if (top) {
+                    return [...entries, ...state];
+                } else {
+                    return [...state, ...entries];
+                }
             }
+            break;
         }
         case REMOVE_FROM_PLAYLIST: {
             const {index} = props;

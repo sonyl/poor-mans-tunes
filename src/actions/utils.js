@@ -2,7 +2,7 @@ import {lastFmApi} from '../credentials';
 
 const lastFmBase = 'http://ws.audioscrobbler.com/2.0/';
 
-const DO_NOT_FETCH = true;
+const DO_NOT_FETCH = false;
 
 
 function buildUrl(baseUrl, params) {

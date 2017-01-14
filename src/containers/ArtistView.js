@@ -1,27 +1,29 @@
 import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
-import NavLink from '../components/NavLink';
+import { getArtistInfo } from '../reducers';
 import { sanitizeHtml, createLinkUrl } from '../components/utils';
+import NavLink from '../components/NavLink';
 
-function getThumbnail(artist) {
-    if(artist && artist.image) {
-        if (artist.image.length > 3 && artist.image[3]['#text'].length > 0) {
-            return artist.image[3]['#text'];
+function getThumbnail(lastFmInfo) {
+    const image = lastFmInfo && lastFmInfo.image;
+    if(image) {
+        if (image.length > 3 && image[3]['#text'].length > 0) {
+            return image[3]['#text'];
         }
-        if (artist.image.length > 2 && artist.image[2]['#text'].length > 0) {
-            return artist.image[2]['#text'];
+        if (image.length > 2 && image[2]['#text'].length > 0) {
+            return image[2]['#text'];
         }
-        if (artist.image.length > 1 && artist.image[1]['#text'].length > 0) {
-            return artist.image[1]['#text'];
+        if (image.length > 1 && image[1]['#text'].length > 0) {
+            return image[1]['#text'];
         }
-        if (artist.image.length > 0 && artist.image[0]['#text'].length > 0) {
-            return artist.image[0]['#text'];
+        if (image.length > 0 && image[0]['#text'].length > 0) {
+            return image[0]['#text'];
         }
     }
 }
 
-const ArtistView = ({artist, selectedArtist}) => {
+const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     function renderAlbums() {
         if(artist.albums && artist.albums.length) {
             return (
@@ -42,26 +44,28 @@ const ArtistView = ({artist, selectedArtist}) => {
     }
 
     function renderThumbnail() {
-        const url = getThumbnail(selectedArtist.lastFmInfo);
+        const url = getThumbnail(lastFmInfo);
         if(url) {
             return (
-                <div className="thumbnail">
-                    <img src={url}/>
+                <div>
+                    <img src={url} className="img-responsiv img-rounded"/>
                 </div>
             );
         }
     }
 
     function renderWiki() {
-        if(selectedArtist.lastFmInfo && selectedArtist.lastFmInfo.bio && selectedArtist.lastFmInfo.bio.summary) {
+        const summary = lastFmInfo && lastFmInfo.bio && lastFmInfo.bio.summary;
+        if(summary) {
             return (
-                <div dangerouslySetInnerHTML={sanitizeHtml(selectedArtist.lastFmInfo.bio.summary)}/>
+                <div dangerouslySetInnerHTML={sanitizeHtml(summary)}/>
             );
         }
     }
 
 
-    console.log('ArtistView.render() artist: %o, selectedArtist: %o', artist, selectedArtist);
+    console.log('ArtistView.render() artist: %o, selectedArtist: %o, lastFmInfo: %o',
+        artist, selectedArtist, lastFmInfo);
     return (
         <div className="panel panel-default">
             <div className="panel-heading">
@@ -78,13 +82,17 @@ const ArtistView = ({artist, selectedArtist}) => {
 
 ArtistView.propTypes = {
     artist: PropTypes.object.isRequired,
-    selectedArtist: PropTypes.object.isRequired
+    selectedArtist: PropTypes.object.isRequired,
+    lastFmInfo: PropTypes.object
 };
 
-function mapStateToProps({albums, selection}) {
+function mapStateToProps(state) {
+    const {albums, selection} = state;
+    const artist = albums.artists && albums.artists[selection.artist.index] || {};
     return {
-        artist: albums.artists && albums.artists[selection.artist.index] || {},
-        selectedArtist: selection.artist
+        artist,
+        selectedArtist: selection.artist,
+        lastFmInfo: getArtistInfo(state, artist.artist)
     };
 }
 

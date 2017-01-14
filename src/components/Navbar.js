@@ -1,9 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import ArtistSearch from '../containers/ArtistSearch';
 
 
 class Navbar extends Component {
+
+    onClick() {
+        if(this.props.setRandom) {
+            this.props.setRandom(!this.props.randomActive);
+        }
+    }
 
     render() {
         return(
@@ -12,7 +18,20 @@ class Navbar extends Component {
                     <div className="navbar-header">
                         <Link to="/" className="navbar-brand">Poor Man&rsquo;s Tunes</Link>
                     </div>
-                    <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div className="container">
+                        <span>
+                            <input type="checkbox" disabled={true} checked={!!this.props.randomActive}
+                            />
+                            &nbsp;
+                            <button type="button"
+                                    className={'btn btn-default navbar-btn' + (!!this.props.randomActive ? ' active' : '')}
+                                    style={{maxWidth: '200px'}}
+                                    onClick={this.onClick.bind(this)}
+
+                            >
+                                Play random songs
+                            </button>
+                        </span>
                         <form className="navbar-form navbar-right" role="search" onSubmit={(e)=>e.preventDefault()}>
                             <ArtistSearch/>
                         </form>
@@ -22,6 +41,12 @@ class Navbar extends Component {
         );
     }
 }
+
+
+Navbar.propTypes = {
+    randomActive: PropTypes.bool,
+    setRandom: PropTypes.func
+};
 
 
 export default Navbar;

@@ -1,3 +1,4 @@
+import findIndex from 'lodash/findIndex';
 import { REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, createMp3Url}  from '../actions/albumsActions';
 
 // -----------------reducer (default export)
@@ -24,7 +25,6 @@ const albums = (
             return {
                 ...state,
                 isFetching: false,
-                didInvalidate: false,
                 lastUpdated: action.receivedAt,
                 artists: action.artists,
                 error: action.error
@@ -36,26 +36,62 @@ const albums = (
 export default albums;
 
 // ------------ selectors
-export const getSongUrl = (state, {artistIndex, albumIndex, songIndex}) => {
-    if(artistIndex >= 0 && albumIndex >=0 && songIndex >=0) {
+export const getArtist = (state, artistIndex) => {
+    if(artistIndex >= 0) {
+        const artists = state.artists;
+        const artist = artists && artists[artistIndex];
+        return artist || {};
+    }
+    return null;
+};
+
+export const getAlbum = (state, artistIndex, albumIndex) => {
+    if(artistIndex >= 0 && albumIndex >=0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         const album = artist && artist.albums[albumIndex];
-        const song = album && album.songs[songIndex];
-        if (song) {
-            return createMp3Url(song.mp3);
+        return album || {};
+    }
+    return null;
+};
+
+export const getAlbumByName = (state, artist, album) => {
+    const artistIndex = findIndex(state.artists || [], {artist});
+    const selArtist = getArtist(state, artistIndex);
+    if(selArtist) {
+        const albumIndex = findIndex(selArtist.albums || [], {album});
+        if(albumIndex >= 0) {
+            return selArtist.albums[albumIndex];
         }
     }
     return null;
 };
 
-export const getSongTitle = (state, {artistIndex, albumIndex, songIndex}) => {
-    if(artistIndex >= 0 && albumIndex >=0 && songIndex >=0) {
-        const artists = state.artists;
-        const artist = artists && artists[artistIndex];
-        const album = artist && artist.albums[albumIndex];
-        const song = album && album.songs[songIndex];
-        if(song) return artist.artist + ' - ' + song.title;
+export const getRandomSong = state => {
+    const maxArtists = state.artists && state.artists.length;
+    if(maxArtists) {
+        const randArtist = state.artists[Math.floor((Math.random() * maxArtists))];
+        const maxAlbums = randArtist.albums && randArtist.albums.length;
+        if(maxAlbums) {
+            const randAlbum = randArtist.albums[Math.floor((Math.random() * maxAlbums))];
+            const maxSongs = randAlbum.songs && randAlbum.songs.length;
+            if(maxSongs) {
+                const randSong = randAlbum.songs[Math.floor((Math.random() * maxSongs))];
+                if(randSong) {
+                    return {
+                        artist: randAlbum.artist,
+                        album: randAlbum.album,
+                        songs: [
+                            {
+                                song: randSong.title,
+                                url: randSong.mp3
+                            }
+                        ]
+                    };
+                }
+            }
+        }
     }
     return null;
 };
+

@@ -1,46 +1,36 @@
 import React, {PropTypes} from 'react';
 import { connect } from 'react-redux';
 import { clearPlaylist, removeFromPlaylist } from '../actions/playlistActions';
+import NavLink from '../components/NavLink';
 import GlyphIcon from '../components/GlyphIcon';
+import { createLinkUrl } from '../components/utils';
 
-const getEntry = (artists, {artistIndex, albumIndex, songIndex}) => {
-
-    const artist = artists[artistIndex];
-    if(artist) {
-        const album = artist.albums[albumIndex];
-        if(album) {
-            const song = album.songs[songIndex];
-            if(song) {
-                return {
-                    artist: artist.artist,
-                    album: album.album,
-                    title: song.title
-                };
-            }
-        }
-    }
-    return {};
-};
-
-const Entry = ({artist, album, title, index, removeEntry}) => {
+const Entry = ({artist, album, song, index, removeEntry}) => {
+    const style = {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+    };
 
     return (
-        <div onClick={() => removeEntry(index)}>
-            <GlyphIcon iconName="trash" />
+        <div  style={style}>
+            <GlyphIcon iconName="trash" onClick={() => removeEntry(index)}/>
             &nbsp;
             &nbsp;
-            {`${index + 1}. ${artist} - ${album} - ${title}`}
+            <NavLink to={createLinkUrl(artist, album)}>
+                {`${index + 1}. ${artist} - ${song}`}<span className="small">&nbsp;{`[Album - ${album}]`}</span>
+            </NavLink>
         </div>
     );
 };
 
-const PlaylistView = ({artists, playlist, removeFromPlaylist, clearPlaylist}) => {
+const PlaylistView = ({playlist, removeFromPlaylist, clearPlaylist}) => {
 
     console.log('PlaylistView.render', playlist);
 
     function renderPlaylist() {
-        return playlist.map((e, i) => {
-            return <Entry key={i} index={i} removeEntry={removeFromPlaylist} {...getEntry(artists, e)}></Entry>;
+        return playlist.map((entry, i) => {
+            return <Entry key={i} index={i} {...entry} removeEntry={removeFromPlaylist} ></Entry>;
         });
     }
 
@@ -71,19 +61,18 @@ const PlaylistView = ({artists, playlist, removeFromPlaylist, clearPlaylist}) =>
 };
 
 PlaylistView.propTypes = {
-    artists: PropTypes.array,
     playlist: PropTypes.arrayOf(PropTypes.shape({
-        artistIndex: PropTypes.number.isRequired,
-        albumIndex: PropTypes.number.isRequired,
-        songIndex: PropTypes.number.isRequired
+        artist: PropTypes.string.isRequired,
+        album: PropTypes.string.isRequired,
+        song: PropTypes.string.isRequired,
+        url: PropTypes.string.isRequired
     })).isRequired,
     removeFromPlaylist: PropTypes.func.isRequired,
     clearPlaylist: PropTypes.func.isRequired
 };
 
-function mapStateToProps({ albums, playlist }) {
+function mapStateToProps({ playlist }) {
     return  {
-        artists: albums.artists,
         playlist
     };
 }

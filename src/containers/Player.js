@@ -2,12 +2,18 @@ import React, { Component, PropTypes }  from 'react';
 import { connect } from 'react-redux';
 
 import { removeFromPlaylist } from '../actions/playlistActions';
-import { getSongUrl, getSongTitle } from '../reducers';
+import { createMp3Url } from '../actions/albumsActions';
+import { requestAlbumIfNotExists } from '../actions/lastFmActions';
+import { getAlbumInfo } from '../reducers';
 
 import ReactPlayer from 'react-player';
 import Slider from '../components/Slider';
 import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
+import NavLink from '../components/NavLink';
+import { createLinkUrl } from '../components/utils';
+
+import { sendNotification } from '../components/utils';
 
 function PlayIcon(props) {
     return <GlyphIcon iconName={props.playing ? 'pause' : 'play'}/>;
@@ -49,13 +55,25 @@ function Duration ({ className, seconds }) {
     );
 }
 
+function getThumbnail(lastFmInfo) {
+    const image = lastFmInfo && lastFmInfo.image;
+    if(image) {
+        if (image.length > 1 && image[1]['#text'].length > 0) {
+            return image[1]['#text'];
+        }
+        if (image.length > 0 && image[0]['#text'].length > 0) {
+            return image[0]['#text'];
+        }
+    }
+}
+
 
 class Player extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            playing: true,
+            playing: !!this.props.url,
             volume: 0.8,
             played: 0,
             duration: 0
@@ -71,11 +89,26 @@ class Player extends Component {
         this.onEnded = this.onEnded.bind(this);
         this.onPause = this.onPause.bind(this);
         this.nextSong = this.nextSong.bind(this);
+
+        if(this.state.playing && props.title) {
+            if(props.artist && props.album) {
+                this.props.requestAlbum(props.artist, props.album);
+            }
+            sendNotification('Now playing:', props.title);
+        }
     }
 
     componentWillReceiveProps(nextProps){
-        if(this.props.url !== nextProps.url && !this.state.playing) {
-            this.setState({playing: true});
+        if(this.props.url !== nextProps.url) {
+            this.setState({playing: !!nextProps.url});
+            if(!!nextProps.url && nextProps.title) {
+                sendNotification(`Now playing: ${nextProps.title}`);
+            }
+
+        }
+        if(nextProps.artist && nextProps.album &&
+            (nextProps.artist !== this.props.artist || nextProps.album !== this.props.album)) {
+            this.props.requestAlbum(nextProps.artist, nextProps.album);
         }
     }
 
@@ -134,6 +167,20 @@ class Player extends Component {
         }
     }
 
+    renderThumbnail() {
+        const url = getThumbnail(this.props.albumInfo);
+        if (url) {
+            return (
+                <div>
+                    <NavLink to={createLinkUrl(this.props.artist, this.props.album)}>
+                        <img src={url} className="img-responsiv img-rounded" />
+                    </NavLink>
+                </div>
+            );
+        }
+    }
+
+
     render () {
         const {
             playing, volume, played, duration
@@ -146,12 +193,20 @@ class Player extends Component {
             <div className="panel panel-default">
                 <div className="panel-heading">
                     <div className="row">
-                        <div className="col-md-12"><h3>Player:</h3></div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12"><h4>{title}</h4></div>
+                        <div className="col-md-3">
+                            {this.renderThumbnail()}
+                        </div>
+                        <div className="col-md-9">
+                            <div className="row">
+                                <div className="col-md-12"><h3>Player:</h3></div>
+                            </div>
+                            <div className="row">
+                                <div className="col-md-12"><h4>{title}</h4></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div className="panel-body">
                     <ReactPlayer
                         ref={player => { this.player = player; }}
@@ -227,7 +282,7 @@ class Player extends Component {
                                     id="player-volume"
                                     min={0}
                                     max={1}
-                                    step={0.1}
+                                    step={0.01}
                                     value={volume}
                                     onChange={this.setVolume} />
                                 <label htmlFor="player-volume">Volume</label>
@@ -249,23 +304,35 @@ class Player extends Component {
 
 Player.propTypes = {
     url: PropTypes.string,
+    artist: PropTypes.string,
+    album: PropTypes.string,
+    song: PropTypes.string,
     title: PropTypes.string,
-    nextSong: PropTypes.func
+    albumInfo: PropTypes.object,
+    nextSong: PropTypes.func,
+    requestAlbum: PropTypes.func
 };
 
 const mapStateToProps = state => {
     const { playlist } = state;
+    const {artist, album, song, url} = playlist[0] || {};
+    const title = artist && song ? `${artist} :  ${song}` : '';
     return {
-        url: getSongUrl(state, playlist[0] || {}),
-        title: getSongTitle(state, playlist[0] || {})
+        url: createMp3Url(url),
+        artist,
+        album,
+        song,
+        title,
+        albumInfo: getAlbumInfo(state, artist, album)
     };
 };
 
 const mapDispatchToProps = dispatch => {
 
-    const nextSong = () => dispatch(removeFromPlaylist(0));
-
-    return { nextSong };
+    return {
+        nextSong: () => dispatch(removeFromPlaylist(0)),
+        requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);
