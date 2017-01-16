@@ -6,7 +6,7 @@ import { createMp3Url } from '../actions/albumsActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
 import { getAlbumInfo } from '../reducers';
 
-import ReactPlayer from 'react-player';
+import AudioPlayer from '../components/AudioPlayer';
 import Slider from '../components/Slider';
 import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
@@ -79,17 +79,6 @@ class Player extends Component {
             duration: 0
         };
 
-        this.playPause = this.playPause.bind(this);
-        this.restart = this.restart.bind(this);
-        this.setVolume = this.setVolume.bind(this);
-        this.onSeekMouseDown = this.onSeekMouseDown.bind(this);
-        this.onSeekChange = this.onSeekChange.bind(this);
-        this.onSeekMouseUp = this.onSeekMouseUp.bind(this);
-        this.onProgress = this.onProgress.bind(this);
-        this.onEnded = this.onEnded.bind(this);
-        this.onPause = this.onPause.bind(this);
-        this.nextSong = this.nextSong.bind(this);
-
         if(this.state.playing && props.title) {
             if(props.artist && props.album) {
                 this.props.requestAlbum(props.artist, props.album);
@@ -100,11 +89,14 @@ class Player extends Component {
 
     componentWillReceiveProps(nextProps){
         if(this.props.url !== nextProps.url) {
-            this.setState({playing: !!nextProps.url});
+            const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
                 sendNotification(`Now playing: ${nextProps.title}`);
+            } else {
+                newState.played = 0;
+                newState.duration = 0;
             }
-
+            this.setState(newState);
         }
         if(nextProps.artist && nextProps.album &&
             (nextProps.artist !== this.props.artist || nextProps.album !== this.props.album)) {
@@ -112,34 +104,39 @@ class Player extends Component {
         }
     }
 
-    playPause() {
-        this.setState({ playing: !this.state.playing });
-    }
+    playPause = () => {
+        this.setState({ playing: !this.state.playing && !!this.props.url});
+    };
 
-    restart() {
+    restart = () => {
         this.setState({ played: 0.0 });
         this.player.seekTo(0.0);
-    }
+    };
 
-    setVolume(e) {
+    setVolume = e => {
         this.setState({ volume: parseFloat(e.target.value) });
-    }
+    };
 
-    onSeekMouseDown(e) {
-        this.setState({ seeking: true });
-    }
+    onSeekMouseDown = e => {
+        if(this.props.url) {
+            this.setState({seeking: true});
+        }
+    };
 
-    onSeekChange(e) {
-        this.setState({ played: parseFloat(e.target.value) });
-    }
+    onSeekChange = e => {
+        if(this.props.url) {
+            this.setState({ played: parseFloat(e.target.value) });
+        }
+    };
 
-    onSeekMouseUp(e) {
-        this.setState({ seeking: false });
-        this.player.seekTo(parseFloat(e.target.value));
-    }
+    onSeekMouseUp = e => {
+        if(this.props.url) {
+            this.setState({seeking: false});
+            this.player.seekTo(parseFloat(e.target.value));
+        }
+    };
 
-    onProgress(state) {
-
+    onProgress = state => {
         // We only want to update time slider if we are not currently seeking
         if (!this.state.seeking) {
             const {played} = state;
@@ -149,23 +146,23 @@ class Player extends Component {
             }
 
         }
-    }
+    };
 
-    onEnded() {
-        this.setState({ playing: false });
+    onEnded = () => {
+        this.setState({ playing: false, played: 0});
         this.nextSong();
-    }
+    };
 
-    onPause() {
+    onPause = () => {
         this.setState({ playing: false });
-    }
+    };
 
-    nextSong() {
+    nextSong = () => {
         const { nextSong } = this.props;
         if(nextSong) {
             nextSong();
         }
-    }
+    };
 
     renderThumbnail() {
         const url = getThumbnail(this.props.albumInfo);
@@ -180,14 +177,12 @@ class Player extends Component {
         }
     }
 
-
     render () {
         const {
             playing, volume, played, duration
         } = this.state;
 
         const { url, title } = this.props;
-        const songtitle = title && <span><small> </small><h3>{title}</h3></span>;
 
         return (
             <div className="panel panel-default">
@@ -208,9 +203,8 @@ class Player extends Component {
                 </div>
 
                 <div className="panel-body">
-                    <ReactPlayer
+                    <AudioPlayer
                         ref={player => { this.player = player; }}
-                        className='react-player'
                         hidden={true}
                         url={url}
                         playing={playing}
@@ -269,6 +263,7 @@ class Player extends Component {
                                 <Slider id="player-seek"
                                         min={0} max={1} step={0.01}
                                         value={played}
+                                        disabled={ !url }
                                         onMouseDown={this.onSeekMouseDown}
                                         onChange={this.onSeekChange}
                                         onMouseUp={this.onSeekMouseUp}
