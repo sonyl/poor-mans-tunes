@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import { connect } from 'react-redux';
 import { clearPlaylist, removeFromPlaylist } from '../actions/playlistActions';
-import NavLink from '../components/NavLink';
+import { Link } from 'react-router';
 import GlyphIcon from '../components/GlyphIcon';
 import { createLinkUrl } from '../components/utils';
 
@@ -17,9 +17,9 @@ const Entry = ({artist, album, song, index, removeEntry}) => {
             <GlyphIcon iconName="trash" onClick={() => removeEntry(index)}/>
             &nbsp;
             &nbsp;
-            <NavLink to={createLinkUrl(artist, album)}>
+            <Link to={createLinkUrl(artist, album)}>
                 {`${index + 1}. ${artist} - ${song}`}<span className="small">&nbsp;{`[Album - ${album}]`}</span>
-            </NavLink>
+            </Link>
         </div>
     );
 };
