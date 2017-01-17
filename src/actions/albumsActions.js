@@ -1,8 +1,13 @@
+import getConfig from '../config.js';
+
 export const REQUEST_ALBUMS = 'REQUEST_ALBUMS';
 export const RECEIVE_ALBUMS = 'RECEIVE_ALBUMS';
 export const INVALIDATE_ALBUMS = 'INVALIDATE_ALBUMS';
 
-const baseUrl = 'http://www';
+const {baseUrl, collectionUrl } = getConfig({
+    baseUrl: 'http://www',
+    collectionUrl: '/public/files.json'
+});
 
 export const createMp3Url = (part) => {
     return part ? (baseUrl + part) : null;
@@ -18,19 +23,18 @@ export const invalidateAlbums = () => ({
 
 export const receiveAlbums = (artists, error) => ({
     type: RECEIVE_ALBUMS,
-    artists:  artists,
+    artists: artists,
     error: error && (error.message || error),
     receivedAt: Date.now()
 });
 
 export const fetchAllAlbums = () => dispatch => {
-    const url = '/public/files.json';
 
     dispatch(requestAlbums());
 
-    return fetch(url)
+    return fetch(collectionUrl)
         .then(response => {
-            if(response.ok) {
+            if (response.ok) {
                 return response.json();
             } else {
                 throw new Error('Error fetching data: ' + response.statusText);

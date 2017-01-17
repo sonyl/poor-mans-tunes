@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV=production node node_modules/.bin/webpack && cp index.html public/index.html",
+    "build": "NODE_ENV=production node node_modules/.bin/webpack -p && cp index.html dist/index.html && cp -a vendor dist/vendor",
     "devserver": "webpack-dev-server",
     "lint": "node_modules/.bin/eslint src"
   },

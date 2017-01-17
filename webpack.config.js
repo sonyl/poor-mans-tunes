@@ -11,7 +11,7 @@ module.exports = {
         './src'
     ],
     output: {
-        path: path.join(__dirname, 'public'),
+        path: path.join(__dirname, 'dist'),
         filename: 'bundle.js'
     },
     resolve: {
@@ -52,18 +52,28 @@ module.exports = {
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+            }
+        })
     ],
     devServer: {
         historyApiFallback: {
-            rewrites: [
-                {
-                    from: /^\/app\/.*$/,
-                    to: function() {
-                        return 'index.html';
-                    }
-                }
-            ]
+            rewrites: [{
+                from: /.*\/bootstrap\.min\.css$/,
+                to: '/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css'
+            }, {
+                from: /.*\/glyphicons-halflings-regular\.woff2$/,
+                to: '/vendor/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.woff2'
+            }, {
+                from: /.*\/bundle\.js$/,
+                to: '/bundle.js'
+            }, {
+                from: /^\/app\/.*$/,
+                to: '/index.html'
+            }]
         }
     }
 };

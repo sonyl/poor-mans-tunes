@@ -1,5 +1,7 @@
 import _sanitizeHtml from 'sanitize-html';
+import getConfig from '../config';
 
+const {contextRoot = ''} = getConfig();
 
 function sanitize(dirty) {
     return _sanitizeHtml(dirty, {
@@ -11,18 +13,14 @@ function sanitize(dirty) {
 
 export const sanitizeHtml = dirty => ({__html: sanitize(dirty)});
 
-
 export const createLinkUrl = (artist, album) => {
-    return album ? `/app/${artist}/${album}`: `/app/${artist}`;
+    return album ? `${contextRoot}/app/${artist}/${album}` : `${contextRoot}/app/${artist}`;
 };
-
-
 
 const notify = (title, body, icon) => {
-    const n  = new Notification(title, {body, icon});
+    const n = new Notification(title, {body, icon});
     setTimeout(n.close.bind(n), 5000);
 };
-
 
 export const sendNotification = (title, body, icon) => {
     if (!('Notification' in window)) {
@@ -36,7 +34,7 @@ export const sendNotification = (title, body, icon) => {
         notify(title, body, icon);
     } else if (Notification.permission !== 'denied') {
         // Otherwise, we need to ask the user for permission
-        Notification.requestPermission(function (permission) {
+        Notification.requestPermission(function(permission) {
             // If the user accepts, let's create a notification
             if (permission === 'granted') {
                 notify(title, body, icon);
