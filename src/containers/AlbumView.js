@@ -38,8 +38,8 @@ function Song({index, title, addAlbumSongToPlaylist}){
                 defaultIcon={<PlusIcon/>}
                 defaultOnClick={() => addAlbumSongToPlaylist(index, false)}
                 actions={ [
-                    { label: 'add songs to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)},
-                    { label: 'add song to top of playlist', onClick: () => addAlbumSongToPlaylist(index, true)}
+                    { label: 'add song to top of playlist', onClick: () => addAlbumSongToPlaylist(index, true)},
+                    { label: 'add songs to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)}
                 ] }
             />
             &nbsp;&nbsp; {title}
@@ -66,8 +66,8 @@ const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
 
             const splitButtonProps = {
                 actions: [
-                    {label: 'add all songs to end of playlist', onClick: () => addAlbumSongToPlaylist(null, false)},
-                    {label: 'add all songs to top of playlist', onClick: () => addAlbumSongToPlaylist(null, true)}
+                    {label: 'add all songs to top of playlist', onClick: () => addAlbumSongToPlaylist(null, true)},
+                    {label: 'add all songs to end of playlist', onClick: () => addAlbumSongToPlaylist(null, false)}
                 ],
                 defaultLabel: 'Add album to playlist',
                 defaultIcon: <PlusIcon/>,
@@ -78,7 +78,7 @@ const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
                 <div>
                     <h4>Songs:
                         <span className="pull-right">
-                            <SplitButton {...splitButtonProps}/>
+                            <SplitButton {...splitButtonProps} size="extra-small"/>
                         </span>
                     </h4>
 
