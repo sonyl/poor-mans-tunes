@@ -27,7 +27,7 @@ const selection = (state = defaultState, action) => {
             return Object.assign({}, state, {
                 album: {
                     index: action.index,
-                    name: action.name,
+                    name: action.name
                 }
             });
 

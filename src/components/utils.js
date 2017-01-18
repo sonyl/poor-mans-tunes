@@ -24,7 +24,7 @@ const notify = (title, body, icon) => {
 
 export const sendNotification = (title, body, icon) => {
     if (!('Notification' in window)) {
-        console.log('This browser does not support desktop notifications: ', text);
+        console.log('This browser does not support desktop notifications: ', title, body);
         return;
     }
 
@@ -41,4 +41,4 @@ export const sendNotification = (title, body, icon) => {
             }
         });
     }
-}
+};

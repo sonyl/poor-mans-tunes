@@ -23,11 +23,11 @@ class Navbar extends Component {
                     </div>
                     <div className="container">
                         <span>
-                            <input type="checkbox" disabled={true} checked={!!this.props.randomActive}
+                            <input type="checkbox" disabled={true} checked={this.props.randomActive}
                             />
                             &nbsp;
                             <button type="button"
-                                    className={'btn btn-default navbar-btn' + (!!this.props.randomActive ? ' active' : '')}
+                                    className={'btn btn-default navbar-btn' + (this.props.randomActive ? ' active' : '')}
                                     style={{maxWidth: '200px'}}
                                     onClick={this.onClick.bind(this)}
 

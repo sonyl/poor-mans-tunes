@@ -9,7 +9,7 @@ const Entry = ({artist, album, song, index, removeEntry}) => {
     const style = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-        whiteSpace: 'nowrap',
+        whiteSpace: 'nowrap'
     };
 
     return (
