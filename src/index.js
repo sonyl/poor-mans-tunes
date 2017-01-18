@@ -1,4 +1,4 @@
-/* global process:false */
+/* global process:false module:false */
 import React from 'react';
 import {Router, Route, browserHistory} from 'react-router';
 import {render} from 'react-dom';
@@ -19,9 +19,10 @@ const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk, creat
 const history = syncHistoryWithStore(browserHistory, store);
 
 if (process.env.NODE_ENV === 'production') {
-    console.log('Running in: production environment!');
+    console.log('Running in: production environment... and module.hot is: ', module.hot);
+    console.log('Config:', getConfig());
 } else {
-    console.log('Running in: development environment!');
+    console.log('Running in: development environment... and module.hot is: ', module.hot);
 }
 
 const contextRoot = getConfig().contextRoot || '';
