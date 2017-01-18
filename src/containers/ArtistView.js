@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { getArtistInfo } from '../reducers';
-    import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
+import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
 import NavLink from '../components/NavLink';
 
 const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
