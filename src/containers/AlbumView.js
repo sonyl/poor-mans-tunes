@@ -4,26 +4,8 @@ import { addToPlaylist } from '../actions/playlistActions';
 import { getAlbum, getAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
-import { sanitizeHtml } from '../components/utils';
+import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
 
-
-function getThumbnail(lastFmInfo) {
-    const image = lastFmInfo && lastFmInfo.image;
-    if(image) {
-        if (image.length > 3 && image[3]['#text'].length > 0) {
-            return image[3]['#text'];
-        }
-        if (image.length > 2 && image[2]['#text'].length > 0) {
-            return image[2]['#text'];
-        }
-        if (image.length > 1 && image[1]['#text'].length > 0) {
-            return image[1]['#text'];
-        }
-        if (image.length > 0 && image[0]['#text'].length > 0) {
-            return image[0]['#text'];
-        }
-    }
-}
 
 function PlusIcon() {
     return <GlyphIcon iconName='share-alt'/>;
@@ -97,11 +79,12 @@ const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
     }
 
     const renderThumbnail = () => {
-        const url = getThumbnail(lastFmInfo);
+        const url = getLastFmThumbnail(lastFmInfo, LASTFM_IMG_SIZE_XLARGE) || getCoverUrl(album);
+
         if(url) {
             return (
                 <div>
-                    <img src={url} className="img-responsiv img-rounded"/>
+                    <img src={url} className="img-responsiv img-rounded" style={{maxWidth: '300', maxHeight: 'auto'}}/>
                 </div>
             );
         }

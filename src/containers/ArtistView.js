@@ -2,26 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { getArtistInfo } from '../reducers';
-import { sanitizeHtml, createLinkUrl } from '../components/utils';
+    import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
 import NavLink from '../components/NavLink';
-
-function getThumbnail(lastFmInfo) {
-    const image = lastFmInfo && lastFmInfo.image;
-    if(image) {
-        if (image.length > 3 && image[3]['#text'].length > 0) {
-            return image[3]['#text'];
-        }
-        if (image.length > 2 && image[2]['#text'].length > 0) {
-            return image[2]['#text'];
-        }
-        if (image.length > 1 && image[1]['#text'].length > 0) {
-            return image[1]['#text'];
-        }
-        if (image.length > 0 && image[0]['#text'].length > 0) {
-            return image[0]['#text'];
-        }
-    }
-}
 
 const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     function renderAlbums() {
@@ -44,7 +26,7 @@ const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     }
 
     function renderThumbnail() {
-        const url = getThumbnail(lastFmInfo);
+        const url = getLastFmThumbnail(lastFmInfo, LASTFM_IMG_SIZE_XLARGE);
         if(url) {
             return (
                 <div>

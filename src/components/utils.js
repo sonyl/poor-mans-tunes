@@ -1,7 +1,7 @@
 import _sanitizeHtml from 'sanitize-html';
 import getConfig from '../config';
 
-const {contextRoot = ''} = getConfig();
+const {contextRoot='', baseUrl=''} = getConfig();
 
 function sanitize(dirty) {
     return _sanitizeHtml(dirty, {
@@ -41,4 +41,29 @@ export const sendNotification = (title, body, icon) => {
             }
         });
     }
+};
+
+export const LASTFM_IMG_SIZE_SMALL = 0;
+export const LASTFM_IMG_SIZ_MEDIUM = 1;
+export const LASTFM_IMG_SIZE_LARGE = 2;
+export const LASTFM_IMG_SIZE_XLARGE = 3;
+export const LASTFM_IMG_SIZE_MEGA = 4;
+export const LASTFM_IMG_SIZE_ULTRA = 5;
+
+export const getLastFmThumbnail = (lastFmInfo, maxSize=LASTFM_IMG_SIZE_ULTRA) => {
+    const image = lastFmInfo && lastFmInfo.image;
+    if(image) {
+        let size = maxSize + 1;
+        while(--size >= 0) {
+            if (image[size] && image[size]['#text'] && image[size]['#text'].length > 0) {
+                return image[size]['#text'];
+            }
+        }
+    }
+    return null;
+};
+
+export const getCoverUrl = album => {
+    const coverUrl = album && album.coverUrl;
+    return coverUrl ? `${baseUrl}/${coverUrl}` : null;
 };

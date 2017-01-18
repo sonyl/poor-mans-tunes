@@ -4,16 +4,15 @@ import { connect } from 'react-redux';
 import { removeFromPlaylist } from '../actions/playlistActions';
 import { createMp3Url } from '../actions/albumsActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
-import { getAlbumInfo } from '../reducers';
+import { getAlbumInfo, getAlbumByName } from '../reducers';
 
 import AudioPlayer from '../components/AudioPlayer';
 import Slider from '../components/Slider';
 import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
-import { createLinkUrl } from '../components/utils';
+import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
-import { sendNotification } from '../components/utils';
 
 function PlayIcon(props) {
     return <GlyphIcon iconName={props.playing ? 'pause' : 'play'}/>;
@@ -54,19 +53,6 @@ function Duration ({ className, seconds }) {
         </time>
     );
 }
-
-function getThumbnail(lastFmInfo) {
-    const image = lastFmInfo && lastFmInfo.image;
-    if(image) {
-        if (image.length > 1 && image[1]['#text'].length > 0) {
-            return image[1]['#text'];
-        }
-        if (image.length > 0 && image[0]['#text'].length > 0) {
-            return image[0]['#text'];
-        }
-    }
-}
-
 
 class Player extends Component {
 
@@ -165,12 +151,13 @@ class Player extends Component {
     };
 
     renderThumbnail() {
-        const url = getThumbnail(this.props.albumInfo);
+        const {artist, album, albumInfo, colAlbum} = this.props;
+        const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         if (url) {
             return (
                 <div>
-                    <NavLink to={createLinkUrl(this.props.artist, this.props.album)}>
-                        <img src={url} className="img-responsiv img-rounded" />
+                    <NavLink to={createLinkUrl(artist, album)}>
+                        <img src={url} className="img-responsiv img-rounded" style={{maxWidth: '100px', maxHeight: 'auto'}}/>
                     </NavLink>
                 </div>
             );
@@ -304,6 +291,7 @@ Player.propTypes = {
     song: PropTypes.string,
     title: PropTypes.string,
     albumInfo: PropTypes.object,
+    colAlbum: PropTypes.object,
     nextSong: PropTypes.func,
     requestAlbum: PropTypes.func
 };
@@ -318,7 +306,8 @@ const mapStateToProps = state => {
         album,
         song,
         title,
-        albumInfo: getAlbumInfo(state, artist, album)
+        albumInfo: getAlbumInfo(state, artist, album),
+        colAlbum: getAlbumByName(state, artist, album)
     };
 };
 
