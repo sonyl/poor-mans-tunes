@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "NODE_ENV=production node node_modules/.bin/webpack -p --json && cp index.html dist/index.html",
     "devserver": "webpack-dev-server",
-    "lint": "node_modules/.bin/eslint src"
+    "lint": "node_modules/.bin/eslint src",
+    "precommit": "npm run lint"
   },
   "keywords": [],
   "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
@@ -41,6 +42,7 @@
     "eslint": "^3.12.2",
     "eslint-plugin-react": "^6.8.0",
     "file-loader": "^0.9.0",
+    "husky": "^0.12.0",
     "json-loader": "^0.5.4",
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
