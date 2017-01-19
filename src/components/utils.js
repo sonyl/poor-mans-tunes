@@ -1,7 +1,7 @@
 import _sanitizeHtml from 'sanitize-html';
 import getConfig from '../config';
 
-const {contextRoot='', baseUrl=''} = getConfig();
+const { baseUrl=''} = getConfig();
 
 function sanitize(dirty) {
     return _sanitizeHtml(dirty, {
@@ -14,7 +14,7 @@ function sanitize(dirty) {
 export const sanitizeHtml = dirty => ({__html: sanitize(dirty)});
 
 export const createLinkUrl = (artist, album) => {
-    return album ? `${contextRoot}/app/${artist}/${album}` : `${contextRoot}/app/${artist}`;
+    return album ? `/app/${artist}/${album}` : `/app/${artist}`;
 };
 
 const notify = (title, body, icon) => {

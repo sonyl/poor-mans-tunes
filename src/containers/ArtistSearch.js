@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import { browserHistory } from 'react-router';
+import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { createLinkUrl } from '../components/utils';
@@ -83,17 +83,16 @@ class ArtistSearch extends Component {
         this.state = {
             db: reorganize(props.artists),
             suggestions: [],
-            value: ''
+            value: '',
+            redirect: ''
         };
-
-        this.getSuggestions = this.getSuggestions.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({db: reorganize(nextProps.artists)});
     }
 
-    getSuggestions(value) {
+    getSuggestions = value => {
         const {_value, db} = this.state;
         value = value || _value;
         if( !value ) {
@@ -115,7 +114,7 @@ class ArtistSearch extends Component {
             }
         }
         return suggestions;
-    }
+    };
 
     onChange = (event, { newValue, method }) => {
         console.log('onChange:', newValue, method);
@@ -142,7 +141,9 @@ class ArtistSearch extends Component {
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
         console.log('ArtistSearch.onSuggestionSelected:', suggestion, opts);
         if(suggestion) {
-            browserHistory.push(createLinkUrl(suggestion.artist, suggestion.album));
+            this.setState({
+                redirect: createLinkUrl(suggestion.artist, suggestion.album)
+            });
         }
     };
 
@@ -170,6 +171,7 @@ class ArtistSearch extends Component {
                     renderInputComponent={renderInputComponent}
                     inputProps={inputProps}
                 />
+                { this.state.redirect && <Redirect to={this.state.redirect} /> }
             </span>
         );
     }

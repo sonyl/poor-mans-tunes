@@ -1,10 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import ArtistSearch from '../containers/ArtistSearch';
-import getConfig from '../config';
-
-const { contextRoot='' } = getConfig();
-
 
 class Navbar extends Component {
 
@@ -19,7 +15,7 @@ class Navbar extends Component {
             <div role="navigation" className="navbar navbar-default" >
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <Link to={contextRoot + '/'} className="navbar-brand">Poor Man&rsquo;s Tunes</Link>
+                        <Link to="/" className="navbar-brand">Poor Man&rsquo;s Tunes</Link>
                     </div>
                     <div className="container">
                         <span>

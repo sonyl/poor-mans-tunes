@@ -20,6 +20,24 @@ function getAlbumIndex(albums, album) {
     return findIndex(albums, {album});
 }
 
+function parseUrl(path = '') {
+
+    let artist, album;
+    const parts = path.split('/');
+    if(parts.length < 5) {
+        // we assume /app/artist/name
+        // '' = parts[0];
+        // 'app' = parts[1];
+        artist = parts[2] || null;
+        album = parts[3] || null;
+    }
+
+    return {
+        artist,
+        album
+    };
+}
+
 
 class Main extends Component {
 
@@ -29,8 +47,10 @@ class Main extends Component {
 
     /* new route selected */
     componentWillReceiveProps(nextProps) {
-        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
-        console.log('Main.componentWillReceiveProps() nextProps:', nextProps, params, artists, params.artist);
+        const {artists, selectedArtist, selectedAlbum, location} = nextProps;
+        const params = parseUrl(location.pathname);
+        console.log('Main.componentWillReceiveProps() nextProps:', nextProps, params);
+
 
         if(params.artist !== selectedArtist.name) {
             if(params.artist) {
@@ -38,7 +58,7 @@ class Main extends Component {
                 if (index >= 0) {
                     this.props.selectArtist(index, artists[index].artist);
                 }
-            } else {
+            } else if(this.props.selectedArtist.name) {
                 this.props.unselectArtist();
             }
 
@@ -52,7 +72,7 @@ class Main extends Component {
                         this.props.selectAlbum(index, artist.albums[index]);
                     }
                 }
-            } else {
+            } else if(this.props.selectedAlbum.name){
                 this.props.unselectAlbum();
             }
         }
