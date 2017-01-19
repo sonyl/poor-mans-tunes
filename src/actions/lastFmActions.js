@@ -20,6 +20,10 @@ const receiveArtist = (artist, lastFmInfo, error) => ({
 
 
 export const requestArtistIfNotExists = artist => (dispatch, getState) => {
+    if(!artist) {
+        return null;
+    }
+
     const lastFm = getState().lastFm;
     if(lastFm && lastFm[artist] && lastFm[artist].__ARTIST_INFO) {
         return Promise.resolve(lastFm[artist]);
@@ -78,7 +82,12 @@ const receiveAlbum = (artist, album, lastFmInfo, error) => ({
 
 
 export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) => {
+    if(!artist || !album) {
+        return null;
+    }
+
     const lastFm = getState().lastFm;
+
     if(lastFm && lastFm[artist] && lastFm[artist][album]) {
         return Promise.resolve(lastFm[artist][album]);
     }
