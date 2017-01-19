@@ -84,7 +84,7 @@ const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
         if(url) {
             return (
                 <div>
-                    <img src={url} className="img-responsiv img-rounded" style={{maxWidth: '300', maxHeight: 'auto'}}/>
+                    <img src={url} className="img-responsiv img-rounded" style={{maxWidth: '300px', maxHeight: 'auto'}}/>
                 </div>
             );
         }
