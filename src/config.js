@@ -3,7 +3,7 @@
 const config = {
     develop: {
         contextRoot: '',
-        baseUrl:  'http://www',
+        baseUrl:  'http://localhost:8080',
         collectionUrl: '/public/files.json'
     },
 

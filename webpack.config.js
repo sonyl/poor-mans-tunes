@@ -103,6 +103,12 @@ module.exports = {
                 from: /^\/app\/.*$/,
                 to: '/index.html'
             }]
+        },
+        proxy: {
+            '/mp3': {
+                target: 'http://www.home',
+                logLevel: 'debug'
+            }
         }
     }
 };
