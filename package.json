@@ -9,7 +9,7 @@
     "build": "NODE_ENV=production node node_modules/.bin/webpack -p && cp index.html dist/index.html",
     "devserver": "webpack-dev-server",
     "lint": "node_modules/.bin/eslint src",
-    "deploy": "pushd dist && scp -r . tux:public_html/poor-mans-tunes && popd",
+    "deploy": "cd dist && scp -r . tux:public_html/poor-mans-tunes && cd ..",
     "precommit": "npm run lint"
   },
   "keywords": [],
