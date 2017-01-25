@@ -65,7 +65,7 @@ class Main extends Component {
         }
         if(params.album !== selectedAlbum.name ) {
             if(params.album) {
-                if(selectedArtist.index) {
+                if(selectedArtist.index >=0) {
                     const artist = artists[selectedArtist.index];
                     const index = getAlbumIndex(artist.albums, params.album);
                     if (index >= 0) {
