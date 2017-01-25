@@ -23,7 +23,7 @@ function getAlbumIndex(albums, album) {
 function parseUrl(path = '') {
 
     let artist, album;
-    const parts = path.split('/');
+    const parts = decodeURIComponent(path).split('/');
     if(parts.length < 5) {
         // we assume /app/artist/name
         // '' = parts[0];
