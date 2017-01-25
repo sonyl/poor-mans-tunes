@@ -5,14 +5,14 @@ import ArtistSearch from '../containers/ArtistSearch';
 class Navbar extends Component {
 
     onClick() {
-        if(this.props.setRandom) {
+        if (this.props.setRandom) {
             this.props.setRandom(!this.props.randomActive);
         }
     }
 
     render() {
-        return(
-            <div role="navigation" className="navbar navbar-default" >
+        return (
+            <div role="navigation" className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <Link to="/" className="navbar-brand">Poor Man&rsquo;s Tunes</Link>
@@ -31,7 +31,7 @@ class Navbar extends Component {
                                 Play random songs
                             </button>
                         </span>
-                        <form className="navbar-form navbar-right" role="search" onSubmit={(e)=>e.preventDefault()}>
+                        <form className="navbar-form navbar-right" role="search" onSubmit={(e) => e.preventDefault()}>
                             <ArtistSearch/>
                         </form>
                     </div>
@@ -39,13 +39,17 @@ class Navbar extends Component {
             </div>
         );
     }
+
+    static propTypes = {
+        randomActive: PropTypes.bool,
+        setRandom: PropTypes.func
+    };
+
+    /* to prevent annoying warnings, make sure that the checkbox property 'checked' is never undefined */
+    static defaultProps = {
+        randomActive: false
+    };
 }
-
-
-Navbar.propTypes = {
-    randomActive: PropTypes.bool,
-    setRandom: PropTypes.func
-};
 
 
 export default Navbar;
