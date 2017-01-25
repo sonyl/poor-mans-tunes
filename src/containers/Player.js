@@ -11,6 +11,7 @@ import Slider from '../components/Slider';
 import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
+import LevelMeter from '../components/LevelMeter';
 import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 
@@ -71,6 +72,15 @@ class Player extends Component {
             }
             sendNotification('Now playing:', props.title);
         }
+    }
+
+    componentDidMount() {
+        const bodyStyle = window.getComputedStyle(document.body);
+        this.backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg');
+        this.defaultColor = bodyStyle.getPropertyValue('--main-default-color');
+        this.successColor = bodyStyle.getPropertyValue('--main-success-color');
+        this.warningColor = bodyStyle.getPropertyValue('--main-warning-color');
+        this.dangerColor = bodyStyle.getPropertyValue('--main-danger-color');
     }
 
     componentWillReceiveProps(nextProps){
@@ -190,6 +200,15 @@ class Player extends Component {
                 </div>
 
                 <div className="panel-body">
+                    <div style={{height: '50px', marginBottom: '5px'}}>
+                        <LevelMeter audio={this.player && this.player.getAudio()}
+                            backgroundColor={this.backgroundColor}
+                            okColor={this.successColor}
+                            alarmColor={this.dangerColor}
+                            warnColor={this.warningColor}
+                            textColor={this.defaultColor}
+                        />
+                    </div>
                     <AudioPlayer
                         ref={player => { this.player = player; }}
                         hidden={true}
