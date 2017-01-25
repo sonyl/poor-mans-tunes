@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 
-
 export default class AudioPlayer extends Component {
 
     static propTypes = {
@@ -159,6 +158,10 @@ export default class AudioPlayer extends Component {
         }
     };
 
+    getAudio() {
+        return this.player;
+    }
+
     progress = () => {
         if (this.props.url && this.player) {
             const loaded = this.getFractionLoaded() || 0;
@@ -187,7 +190,6 @@ export default class AudioPlayer extends Component {
             height: '100%',
             display: url ? 'block' : 'none'
         };
-
         return (
             <div style={{ ...style}} className={className} hidden={hidden}>
                 <audio
@@ -195,7 +197,7 @@ export default class AudioPlayer extends Component {
                     style={ mediaStyle }
                     preload='auto'
                     { ...attributes }
-                /> : null;
+                />
             </div>
         );
     }
