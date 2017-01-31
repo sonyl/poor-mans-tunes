@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-export default (props) => {
-    return <Link {...props} activeClassName="active" className="nav-link"/>;
+export default ({activate=true, ...props}) => {
+    const activeClassName = activate ? 'active' : '';
+    return <Link {...props} activeClassName={activeClassName} className="nav-link"/>;
 };

@@ -27,6 +27,10 @@ function PlayNextIcon() {
     return <GlyphIcon iconName='fast-forward'/>;
 }
 
+function CdIcon() {
+    return <GlyphIcon iconName='cd' style={{fontSize: '96px'}}/>;
+}
+
 function Button({children, onClick}) {
     return <button className="btn btn-lg" onClick={onClick}>{children}</button>;
 }
@@ -53,6 +57,19 @@ function Duration ({ className, seconds }) {
             {format(seconds)}
         </time>
     );
+}
+
+function AlbumLink({artist, album, children, activate}) {
+    if(artist && album) {
+        return (
+            <div>
+                <NavLink activate={activate} to={createLinkUrl(artist, album)}>
+                    {children}
+                </NavLink>
+            </div>
+        );
+    }
+    return null;
 }
 
 class Player extends Component {
@@ -163,15 +180,17 @@ class Player extends Component {
     renderThumbnail() {
         const {artist, album, albumInfo, colAlbum} = this.props;
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
-        if (url) {
-            return (
-                <div>
-                    <NavLink to={createLinkUrl(artist, album)}>
-                        <img src={url} className="img-responsiv img-rounded" style={{maxWidth: '100px', maxHeight: 'auto'}}/>
-                    </NavLink>
-                </div>
-            );
-        }
+        return (
+            <AlbumLink artist={artist} album={album} activate={false}>
+                { url ?
+                    <img src={url} className="img-responsiv img-rounded"
+                         style={{maxWidth: '100px', maxHeight: 'auto'}}
+                    />
+                    :
+                    <CdIcon />
+                }
+            </AlbumLink>
+        );
     }
 
     render () {
@@ -179,7 +198,7 @@ class Player extends Component {
             playing, volume, played, duration
         } = this.state;
 
-        const { url, title } = this.props;
+        const { url, title, artist, album } = this.props;
 
         return (
             <div className="panel panel-default">
@@ -193,7 +212,9 @@ class Player extends Component {
                                 <div className="col-md-12"><h3>Player:</h3></div>
                             </div>
                             <div className="row">
-                                <div className="col-md-12"><h4>{title}</h4></div>
+                                <AlbumLink artist={artist} album={album}>
+                                    <div className="col-md-12"><h4>{title}</h4></div>
+                                </AlbumLink>
                             </div>
                         </div>
                     </div>
