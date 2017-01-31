@@ -1,5 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 
+const ENABLE_LOG = true;
+function log(method, fmt, ...args) {
+    if(ENABLE_LOG) {
+        console.log(`AudioPlayer.${method}() ${fmt}`, ...args);
+    }
+}
+
 export default class AudioPlayer extends Component {
 
     static propTypes = {
@@ -35,7 +42,7 @@ export default class AudioPlayer extends Component {
     isReady = false;
 
     componentDidMount() {
-
+        log('componentDidMount', 'props=', this.props);
         this.player.addEventListener('canplay', this.onReady);
         this.player.addEventListener('play', this.onPlay);
         this.player.addEventListener('pause', this.onPause);
@@ -63,6 +70,7 @@ export default class AudioPlayer extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
+        log('componentWillReceiveProps', 'nextProps=', nextProps);
         const { url, playing, volume} = this.props;
         // Invoke player methods based on incoming props
         if (url !== nextProps.url && nextProps.url) {
@@ -88,9 +96,11 @@ export default class AudioPlayer extends Component {
     }
 
     onReady = () => {
+
         this.player.play();
         this.isReady = true;
         const duration = this.getDuration();
+
         if (duration) {
             this.props.onDuration(duration);
         }
@@ -109,11 +119,14 @@ export default class AudioPlayer extends Component {
         this.props.onEnded();
     };
 
-    onError = () => {
+    onError = (evt) => {
+        log('onError', 'evt=', evt);
         this.props.onError();
     };
 
     load (url) {
+        log('load', 'url=', url);
+
         this.player.src = url;
         this.isReady = false;
     }
@@ -183,6 +196,7 @@ export default class AudioPlayer extends Component {
     };
 
     render () {
+        log('render', 'props=', this.props);
         const { url, attributes, hidden, className, style } = this.props;
 
         const mediaStyle = {
