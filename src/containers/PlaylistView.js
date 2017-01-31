@@ -1,36 +1,57 @@
 import React, {PropTypes} from 'react';
 import { connect } from 'react-redux';
-import { clearPlaylist, removeFromPlaylist } from '../actions/playlistActions';
-import { Link } from 'react-router';
+import { clearPlaylist, removeFromPlaylist, moveItemToPosition } from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
-import { createLinkUrl } from '../components/utils';
 
-const Entry = ({artist, album, song, index, removeEntry}) => {
+const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) => {
     const style = {
-        textOverflow: 'ellipsis',
+        textOverflow: 'ellipsis',               // the folling 2 lines cut text and add ... if text is to long
         overflow: 'hidden',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+
+        border: '1px solid #ddd ',
+        borderRadius: '5px',
+        paddingTop: '2px',
+        paddingBottom: '2px',
+
+        cursor: 'pointer'
     };
 
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData('pos', index);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const data = parseInt(ev.dataTransfer.getData('pos'), 10);
+        console.log('Ondrop: %d, data=%s', index, data);
+        moveItemToPosition(data, index);
+    }
+
     return (
-        <div  style={style}>
-            <GlyphIcon iconName="trash" onClick={() => removeEntry(index)}/>
-            &nbsp;
-            &nbsp;
-            <Link to={createLinkUrl(artist, album)}>
+        <div onDrop={drop}  onDragOver={allowDrop} >
+            <div style={style} draggable={true} onDragStart={drag} >
+                <GlyphIcon iconName="trash" onClick={() => removeEntry(index)}/>
+                &nbsp;
+                &nbsp;
                 {`${index + 1}. ${artist} - ${song}`}<span className="small">&nbsp;{`[Album - ${album}]`}</span>
-            </Link>
+            </div>
         </div>
     );
 };
 
-const PlaylistView = ({playlist, removeFromPlaylist, clearPlaylist}) => {
+const PlaylistView = ({playlist, removeFromPlaylist, clearPlaylist, moveItemToPosition}) => {
 
     console.log('PlaylistView.render', playlist);
 
     function renderPlaylist() {
         return playlist.map((entry, i) => {
-            return <Entry key={i} index={i} {...entry} removeEntry={removeFromPlaylist} ></Entry>;
+            return <Entry key={i} index={i} {...entry} removeEntry={removeFromPlaylist}
+                          moveItemToPosition={moveItemToPosition} ></Entry>;
         });
     }
 
@@ -68,6 +89,7 @@ PlaylistView.propTypes = {
         url: PropTypes.string.isRequired
     })).isRequired,
     removeFromPlaylist: PropTypes.func.isRequired,
+    moveItemToPosition: PropTypes.func.isRequired,
     clearPlaylist: PropTypes.func.isRequired
 };
 
@@ -78,7 +100,7 @@ function mapStateToProps({ playlist }) {
 }
 
 function mapDispatchToProps() {
-    return { clearPlaylist, removeFromPlaylist };
+    return { clearPlaylist, removeFromPlaylist, moveItemToPosition };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps())(PlaylistView);
