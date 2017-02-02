@@ -1,11 +1,8 @@
 import React, { Component, PropTypes } from 'react';
+import { createLog } from './utils';
 
 const ENABLE_LOG = true;
-function log(method, fmt, ...args) {
-    if(ENABLE_LOG) {
-        console.log(`AudioPlayer.${method}() ${fmt}`, ...args);
-    }
-}
+const log = createLog(ENABLE_LOG, 'AudioPlayer');
 
 export default class AudioPlayer extends Component {
 
@@ -14,6 +11,7 @@ export default class AudioPlayer extends Component {
         playing: PropTypes.bool,
         volume: PropTypes.number,
         hidden: PropTypes.bool,
+        className: PropTypes.string,
         attributes: PropTypes.object,
         progressFrequency: PropTypes.number,
         onPlay: PropTypes.func,
@@ -28,6 +26,7 @@ export default class AudioPlayer extends Component {
         playing: false,
         volume: 0.8,
         hidden: false,
+        className: '',
         attributes: {},
         progressFrequency: 1000,
         onPlay: function() {},
@@ -48,7 +47,6 @@ export default class AudioPlayer extends Component {
         this.player.addEventListener('pause', this.onPause);
         this.player.addEventListener('ended', this.onEnded);
         this.player.addEventListener('error', this.onError);
-        this.player.setAttribute('webkit-playsinline', '');
 
         const { url } = this.props;
         if (url) {
@@ -70,22 +68,26 @@ export default class AudioPlayer extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        log('componentWillReceiveProps', 'nextProps=', nextProps);
         const { url, playing, volume} = this.props;
         // Invoke player methods based on incoming props
         if (url !== nextProps.url && nextProps.url) {
+            log('componentWillReceiveProps', 'url set, url=', nextProps.url);
             this.load(nextProps.url);
         } else if (url && !nextProps.url) {
+            log('componentWillReceiveProps', 'url unset');
             this.load('');
             this.seekTo(0);
             this.stop();
         }
         if (!playing && nextProps.playing) {
+            log('componentWillReceiveProps', 'start play');
             this.play();
         } else if (playing && !nextProps.playing) {
+            log('componentWillReceiveProps', 'stop play');
             this.pause();
         }
         if (volume !== nextProps.volume) {
+            log('componentWillReceiveProps', 'volume changed', nextProps.volume);
             this.setVolume(nextProps.volume);
         }
     }
@@ -96,7 +98,7 @@ export default class AudioPlayer extends Component {
     }
 
     onReady = () => {
-
+        log('onReady', 'canPlay event received, this.isReady=', this.isReady);
         this.player.play();
         this.isReady = true;
         const duration = this.getDuration();
@@ -108,20 +110,43 @@ export default class AudioPlayer extends Component {
 
 
     onPlay = () => {
+        log('onPlay', 'canPlay event received, this.isReady=', this.isReady);
         this.props.onPlay();
     };
 
     onPause = () => {
+        log('onPause', 'onPause event received, this.isReady=', this.isReady);
         this.props.onPause();
     };
 
     onEnded = () => {
+        log('onEnded', 'onEnded event received, this.isReady=', this.isReady);
         this.props.onEnded();
     };
 
-    onError = (evt) => {
-        log('onError', 'evt=', evt);
-        this.props.onError();
+    onError = (e) => {
+        let reason;
+        switch (e.target.error.code) {
+            case e.target.error.MEDIA_ERR_ABORTED:
+                reason = 'You aborted the video playback.';
+                break;
+            case e.target.error.MEDIA_ERR_NETWORK:
+                reason = 'A network error caused the audio download to fail.';
+                break;
+            case e.target.error.MEDIA_ERR_DECODE:
+                reason = 'The audio playback was aborted due to a corruption problem or because the media used ' +
+                            'features your browser did not support.';
+                break;
+            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                reason = 'The media could not be loaded, either because the server or network failed or because ' +
+                            'the format is not supported.';
+                break;
+            default:
+                reason = 'An unknown error occurred.';
+                break;
+        }
+        log('onError', 'reason=', reason, e);
+        this.props.onError(reason);
     };
 
     load (url) {
@@ -132,6 +157,8 @@ export default class AudioPlayer extends Component {
     }
 
     play () {
+        log('play', 'this.ready=', this.isReady);
+
         if(this.isReady) {
             this.player.play();
         }
@@ -197,7 +224,7 @@ export default class AudioPlayer extends Component {
 
     render () {
         log('render', 'props=', this.props);
-        const { url, attributes, hidden, className, style } = this.props;
+        const { url, attributes, hidden, className } = this.props;
 
         const mediaStyle = {
             width: '100%',
@@ -205,9 +232,9 @@ export default class AudioPlayer extends Component {
             display: url ? 'block' : 'none'
         };
         return (
-            <div style={{ ...style}} className={className} hidden={hidden}>
+            <div className={className} hidden={hidden}>
                 <audio
-                    ref={ player => this.player = player}
+                    ref={ player => window.player = this.player = player }
                     style={ mediaStyle }
                     preload='auto'
                     { ...attributes }

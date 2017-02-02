@@ -2,6 +2,12 @@ import React, {PropTypes} from 'react';
 import { connect } from 'react-redux';
 import { clearPlaylist, removeFromPlaylist, moveItemToPosition } from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
+import { createLog } from '../components/utils';
+
+const ENABLE_LOG = true;
+const entryLog = createLog(ENABLE_LOG, 'Entry');
+const log = createLog(ENABLE_LOG, 'PlaylistView');
+
 
 const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) => {
     const style = {
@@ -28,7 +34,7 @@ const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) =>
     function drop(ev) {
         ev.preventDefault();
         const data = parseInt(ev.dataTransfer.getData('pos'), 10);
-        console.log('Ondrop: %d, data=%s', index, data);
+        entryLog('drop', '%d, data=%s', index, data);
         moveItemToPosition(data, index);
     }
 
@@ -46,7 +52,7 @@ const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) =>
 
 const PlaylistView = ({playlist, removeFromPlaylist, clearPlaylist, moveItemToPosition}) => {
 
-    console.log('PlaylistView.render', playlist);
+    log('render', 'playlist=%o', playlist);
 
     function renderPlaylist() {
         return playlist.map((entry, i) => {

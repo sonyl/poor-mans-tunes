@@ -67,9 +67,5 @@ export const getArtistInfo = (state={}, artist) => {
 
 };
 export const getAlbumInfo = (state={}, artist, album) => {
-    const ret = state[artist] && state[artist][album] && state[artist][album].info;
-
-    console.log('getAlbumInfo()', artist, album);
-
-    return ret;
+    return state[artist] && state[artist][album] && state[artist][album].info;
 };

@@ -67,3 +67,12 @@ export const getCoverUrl = album => {
     const coverUrl = album && album.coverUrl;
     return coverUrl ? baseUrl + coverUrl : null;
 };
+
+export function createLog(enabled, component){
+    function log (method, fmt='', ...args) {
+        if(!args) args = [];
+        console.log(`${component}.${method}() ${fmt}`, ...args);
+    }
+    return enabled ? log : function () {};
+
+}

@@ -12,7 +12,11 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
+import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createLog,
+        LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'Player');
 
 
 function PlayIcon(props) {
@@ -194,6 +198,7 @@ class Player extends Component {
     }
 
     render () {
+        log('render');
         const {
             playing, volume, played, duration
         } = this.state;
@@ -239,7 +244,6 @@ class Player extends Component {
                         onPlay={() => this.setState({ playing: true })}
                         onPause={ this.onPause }
                         onEnded={ this.onEnded }
-                        onError={e => console.log('onError', e)}
                         onProgress={this.onProgress}
                         onDuration={duration => this.setState({ duration })}
                     />

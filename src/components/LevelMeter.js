@@ -1,4 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import { createLog } from './utils';
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'LevelMeter');
+
 
 const DB_MIN_SCALE = -48;
 const PEAK_BUFFER_SIZE = 50;
@@ -41,6 +46,7 @@ export default class LevelMeter extends Component {
 
 
     componentDidMount() {
+        log('componentDidMount', 'props=', this.props);
         this.connect(this.props);
     }
 
@@ -50,6 +56,7 @@ export default class LevelMeter extends Component {
 
     componentWillReceiveProps (nextProps) {
         if(this.props.audio !== nextProps.audio) {
+            log('componentWillReceiveProps', 'nextProps=', nextProps);
             if(this.props.audio) {
                 this.disconnect();
             }
@@ -64,32 +71,49 @@ export default class LevelMeter extends Component {
         return false;
     }
 
-    connect({ audioContext, audio }) {
-        console.log('LevelMeter.connect()');
+    audioOnPlay = (event) => {
+        log('audioOnPlay', 'meterNode=%o sourceNode=%o', this.meterNode, this.sourceNode);
+        this.meterNode && this.meterNode.disconnect();
+        this.sourceNode && this.sourceNode.disconnect();
+
+        const {audioContext, audio } = this.props;
+        try {
+            this.sourceNode = audioContext.createMediaElementSource(audio);
+        } catch(error) {
+            log('audioOnPlay', 'ERROR:', error);
+        }
+        this.sourceNode.connect(audioContext.destination);
+
+
+        this.sourceNode.connect(this.meterNode);
+        this.meterNode.connect(audioContext.destination);
+    };
+
+    connect( { audioContext, audio }) {
+        log('connect');
         if(audio) {
-            const sourceNode = audioContext.createMediaElementSource(audio);
-            sourceNode.connect(audioContext.destination);
-
-            this.channelCount = sourceNode.channelCount;
-
-            const meterNode = audioContext.createScriptProcessor(2048, this.channelCount, this.channelCount);
-            sourceNode.connect(meterNode);
-            meterNode.connect(audioContext.destination);
-
-            meterNode.onaudioprocess = this.updateMeter;
+            audio.addEventListener('play', this.audioOnPlay);
+            this.sourceNode = audioContext.createMediaElementSource(audio);
+            const channelCount = this.sourceNode.channelCount;
+            this.meterNode = audioContext.createScriptProcessor(2048, channelCount, channelCount);
+            this.meterNode.onaudioprocess = this.updateMeter;
             this.paintMeter();
         }
     }
 
     disconnect() {
-        console.log('LevelMeter.disconnect()');
+        log('disconnect');
+        this.props.audio.removeEventListener('play', this.audioOnPlay);
+
+        this.meterNode && this.meterNode.disconnect();
+        this.sourceNode && this.sourceNode.disconnect();
     }
 
     updateMeter = audioProcessingEvent => {
         const inputBuffer = audioProcessingEvent.inputBuffer;
         this.channelPeak = [];
 
-        for (let channel = 0; channel < this.channelCount; channel++) {
+        for (let channel = 0; channel < this.sourceNode.channelCount; channel++) {
             this.channelPeak[channel] = 0.0;
             const channelData = inputBuffer.getChannelData(channel);
             for (let sample = 0; sample < inputBuffer.length; sample++) {
@@ -147,7 +171,7 @@ export default class LevelMeter extends Component {
     }
 
     render() {
-        console.log('LevelMeter.render() props=', this.props);
+        log('render', 'props=', this.props);
         return (
             <canvas ref={canvas => this.canvas = canvas} style={{ width: '100%', height: '100%' }} />
         );

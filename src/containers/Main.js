@@ -11,6 +11,11 @@ import ArtistList from './ArtistList';
 import ArtistView from './ArtistView';
 import AlbumView from './AlbumView';
 import Player from './Player';
+import { createLog } from '../components/utils';
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'Main');
+
 
 function getArtistIndex(artists, artist) {
     return findIndex(artists, {artist});
@@ -49,7 +54,7 @@ class Main extends Component {
     componentWillReceiveProps(nextProps) {
         const {artists, selectedArtist, selectedAlbum, location} = nextProps;
         const params = parseUrl(location.pathname);
-        console.log('Main.componentWillReceiveProps() nextProps:', nextProps, params);
+        log('componentWillReceiveProps', 'nextProps:', nextProps, params);
 
 
         if(params.artist !== selectedArtist.name) {
@@ -79,12 +84,12 @@ class Main extends Component {
     }
 
     setRandom(newState) {
-        console.log('setRandom clicked', newState);
+        log('setRandom', 'newState=', newState);
         this.props.setPlayRandom(!!newState);
     }
 
     render() {
-        console.log('Main.render() props=', this.props);
+        log('render', 'props=', this.props);
 
         return (
             <div className="container-fluid">

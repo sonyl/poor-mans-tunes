@@ -4,7 +4,11 @@ import { addToPlaylist } from '../actions/playlistActions';
 import { getAlbum, getAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
-import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
+import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
+
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'AlbumView');
 
 
 function PlusIcon() {
@@ -30,7 +34,7 @@ function Song({index, title, addAlbumSongToPlaylist}){
 }
 
 const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
-    console.log('AlbumView.render() album=%o, lastFmInfo=%o', album, lastFmInfo);
+    log('render', 'album=%o, lastFmInfo=%o', album, lastFmInfo);
 
     function addAlbumSongToPlaylist(index, top=false) {
         let songs;

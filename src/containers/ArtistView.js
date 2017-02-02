@@ -2,8 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { getArtistInfo } from '../reducers';
-import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
+import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
 import NavLink from '../components/NavLink';
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'ArtistView');
 
 const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     function renderAlbums() {
@@ -46,8 +49,7 @@ const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     }
 
 
-    console.log('ArtistView.render() artist: %o, selectedArtist: %o, lastFmInfo: %o',
-        artist, selectedArtist, lastFmInfo);
+    log('render', 'artist: %o, selectedArtist: %o, lastFmInfo: %o', artist, selectedArtist, lastFmInfo);
     return (
         <div className="panel panel-default">
             <div className="panel-heading">

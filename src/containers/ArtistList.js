@@ -3,11 +3,14 @@ import { connect } from 'react-redux';
 import findIndex from 'lodash/findIndex';
 
 import NavLink from '../components/NavLink';
-import { createLinkUrl } from '../components/utils';
+import { createLinkUrl, createLog } from '../components/utils';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
 const MAP = {'Ä': 'A', 'Ö': 'O', 'Ü': 'U'};
+
+const ENABLE_LOG = false;
+const log = createLog(ENABLE_LOG, 'ArtistList');
 
 
 function getCategory(name) {
@@ -130,7 +133,7 @@ class ArtistList extends Component {
     }
 
     render() {
-        console.log('ArtistList.render()', this.props.selectedArtist);
+        log('render', 'selectedArtist=%o', this.props.selectedArtist);
         return (
             <div>
                 <h3>All artists:</h3>
