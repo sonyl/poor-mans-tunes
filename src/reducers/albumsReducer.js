@@ -1,4 +1,3 @@
-import findIndex from 'lodash/findIndex';
 import { REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, createMp3Url}  from '../actions/albumsActions';
 
 // -----------------reducer (default export)
@@ -56,10 +55,10 @@ export const getAlbum = (state, artistIndex, albumIndex) => {
 };
 
 export const getAlbumByName = (state, artist, album) => {
-    const artistIndex = findIndex(state.artists || [], {artist});
+    const artistIndex = (state.artists || []).findIndex(a => a.artist === artist);
     const selArtist = getArtist(state, artistIndex);
     if(selArtist) {
-        const albumIndex = findIndex(selArtist.albums || [], {album});
+        const albumIndex = (selArtist.albums || []).findIndex(a => a.album === album);
         if(albumIndex >= 0) {
             return selArtist.albums[albumIndex];
         }

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import findIndex from 'lodash/findIndex';
 
 import { fetchAllAlbums } from '../actions/albumsActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum, setPlayRandom } from '../actions/selectionActions';
@@ -18,11 +17,11 @@ const log = createLog(ENABLE_LOG, 'Main');
 
 
 function getArtistIndex(artists, artist) {
-    return findIndex(artists, {artist});
+    return artists.findIndex(a => a.artist === artist);
 }
 
 function getAlbumIndex(albums, album) {
-    return findIndex(albums, {album});
+    return albums.findIndex(a => a.album === album);
 }
 
 function parseUrl(path = '') {
@@ -52,10 +51,10 @@ class Main extends Component {
 
     /* new route selected */
     componentWillReceiveProps(nextProps) {
-        const {artists, selectedArtist, selectedAlbum, location} = nextProps;
-        const params = parseUrl(location.pathname);
+        // const {artists, selectedArtist, selectedAlbum, location} = nextProps;
+        // const params = parseUrl(location.pathname);
+        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
         log('componentWillReceiveProps', 'nextProps:', nextProps, params);
-
 
         if(params.artist !== selectedArtist.name) {
             if(params.artist) {

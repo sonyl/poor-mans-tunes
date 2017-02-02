@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
-import findIndex from 'lodash/findIndex';
 
 import NavLink from '../components/NavLink';
 import { createLinkUrl, createLog } from '../components/utils';
@@ -52,7 +51,7 @@ function getActiveIndex(categories, name) {
     }
 
     const category = getCategory(name);
-    const index = findIndex(categories, c => c.category === category);
+    const index = categories.findIndex(c => c.category === category);
     return index > 0 ? index : 0;
 }
 
