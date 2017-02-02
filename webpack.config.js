@@ -4,7 +4,7 @@ const path = require('path');
 
 var entry;
 const plugins = [
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
         'process.env': {
             'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
@@ -45,29 +45,35 @@ module.exports = {
     },
 
     resolve: {
-        modulesDirectories: ['node_modules', 'src'],
-        extensions: ['', '.scss', '.css', '.js', '.json']
+        modules: [
+            path.join(__dirname, 'src'),
+            'node_modules'
+        ],
+        extensions: ['.scss', '.css', '.js', '.json']
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
-                loader: 'react-hot'
+                loader: 'react-hot-loader'
             },
             {
                 test: /\.jsx?$/,
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
-                loader: 'babel',
-                query: {
-                    presets: ['react', 'es2015'],
-                    plugins: ['transform-object-rest-spread', 'transform-class-properties']
-                }
+                use: [
+                    {
+                        loader: 'babel-loader', options: {
+                            presets: ['react', 'es2015'],
+                            plugins: ['transform-object-rest-spread', 'transform-class-properties']
+                        }
+                    }
+                ]
             },
             {
                 test: /\.less$/,
@@ -79,11 +85,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                loaders: ['style', 'css']
-            },
-            {
-                test: /\.json$/,
-                loader: 'json'
+                use: ['style-loader', 'css-loader']
             },
             { test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,  loader: 'url-loader?limit=20000&mimetype=application/font-woff' },
             { test: /\.ttf$/,    loader: 'file-loader' },

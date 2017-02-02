@@ -1,9 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
-import { createLinkUrl } from '../components/utils';
+import { createLinkUrl, createLog } from '../components/utils';
 import GlyphIcon from '../components/GlyphIcon';
+
+const ENABLE_LOG = true;
+const log = createLog(ENABLE_LOG, 'ArtistSearch');
 
 const theme = {
     input: {
@@ -117,7 +120,7 @@ class ArtistSearch extends Component {
     };
 
     onChange = (event, { newValue, method }) => {
-        console.log('onChange:', newValue, method);
+        log('onChange:', 'newValue=%o, method=%o', newValue, method);
         this.setState({
             value: newValue
         });
@@ -139,7 +142,7 @@ class ArtistSearch extends Component {
     };
 
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
-        console.log('ArtistSearch.onSuggestionSelected:', suggestion, opts);
+        log('onSuggestionSelected', 'suggestion=%o, opts=%o', suggestion, opts);
         if(suggestion) {
             this.setState({
                 redirect: createLinkUrl(suggestion.artist, suggestion.album)
@@ -148,14 +151,20 @@ class ArtistSearch extends Component {
     };
 
     render() {
-        console.log('ArtistSearch.render:', this.props);
-        const { value, suggestions } = this.state;
+        const { value, suggestions, redirect } = this.state;
+
+        log('render', 'props=', this.props);
+        if(redirect) {
+            log('render', 'redirect:', redirect);
+        }
+
         // Autosuggest will pass through all these props to the input element.
         const inputProps = {
             placeholder: 'Type an artist or album name',
             value,
             onChange: this.onChange
         };
+
 
         return (
 
@@ -171,7 +180,7 @@ class ArtistSearch extends Component {
                     renderInputComponent={renderInputComponent}
                     inputProps={inputProps}
                 />
-                { this.state.redirect && <Redirect to={this.state.redirect} /> }
+                { redirect && <Redirect to={redirect} /> }
             </span>
         );
     }

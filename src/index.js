@@ -1,7 +1,7 @@
 /* global process:false module:false */
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router, Match, Miss} from 'react-router';
+import { BrowserRouter as Router , Route } from 'react-router-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import createLogger from 'redux-logger';
@@ -27,7 +27,7 @@ render(
     <Provider store={store}>
         <div>
             <Router basename={contextRoot} >
-                <Match pattern="/" component={Main} />
+                <Route path="/" component={Main} />
             </Router>
         </div>
     </Provider>, document.getElementById('app')

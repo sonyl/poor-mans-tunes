@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { routerReducer } from 'react-router-redux';
+//import { routerReducer } from 'react-router-redux';
 
 import playlist from './playlistReducer';
 import selection from './selectionReducer';
@@ -11,8 +11,9 @@ const rootReducer = combineReducers({
     albums,
     selection,
     playlist,
-    lastFm,
+    lastFm /*,
     routing: routerReducer
+*/
 });
 
 export default rootReducer;
