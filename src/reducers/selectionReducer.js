@@ -1,4 +1,4 @@
-import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM, SET_PLAY_RANDOM } from '../actions/actionKeys';
+import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM } from '../actions/actionKeys';
 
 
 const defaultState = {
@@ -36,15 +36,6 @@ const selection = (state = defaultState, action) => {
                 ...state,
                 artist: state.artist,
                 album: {}
-            };
-
-        case SET_PLAY_RANDOM:
-            return {
-                ...state,
-                set: {
-                    ...state.playRandom,
-                    playRandom: action.playRandom
-                }
             };
     }
     return state;
