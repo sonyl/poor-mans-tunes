@@ -1,45 +1,41 @@
-import { getRandomSong } from '../reducers';
-export const ADD_TO_PLAYLIST = 'ADD_TO_PLAYLIST';
-export const REMOVE_FROM_PLAYLIST = 'REMOVE_FROM_PLAYLIST';
-export const CLEAR_PLAYLIST = 'CLEAR_PLAYLIST';
-export const MOVE_ITEM_TO_POSITION = 'MOVE_ITEM_TO_POSITION';
+import { getRandomSong, isPlaylistEmpty, isSetInSettings } from '../reducers';
+import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from './actionKeys';
 
-export const addToPlaylist = (artist, album, songs, top=false) => ({
-    type: ADD_TO_PLAYLIST,
+
+export const addSongsToPlaylist = (artist, album, songs, top=false) => ({
+    type: ADD_SONG_TO_PLAYLIST,
     artist,
     album,
-    songs,
+    songs: Array.isArray(songs) ? songs : [songs],
     top
 });
 
-export const removeFromPlaylist = (index) => (dispatch, getState) => {
-    const { selection, playlist } = getState();
+export const removeSongAtIndexFromPlaylist = index => dispatch => {
     dispatch({
-        type: REMOVE_FROM_PLAYLIST,
+        type: REMOVE_SONG_FROM_PLAYLIST,
         index
     });
-    if(selection && selection.set && selection.set.playRandom && !(playlist && playlist.length > 1)) {
-        dispatch(addRandomToPlaylist());
-    }
+    dispatch(addRandomSongToPlaylistIfNecessary());
 };
 
-export const clearPlaylist = () => (dispatch, getState) => {
+export const clearPlaylist = () => (dispatch) => {
     dispatch({type: CLEAR_PLAYLIST});
-    const { selection } = getState();
-    if(selection && selection.set && selection.set.playRandom) {
-        dispatch(addRandomToPlaylist());
+    dispatch(addRandomSongToPlaylistIfNecessary());
+};
+
+export const addRandomSongToPlaylistIfNecessary = () => (dispatch, getState) => {
+    const state = getState();
+    if(isSetInSettings(state, 'playRandom') && isPlaylistEmpty(state)) {
+        const randomSong = getRandomSong(state);
+        if (randomSong) {
+            dispatch(addSongsToPlaylist(randomSong.artist, randomSong.album, randomSong.songs));
+        }
     }
 };
 
-export const addRandomToPlaylist = () => (dispatch, getState) => {
-    const entry = getRandomSong(getState());
-    if(entry) {
-        dispatch(addToPlaylist(entry.artist, entry.album, entry.songs));
-    }
-};
 
-export const moveItemToPosition = (index, newIndex) => ({
-    type: MOVE_ITEM_TO_POSITION,
+export const moveSongToPositionInPlaylist = (index, newIndex) => ({
+    type: MOVE_SONG_TO_POSITION,
     index,
     newIndex
 });

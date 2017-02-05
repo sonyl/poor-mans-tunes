@@ -181,7 +181,7 @@ class ArtistSearch extends Component {
     }
 }
 function mapStateToProps(state) {
-    return { artists: state.albums.artists };
+    return { artists: state.collection.artists };
 }
 
 

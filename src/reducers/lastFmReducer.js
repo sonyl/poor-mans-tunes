@@ -1,4 +1,4 @@
-import {REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM} from '../actions/lastFmActions';
+import {REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM} from '../actions/actionKeys';
 
 const ARTIST_INFO_ATTR = '__ARTIST_INFO';
 

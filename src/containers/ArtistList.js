@@ -160,9 +160,9 @@ ArtistList.propTypes = {
     selectedArtist: PropTypes.object
 };
 
-function mapStateToProps({albums, selection}) {
+function mapStateToProps({collection, selection}) {
     return {
-        artists: albums.artists,
+        artists: collection.artists,
         selectedArtist: selection.artist
     };
 }

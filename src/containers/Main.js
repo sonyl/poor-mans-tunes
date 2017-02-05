@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
-import { fetchAllAlbums } from '../actions/albumsActions';
-import { selectArtist, unselectArtist, selectAlbum, unselectAlbum, setPlayRandom } from '../actions/selectionActions';
+import { getCollection } from '../actions/collectionActions';
+import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
+import { setPlayRandom } from '../actions/settingsActions';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -46,7 +47,7 @@ function parseUrl(path = '') {
 class Main extends Component {
 
     componentDidMount() {
-        this.props.fetchAllAlbums();
+        this.props.getCollection();
     }
 
     /* new route selected */
@@ -82,17 +83,17 @@ class Main extends Component {
         }
     }
 
-    setRandom(newState) {
+    setRandom = newState => {
         log('setRandom', 'newState=', newState);
         this.props.setPlayRandom(!!newState);
-    }
+    };
 
     render() {
         log('render', 'props=', this.props);
 
         return (
             <div className="container-fluid">
-                <Navbar randomActive={this.props.set.playRandom} setRandom={this.setRandom.bind(this)}/>
+                <Navbar randomActive={this.props.settings.playRandom} setRandom={this.setRandom}/>
                 <div className="row">
                     <div className="col-md-4">
                         <ArtistView />
@@ -109,15 +110,30 @@ class Main extends Component {
             </div>
         );
     }
+
+    static propTypes = {
+        artists: PropTypes.arrayOf(PropTypes.object).isRequired,
+        selectedArtist: PropTypes.object.isRequired,
+        selectedAlbum: PropTypes.object.isRequired,
+        settings: PropTypes.object.isRequired,
+        playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
+
+        fetchAllAlbums: PropTypes.func.isRequired,
+        selectArtist: PropTypes.func.isRequired,
+        unselectArtist: PropTypes.func.isRequired,
+        selectAlbum: PropTypes.func.isRequired,
+        unselectAlbum: PropTypes.func.isRequired,
+        setPlayRandom: PropTypes.func.isRequired
+    }
 }
 
 const mapStateToProps = state => {
-    const { albums, selection, playlist } = state;
+    const { collection, selection, playlist, settings } = state;
     const props =  {
-        artists: albums.artists,
+        artists: collection.artists,
         selectedArtist: selection.artist,
         selectedAlbum: selection.album,
-        set: selection.set,
+        settings,
         playlist
     };
 
@@ -126,7 +142,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = () => {
     return {
-        fetchAllAlbums,
+        getCollection,
         selectArtist,
         unselectArtist,
         selectAlbum,

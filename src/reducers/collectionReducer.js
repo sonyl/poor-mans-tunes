@@ -1,26 +1,25 @@
-import { REQUEST_ALBUMS, RECEIVE_ALBUMS, INVALIDATE_ALBUMS, createMp3Url}  from '../actions/albumsActions';
+import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from '../actions/actionKeys';
 
 // -----------------reducer (default export)
-const albums = (
+const collection = (
     state = {
         isFetching: false,
-        didInvalidate: false,
         artists: []
     }, action) => {
 
     switch (action.type) {
-        case INVALIDATE_ALBUMS:
+        case INVALIDATE_COLLECTION:
             return {
                 ...state,
                 didInvalidate: true
             };
-        case REQUEST_ALBUMS:
+        case REQUEST_COLLECTION:
             return {
                 ...state,
                 isFetching: true,
                 didInvalidate: false
             };
-        case RECEIVE_ALBUMS:
+        case RECEIVE_COLLECTION:
             return {
                 ...state,
                 isFetching: false,
@@ -32,7 +31,7 @@ const albums = (
     return state;
 };
 
-export default albums;
+export default collection;
 
 // ------------ selectors
 export const getArtist = (state, artistIndex) => {

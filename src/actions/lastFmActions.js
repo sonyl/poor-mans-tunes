@@ -1,8 +1,5 @@
 import {fetchLastFm} from './utils';
-export const REQUEST_ARTIST = 'REQUEST_ARTIST';
-export const RECEIVE_ARTIST = 'RECEIVE_ARTIST';
-export const REQUEST_ALBUM = 'REQUEST_ALBUM';
-export const RECEIVE_ALBUM = 'RECEIVE_ALBUM';
+import { REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM } from './actionKeys';
 
 /* ============ artist actions =================*/
 const requestArtist = (artist) => ({

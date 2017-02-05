@@ -1,8 +1,6 @@
 import React, { Component, PropTypes }  from 'react';
 import { connect } from 'react-redux';
-
-import { removeFromPlaylist } from '../actions/playlistActions';
-import { createMp3Url } from '../actions/albumsActions';
+import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
 import { getAlbumInfo, getAlbumByName } from '../reducers';
 
@@ -12,7 +10,7 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createLog,
+import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 const ENABLE_LOG = true;
@@ -358,7 +356,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 
     return {
-        nextSong: () => dispatch(removeFromPlaylist(0)),
+        nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
         requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
     };
 };

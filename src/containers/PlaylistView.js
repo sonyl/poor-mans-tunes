@@ -1,15 +1,15 @@
 import React, {PropTypes} from 'react';
 import { connect } from 'react-redux';
-import { clearPlaylist, removeFromPlaylist, moveItemToPosition } from '../actions/playlistActions';
+import { clearPlaylist, removeSongAtIndexFromPlaylist, moveSongToPositionInPlaylist } from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
 import { createLog } from '../components/utils';
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const entryLog = createLog(ENABLE_LOG, 'Entry');
 const log = createLog(ENABLE_LOG, 'PlaylistView');
 
 
-const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) => {
+const Entry = ({artist, album, song, index, removeEntry, moveSongToPositionInPlaylist}) => {
     const style = {
         textOverflow: 'ellipsis',               // the folling 2 lines cut text and add ... if text is to long
         overflow: 'hidden',
@@ -35,7 +35,7 @@ const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) =>
         ev.preventDefault();
         const data = parseInt(ev.dataTransfer.getData('pos'), 10);
         entryLog('drop', '%d, data=%s', index, data);
-        moveItemToPosition(data, index);
+        moveSongToPositionInPlaylist(data, index);
     }
 
     return (
@@ -50,14 +50,15 @@ const Entry = ({artist, album, song, index, removeEntry, moveItemToPosition}) =>
     );
 };
 
-const PlaylistView = ({playlist, removeFromPlaylist, clearPlaylist, moveItemToPosition}) => {
+// export for testing purpose only
+export const PlaylistView = ({playlist, removeSongAtIndexFromPlaylist, clearPlaylist, moveSongToPositionInPlaylist}) => {
 
     log('render', 'playlist=%o', playlist);
 
     function renderPlaylist() {
         return playlist.map((entry, i) => {
-            return <Entry key={i} index={i} {...entry} removeEntry={removeFromPlaylist}
-                          moveItemToPosition={moveItemToPosition} ></Entry>;
+            return <Entry key={i} index={i} {...entry} removeEntry={removeSongAtIndexFromPlaylist}
+                          moveSongToPositionInPlaylist={moveSongToPositionInPlaylist} ></Entry>;
         });
     }
 
@@ -94,8 +95,8 @@ PlaylistView.propTypes = {
         song: PropTypes.string.isRequired,
         url: PropTypes.string.isRequired
     })).isRequired,
-    removeFromPlaylist: PropTypes.func.isRequired,
-    moveItemToPosition: PropTypes.func.isRequired,
+    removeSongAtIndexFromPlaylist: PropTypes.func.isRequired,
+    moveSongToPositionInPlaylist: PropTypes.func.isRequired,
     clearPlaylist: PropTypes.func.isRequired
 };
 
@@ -106,7 +107,7 @@ function mapStateToProps({ playlist }) {
 }
 
 function mapDispatchToProps() {
-    return { clearPlaylist, removeFromPlaylist, moveItemToPosition };
+    return { clearPlaylist, removeSongAtIndexFromPlaylist, moveSongToPositionInPlaylist };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps())(PlaylistView);

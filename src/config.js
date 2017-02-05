@@ -7,6 +7,12 @@ const config = {
         collectionUrl: '/public/files.json'
     },
 
+    test: {
+        contextRoot: '',
+        baseUrl:  'http://localhost:8080',
+        collectionUrl: 'http://dummy/files.json'
+    },
+
     production: {
         contextRoot: '/~gerhard/poor-mans-tunes',
         baseUrl: 'http://www',

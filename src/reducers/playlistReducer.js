@@ -1,9 +1,9 @@
-import { ADD_TO_PLAYLIST, REMOVE_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_ITEM_TO_POSITION } from '../actions/playlistActions';
+import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from '../actions/actionKeys';
 
 
 const playlist = (state = [], props) => {
     switch (props.type) {
-        case ADD_TO_PLAYLIST: {
+        case ADD_SONG_TO_PLAYLIST: {
             const {artist, album, songs, top} = props;
 
             if(artist && album && songs && Array.isArray(songs)) {
@@ -17,7 +17,7 @@ const playlist = (state = [], props) => {
             }
             break;
         }
-        case REMOVE_FROM_PLAYLIST: {
+        case REMOVE_SONG_FROM_PLAYLIST: {
             const {index} = props;
             return [
                 ...state.slice(0, index),
@@ -27,11 +27,10 @@ const playlist = (state = [], props) => {
         case CLEAR_PLAYLIST: {
             return [];
         }
-        case MOVE_ITEM_TO_POSITION: {
+        case MOVE_SONG_TO_POSITION: {
             const {index, newIndex} = props;
-            let retVal = state;
             if(state[index] && state[newIndex] && index < newIndex) {
-                retVal = [
+                return  [
                     ...state.slice(0, index),
                     ...state.slice(index + 1, newIndex + 1),
                     state[index],
@@ -39,18 +38,21 @@ const playlist = (state = [], props) => {
                 ];
             }
             if(state[index] && state[newIndex] && index > newIndex) {
-                retVal = [
+                return  [
                     ...state.slice(0, newIndex),
                     state[index],
                     ...state.slice(newIndex, index),
                     ...state.slice(index + 1)
                 ];
             }
-            console.log('MOVE_ITEM_TO_POSITION %d -> %d', index, newIndex, state, retVal);
-            return retVal;
         }
     }
     return state;
 };
 
 export default playlist;
+
+export const isPlaylistEmpty = state => {
+    return !state || state.length == 0;
+};
+

@@ -1,4 +1,4 @@
-import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM, SET_PLAY_RANDOM } from '../actions/selectionActions';
+import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM, SET_PLAY_RANDOM } from '../actions/actionKeys';
 
 
 const defaultState = {

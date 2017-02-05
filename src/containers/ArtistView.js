@@ -71,8 +71,8 @@ ArtistView.propTypes = {
 };
 
 function mapStateToProps(state) {
-    const {albums, selection} = state;
-    const artist = albums.artists && albums.artists[selection.artist.index] || {};
+    const {collection, selection} = state;
+    const artist = collection.artists[selection.artist.index] || {};
     return {
         artist,
         selectedArtist: selection.artist,

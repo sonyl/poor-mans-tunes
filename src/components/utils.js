@@ -68,6 +68,11 @@ export const getCoverUrl = album => {
     return coverUrl ? baseUrl + coverUrl : null;
 };
 
+export const createMp3Url = (part) => {
+    return part ? (baseUrl + part) : null;
+};
+
+
 export function createLog(enabled, component){
     function log (method, fmt='', ...args) {
         if(!args) args = [];

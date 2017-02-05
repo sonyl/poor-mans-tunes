@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react';
 import { connect } from 'react-redux';
-import { addToPlaylist } from '../actions/playlistActions';
+import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getAlbum, getAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
@@ -33,7 +33,7 @@ function Song({index, title, addAlbumSongToPlaylist}){
     );
 }
 
-const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
+const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
     log('render', 'album=%o, lastFmInfo=%o', album, lastFmInfo);
 
     function addAlbumSongToPlaylist(index, top=false) {
@@ -44,7 +44,7 @@ const AlbumView = ({album, lastFmInfo, addToPlaylist}) => {
             const song = album.songs[index];
             songs = [{ song: song.title, url: song.mp3}];
         }
-        addToPlaylist(album.artist, album.album, songs, top);
+        addSongsToPlaylist(album.artist, album.album, songs, top);
     }
 
     function renderSongs () {
@@ -127,7 +127,7 @@ AlbumView.propTypes = {
         artist: PropTypes.string,
         wiki: PropTypes.object
     }),
-    addToPlaylist: PropTypes.func.isRequired
+    addSongsToPlaylist: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -142,5 +142,5 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { addToPlaylist })(AlbumView);
+export default connect(mapStateToProps, { addSongsToPlaylist })(AlbumView);
 
