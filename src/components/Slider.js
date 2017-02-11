@@ -26,9 +26,7 @@ export default class Slider extends Component {
 
     handleChange(e) {
         this.setState({value: e.target.value});
-        if(this.props.onChange) {
-            this.props.onChange(e);
-        }
+        this.props.onChange && this.props.onChange(e);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -50,7 +48,6 @@ export default class Slider extends Component {
                     {...props}
                     disabled={disabled}
                     onChange={ handleChange }
-                    onInput={ handleChange }
                     value={ this.state.value }
                 />
             </span>

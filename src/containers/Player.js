@@ -2,7 +2,8 @@ import React, { Component, PropTypes }  from 'react';
 import { connect } from 'react-redux';
 import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
-import { getAlbumInfo, getAlbumByName } from '../reducers';
+import { setVolume } from '../actions/settingsActions';
+import { getAlbumInfo, getAlbumByName, getValueFromSettings } from '../reducers';
 
 import AudioPlayer from '../components/AudioPlayer';
 import Slider from '../components/Slider';
@@ -77,10 +78,10 @@ function AlbumLink({artist, album, children, activate}) {
 class Player extends Component {
 
     constructor(props) {
+        log('constructor', props);
         super(props);
         this.state = {
             playing: !!this.props.url,
-            volume: 0.8,
             played: 0,
             duration: 0
         };
@@ -94,6 +95,7 @@ class Player extends Component {
     }
 
     componentDidMount() {
+        log('componentDidMount');
         const bodyStyle = window.getComputedStyle(document.body);
         this.backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg');
         this.defaultColor = bodyStyle.getPropertyValue('--main-default-color');
@@ -103,6 +105,7 @@ class Player extends Component {
     }
 
     componentWillReceiveProps(nextProps){
+        log('componentWillReceiveProps', nextProps, this.props);
         if(this.props.url !== nextProps.url) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
@@ -129,7 +132,8 @@ class Player extends Component {
     };
 
     setVolume = e => {
-        this.setState({ volume: parseFloat(e.target.value) });
+        log('setVolume', e.target.value);
+        this.props.setVolume(e.target.value);
     };
 
     onSeekMouseDown = e => {
@@ -196,13 +200,15 @@ class Player extends Component {
     }
 
     render () {
-        log('render');
+        log('render', this.state, this.props);
         const {
-            playing, volume, played, duration
+            playing, played, duration
         } = this.state;
 
-        const { url, title, artist, album } = this.props;
-
+        const { url, title, artist, album, volume } = this.props;
+        let adjustedVol = volume===undefined ? 0.8 : volume;
+        adjustedVol = Math.max(Math.min(adjustedVol , 1.0), 0.0);
+        log('render', 'volume=', volume, 'adjustedVol', adjustedVol, Number.isNaN(volume), Number.isNaN(volume) ? 0.8 : volume);
         return (
             <div className="panel panel-default">
                 <div className="panel-heading">
@@ -222,7 +228,6 @@ class Player extends Component {
                         </div>
                     </div>
                 </div>
-
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
                         <LevelMeter audio={this.player && this.player.getAudio()}
@@ -238,7 +243,7 @@ class Player extends Component {
                         hidden={true}
                         url={url}
                         playing={playing}
-                        volume={volume}
+                        volume={adjustedVol}
                         onPlay={() => this.setState({ playing: true })}
                         onPause={ this.onPause }
                         onEnded={ this.onEnded }
@@ -307,7 +312,7 @@ class Player extends Component {
                                     min={0}
                                     max={1}
                                     step={0.01}
-                                    value={volume}
+                                    value={adjustedVol}
                                     onChange={this.setVolume} />
                                 <label htmlFor="player-volume">Volume</label>
                             </div>
@@ -348,6 +353,7 @@ const mapStateToProps = state => {
         album,
         song,
         title,
+        volume: getValueFromSettings(state, 'volume'),
         albumInfo: getAlbumInfo(state, artist, album),
         colAlbum: getAlbumByName(state, artist, album)
     };
@@ -356,6 +362,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 
     return {
+        setVolume: volume => dispatch(setVolume(volume)),
         nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
         requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
     };

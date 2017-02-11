@@ -19,4 +19,5 @@ export const SELECT_ALBUM = 'SELECT_ALBUM';
 export const UNSELECT_ALBUM = 'UNSELECT_ALBUM';
 
 export const SET_PLAY_RANDOM = 'SET_PLAY_RANDOM';
+export const SET_VOLUME = 'SET_VOLUME';
 
