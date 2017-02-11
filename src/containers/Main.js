@@ -11,11 +11,11 @@ import ArtistList from './ArtistList';
 import ArtistView from './ArtistView';
 import AlbumView from './AlbumView';
 import Player from './Player';
+import Footer from '../components/Footer';
 import { createLog } from '../components/utils';
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Main');
-
 
 function getArtistIndex(artists, artist) {
     return artists.findIndex(a => a.artist === artist);
@@ -41,6 +41,22 @@ function parseUrl(path = '') {
         artist,
         album
     };
+}
+
+function getAlbumAndSongCnt(artists) {
+    const result = {
+        albumCnt: 0,
+        songCnt: 0
+    };
+
+    artists.forEach(artist => {
+        artist.albums.forEach(album => {
+            result.albumCnt++;
+            result.songCnt += album.songs.length;
+        });
+    });
+
+    return result;
 }
 
 
@@ -91,9 +107,13 @@ class Main extends Component {
     render() {
         log('render', 'props=', this.props);
 
+        const {artists, settings} = this.props;
+
+        const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
+
         return (
             <div className="container-fluid">
-                <Navbar randomActive={this.props.settings.playRandom} setRandom={this.setRandom}/>
+                <Navbar randomActive={settings.playRandom} setRandom={this.setRandom}/>
                 <div className="row">
                     <div className="col-md-4">
                         <ArtistView />
@@ -107,6 +127,11 @@ class Main extends Component {
                     </div>
                 </div>
                 <ArtistList />
+                <Footer
+                    message="Poor Man&rsquo;s Tunes xxxx: &copy; 2017"
+                    artistCnt={artists.length}
+                    albumCnt={albumCnt}
+                    songCnt={songCnt} />
             </div>
         );
     }
@@ -118,7 +143,7 @@ class Main extends Component {
         settings: PropTypes.object.isRequired,
         playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
 
-        fetchAllAlbums: PropTypes.func.isRequired,
+        getCollection: PropTypes.func.isRequired,
         selectArtist: PropTypes.func.isRequired,
         unselectArtist: PropTypes.func.isRequired,
         selectAlbum: PropTypes.func.isRequired,
