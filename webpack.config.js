@@ -25,7 +25,7 @@ if(process.env.NODE_ENV === 'production'){
     plugins.push(new webpack.HotModuleReplacementPlugin());
 
     entry = [
-        'webpack-dev-server/client?http://127.0.0.1:8080/',
+        'webpack-dev-server/client?http://127.0.0.1:9000/',
         'webpack/hot/only-dev-server',
         'whatwg-fetch',
         'bootstrap-webpack!./bootstrap.config.js',
@@ -108,6 +108,7 @@ module.exports = {
         },
         proxy: {
             '/mp3': {
+  //              target: 'http://localhost:8083',
                 target: 'http://www.home',
                 logLevel: 'debug'
             }

@@ -3,13 +3,13 @@
 const config = {
     develop: {
         contextRoot: '',
-        baseUrl:  'http://localhost:8080',
+        baseUrl:  'http://localhost:9000',
         collectionUrl: '/public/files.json'
     },
 
     test: {
         contextRoot: '',
-        baseUrl:  'http://localhost:8080',
+        baseUrl:  'http://localhost:9000',
         collectionUrl: 'http://dummy/files.json'
     },
 
