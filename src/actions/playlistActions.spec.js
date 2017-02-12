@@ -1,141 +1,166 @@
 /* eslint-env node, jest */
-import * as keys from './actionKeys';
-import * as actions from './playlistActions';
-import configureMockStore from 'redux-mock-store';
+import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
+import reducer from '../reducers';
+import * as actions from './playlistActions';
+import { setPlayRandom } from './settingsActions';
 
-const middlewares = [ thunk ];
-const mockStore = configureMockStore(middlewares);
+
+const createStore = (initialState = {}) => {
+    return _createStore(
+        reducer,
+        initialState,
+        applyMiddleware(thunk)
+    );
+};
+
 
 describe('playlist actions', () => {
+    let store;
 
-    const initialState = {
-        collection: {
-            artists: [{
-                artist: 'artist',
-                albums: [
-                    {
-                        album: 'album',
-                        artist: 'artist',
-                        songs: [
-                            {
-                                title: 'title',
-                                mp3: 'mp3'
-                            }
-                        ]
-                    }
-                ]
-            }]
-        },
-        // no reducers are running in test, therefore this is the state whenever getState() is called in middleware
-        playlist: [],
-        settings: {
-            playRandom: undefined
-        }
-    };
-
-    afterEach(() => {
-        initialState.settings.playRandom = undefined;
+    beforeEach(() => {
+        store = createStore({
+            collection: {
+                artists: [{
+                    artist: 'Artist',
+                    albums: [
+                        { album: 'Album', artist: 'Artist', songs: [
+                            { title: 'Title', mp3: 'mp3' }
+                        ]}
+                    ]
+                }]
+            },
+            playlist: [
+                { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' },
+                { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' },
+                { artist: 'Artist3', album: 'Album3', song: 'Song3', url: 'a url 3' },
+                { artist: 'Artist4', album: 'Album4', song: 'Song4', url: 'a url 4' },
+                { artist: 'Artist5', album: 'Album5', song: 'Song5', url: 'a url 5' }
+            ]
+        });
     });
 
-
     describe('addSongsToPlaylist', () => {
-        it('should create an action to add a song to the playlist', () => {
-            const expectedAction = {
-                type: keys.ADD_SONG_TO_PLAYLIST,
-                artist: 'artist',
-                album: 'album',
-                songs: ['song'],
-                top: false
-            };
-            expect(actions.addSongsToPlaylist('artist', 'album', 'song')).toEqual(expectedAction);
+        it('should add a song to the end of the playlist', () => {
+            store.dispatch(actions.addSongsToPlaylist('Artist', 'Album', [{song: 'Song', url: 'URL'}]));
+
+            expect(store.getState().playlist.length).toEqual(6);
+            expect(store.getState().playlist[5]).toEqual({
+                artist: 'Artist',
+                album: 'Album',
+                song: 'Song',
+                url: 'URL'
+            });
+        });
+        it('should add a song to the top of the playlist', () => {
+            store.dispatch(actions.addSongsToPlaylist('Artist', 'Album', [{song: 'Song', url: 'URL'}], true));
+            expect(store.getState().playlist.length).toEqual(6);
+            expect(store.getState().playlist[0]).toEqual({
+                artist: 'Artist',
+                album: 'Album',
+                song: 'Song',
+                url: 'URL'
+            });
         });
     });
 
 
     describe('removeSongAtIndexFromPlaylist', () => {
 
-
-        it('should dispatch ADD_SONG_TO_PLAYLIST if \'playRandom\' is true', () => {
-            initialState.settings.playRandom = true;
-            const expectedActions = [
-                {type: keys.REMOVE_SONG_FROM_PLAYLIST, index: 0},
-                {
-                    type: keys.ADD_SONG_TO_PLAYLIST, album: 'album', artist: 'artist', top: false,
-                    songs: [{song: 'title', url: 'mp3'}]
-                }
-            ];
-
-            const store = mockStore(initialState);
+        it('should not add a roandom song to playlist if it is empty and \'playRandom\' is false', () => {
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
-            expect(store.getActions()).toEqual(expectedActions);
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            expect(store.getState().playlist.length).toEqual(0);
         });
 
-        it('should not dispatch ADD_SONG_TO_PLAYLIST if \'playRandom\' is false', () => {
-            initialState.settings.playRandom = false;
-            const expectedActions = [
-                {type: keys.REMOVE_SONG_FROM_PLAYLIST, index: 0}
-            ];
-
-            const store = mockStore(initialState);
+        it('should add a random song to playlist if it is empty and setRandom is true', () => {
+            store.dispatch(setPlayRandom(true));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
-            expect(store.getActions()).toEqual(expectedActions);
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            expect(store.getState().playlist[0]).toEqual(
+                { album: 'Album', artist: 'Artist', song: 'Title', url: 'mp3'}
+            );
         });
+
     });
 
     describe('clearPlaylist', () => {
-        it('should dispatch ADD_SONG_TO_PLAYLIST if \'playRandom\' is true', () => {
-            initialState.settings.playRandom = true;
-
-            const expectedActions = [
-                {type: keys.CLEAR_PLAYLIST},
-                {
-                    type: keys.ADD_SONG_TO_PLAYLIST, album: 'album', artist: 'artist', top: false,
-                    songs: [{song: 'title', url: 'mp3'}]
-                }
-            ];
-            const store = mockStore(initialState);
+        it('should not add a song to playlist if \'playRandom\' is false', () => {
             store.dispatch(actions.clearPlaylist());
-            expect(store.getActions()).toEqual(expectedActions);
+            expect(store.getState().playlist.length).toEqual(0);
         });
 
-        it('should not dispatch ADD_SONG_TO_PLAYLIST if \'playRandom\' is false', () => {
-            initialState.settings.playRandom = false;
-
-            const expectedActions = [
-                {type: keys.CLEAR_PLAYLIST}
-            ];
-            const store = mockStore(initialState);
+        it('should add a song to playlist if \'playRandom\' is true', () => {
+            store.dispatch(setPlayRandom(true));
             store.dispatch(actions.clearPlaylist());
-            expect(store.getActions()).toEqual(expectedActions);
-        });
-    });
-
-    describe('addRandomSongToPlaylistIfNecessary', () => {
-        it('should dispatch ADD_SONG_TO_PLAYLIST', () => {
-            initialState.settings.playRandom = true;
-
-            const expectedActions = [
-                {
-                    type: keys.ADD_SONG_TO_PLAYLIST, album: 'album', artist: 'artist', top: false,
-                    songs: [{song: 'title', url: 'mp3'}]
-                }
-            ];
-            const store = mockStore(initialState);
-            store.dispatch(actions.addRandomSongToPlaylistIfNecessary());
-            expect(store.getActions()).toEqual(expectedActions);
+            expect(store.getState().playlist[0]).toEqual(
+                { album: 'Album', artist: 'Artist', song: 'Title', url: 'mp3'}
+            );
         });
     });
 
     describe('moveSongToPositionInPlaylist', () => {
-        it('should create an action to move a song to a position in the playlist', () => {
-            const expectedAction = {
-                type: keys.MOVE_SONG_TO_POSITION,
-                index: 5,
-                newIndex: 7
-            };
-            expect(actions.moveSongToPositionInPlaylist(5, 7)).toEqual(expectedAction);
+        it('should do nothing if at least one index is undefined', () => {
+            const oldPlaylist = store.getState().playlist;
+            store.dispatch(actions.moveSongToPositionInPlaylist(0, 6));
+            expect(store.getState().playlist).toEqual(oldPlaylist);
         });
-    });
 
+        it('should do nothing if indexes are equal', () => {
+            const oldPlaylist = store.getState().playlist;
+            store.dispatch(actions.moveSongToPositionInPlaylist(3, 3));
+            expect(store.getState().playlist).toEqual(oldPlaylist);
+        });
+
+        it('should be able do move items to higher indexes', () => {
+            store.dispatch(actions.moveSongToPositionInPlaylist(1, 3));
+            expect(store.getState().playlist).toEqual([
+                { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' },
+                { artist: 'Artist3', album: 'Album3', song: 'Song3', url: 'a url 3' },
+                { artist: 'Artist4', album: 'Album4', song: 'Song4', url: 'a url 4' },
+                { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' },
+                { artist: 'Artist5', album: 'Album5', song: 'Song5', url: 'a url 5' }
+            ]);
+        });
+
+        it('should be able do move items to higher indexes, edge case', () => {
+            store.dispatch(actions.moveSongToPositionInPlaylist(0, 4));
+            expect(store.getState().playlist).toEqual([
+                { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' },
+                { artist: 'Artist3', album: 'Album3', song: 'Song3', url: 'a url 3' },
+                { artist: 'Artist4', album: 'Album4', song: 'Song4', url: 'a url 4' },
+                { artist: 'Artist5', album: 'Album5', song: 'Song5', url: 'a url 5' },
+                { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' }
+            ]);
+        });
+
+        it('should be able do move items to lower indexes', () => {
+            store.dispatch(actions.moveSongToPositionInPlaylist(3, 1));
+            expect(store.getState().playlist).toEqual([
+                { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' },
+                { artist: 'Artist4', album: 'Album4', song: 'Song4', url: 'a url 4' },
+                { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' },
+                { artist: 'Artist3', album: 'Album3', song: 'Song3', url: 'a url 3' },
+                { artist: 'Artist5', album: 'Album5', song: 'Song5', url: 'a url 5' }
+            ]);
+        });
+
+        it('should be able do move items to lower indexes, edge case', () => {
+            store.dispatch(actions.moveSongToPositionInPlaylist(4, 0));
+            expect(store.getState().playlist).toEqual([
+                { artist: 'Artist5', album: 'Album5', song: 'Song5', url: 'a url 5' },
+                { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' },
+                { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' },
+                { artist: 'Artist3', album: 'Album3', song: 'Song3', url: 'a url 3' },
+                { artist: 'Artist4', album: 'Album4', song: 'Song4', url: 'a url 4' }
+            ]);
+        });
+
+    });
 });

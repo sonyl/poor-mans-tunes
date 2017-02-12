@@ -17,7 +17,7 @@ export const unselectArtist = () => ({
 
 export const selectArtist = (index, name) => dispatch => {
     dispatch(_selectArtist(index, name));
-    dispatch(requestArtistIfNotExists(name));
+    return dispatch(requestArtistIfNotExists(name));
 };
 
 /* ============ album actions =================*/

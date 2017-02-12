@@ -100,14 +100,14 @@ PlaylistView.propTypes = {
     clearPlaylist: PropTypes.func.isRequired
 };
 
-function mapStateToProps({ playlist }) {
-    return  {
-        playlist
-    };
-}
+const mapStateToProps = state => ({
+    playlist: state.playlist
+});
 
-function mapDispatchToProps() {
-    return { clearPlaylist, removeSongAtIndexFromPlaylist, moveSongToPositionInPlaylist };
-}
+const mapDispatchToProps = {
+    clearPlaylist,
+    removeSongAtIndexFromPlaylist,
+    moveSongToPositionInPlaylist
+};
 
-export default connect(mapStateToProps, mapDispatchToProps())(PlaylistView);
+export default connect(mapStateToProps, mapDispatchToProps)(PlaylistView);

@@ -1,21 +1,31 @@
 /* eslint-env node, jest */
-import * as keys from './actionKeys';
-import * as actions from './collectionActions';
-import configureMockStore from 'redux-mock-store';
+import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
+import reducer from '../reducers';
+import * as actions from './collectionActions';
 import nock from 'nock';
+//eslint-disable-next-line
 import fetch from 'isomorphic-fetch';
 
 
-const middlewares = [ thunk ];
-const mockStore = configureMockStore(middlewares);
+const createStore = (initialState = {}) => {
+    return _createStore(
+        reducer,
+        initialState,
+        applyMiddleware(thunk)
+    );
+};
 
 describe('invalidateCollection', () => {
-    it('should create an action to invalidate the collection', () => {
-        const expectedAction = {
-            type: keys.INVALIDATE_COLLECTION
-        };
-        expect(actions.invalidateCollection()).toEqual(expectedAction);
+    let store;
+    beforeEach(() => {
+        // create a new store instance for each test
+        store = createStore();
+    });
+
+    it('should invalidate the collection', () => {
+        store.dispatch(actions.invalidateCollection());
+        expect(store.getState().collection.didInvalidate).toBe(true);
     });
 });
 
@@ -27,44 +37,41 @@ describe('getCollection', () => {
         Date.now = orgDateNow;
     });
 
+    let store;
+    beforeEach(() => {
+        // create a new store instance for each test
+        store = createStore();
+    });
+
     afterEach(() => {
         nock.cleanAll();
     });
 
 
-    it('creates RECEIVE_COLLECTION when fetching collection has been done', () => {
+    it('stores the collection after fetching has finished', () => {
+        const testArtists = [{
+            artist: 'Artist',
+            albums: [{
+                album: 'Album', artist: 'Artist', songs:[
+                    {title: 'Song', mp3: 'a url'}
+                ]}
+            ]
+        }];
 
         nock('http://dummy')
             .get('/files.json')
-            .reply(200, [{artist: 'Artist', albums: [{album: 'Album', artist: 'Artist',
-                songs:[{title: 'Song', mp3: 'a url'}]}]}]);
+            .reply(200, testArtists);
 
-        const expectedActions = [
-            { type: keys.REQUEST_COLLECTION },
-            { type: keys.RECEIVE_COLLECTION,
-                artists: [{
-                    artist: 'Artist',
-                    albums: [
-                        {
-                            album: 'Album',
-                            artist: 'Artist',
-                            songs:[
-                                {title: 'Song', mp3: 'a url'}
-                            ]
-                        }
-                    ]
-                }],
-                receivedAt: 123456,
-                error: undefined
-            }
-        ];
-
-        const store = mockStore({});
-
-        return store.dispatch(actions.getCollection())
-            .then(() => {
-                expect(store.getActions()).toEqual(expectedActions);
-            });
-
+        return store.dispatch(actions.getCollection()).then(() => {
+            const expectedState = {
+                artists: testArtists,
+                lastUpdated: 123456,
+                error: undefined,
+                isFetching: false,
+                didInvalidate: false
+            };
+            expect(store.getState().collection).toEqual(expectedState);
+            return null;
+        });
     });
 });

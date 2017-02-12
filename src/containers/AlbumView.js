@@ -1,7 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import { connect } from 'react-redux';
 import { addSongsToPlaylist } from '../actions/playlistActions';
-import { getAlbum, getAlbumInfo } from '../reducers';
+import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
 import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
@@ -130,17 +130,10 @@ AlbumView.propTypes = {
     addSongsToPlaylist: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state) {
-    const {selection} = state;
-    const selectedArtist = selection.artist || {};
-    const selectedAlbum = selection.album || {};
-    const album = getAlbum(state, selectedArtist.index, selectedAlbum.index) || {};
-
-    return {
-        album,
-        lastFmInfo: getAlbumInfo(state, album.artist, album.album)
-    };
-}
+const mapStateToProps = state => ({
+    album: getSelectedAlbum(state),
+    lastFmInfo: getSelectedAlbumInfo(state)
+});
 
 export default connect(mapStateToProps, { addSongsToPlaylist })(AlbumView);
 

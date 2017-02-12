@@ -1,14 +1,14 @@
-import React, {Component, PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { getArtistInfo } from '../reducers';
+import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
 import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
 import NavLink from '../components/NavLink';
 
 const ENABLE_LOG = true;
 const log = createLog(ENABLE_LOG, 'ArtistView');
 
-const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
+const ArtistView = ({artist, lastFmInfo}) => {
     function renderAlbums() {
         if(artist.albums && artist.albums.length) {
             return (
@@ -49,7 +49,7 @@ const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
     }
 
 
-    log('render', 'artist: %o, selectedArtist: %o, lastFmInfo: %o', artist, selectedArtist, lastFmInfo);
+    log('render', 'artist: %o, lastFmInfo: %o', artist, lastFmInfo);
     return (
         <div className="panel panel-default">
             <div className="panel-heading">
@@ -66,18 +66,12 @@ const ArtistView = ({artist, selectedArtist, lastFmInfo}) => {
 
 ArtistView.propTypes = {
     artist: PropTypes.object.isRequired,
-    selectedArtist: PropTypes.object.isRequired,
     lastFmInfo: PropTypes.object
 };
 
-function mapStateToProps(state) {
-    const {collection, selection} = state;
-    const artist = collection.artists[selection.artist.index] || {};
-    return {
-        artist,
-        selectedArtist: selection.artist,
-        lastFmInfo: getArtistInfo(state, artist.artist)
-    };
-}
+const mapStateToProps = state => ({
+    artist: getSelectedArtist(state),
+    lastFmInfo: getSelectedArtistInfo(state)
+});
 
 export default connect(mapStateToProps)(ArtistView);

@@ -3,6 +3,7 @@ import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { createLinkUrl, createLog } from '../components/utils';
+import { getArtists } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 
 const ENABLE_LOG = true;
@@ -180,9 +181,9 @@ class ArtistSearch extends Component {
         );
     }
 }
-function mapStateToProps(state) {
-    return { artists: state.collection.artists };
-}
+const mapStateToProps = state => ({
+    artists: getArtists(state)
+});
 
 
 export default connect(mapStateToProps)(ArtistSearch);

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getCollection } from '../actions/collectionActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
 import { setPlayRandom } from '../actions/settingsActions';
+import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings } from '../reducers';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -73,24 +74,24 @@ class Main extends Component {
         const {params, artists, selectedArtist, selectedAlbum} = nextProps;
         log('componentWillReceiveProps', 'nextProps:', nextProps, params);
 
-        if(params.artist !== selectedArtist.name) {
+        if(params.artist !== selectedArtist.artist) {
             if(params.artist) {
                 const index = getArtistIndex(artists, params.artist);
                 if (index >= 0) {
                     this.props.selectArtist(index, artists[index].artist);
                 }
-            } else if(this.props.selectedArtist.name) {
+            } else if(this.props.selectedArtist.artist) {
                 this.props.unselectArtist();
             }
 
         }
         if(params.album !== selectedAlbum.name ) {
             if(params.album) {
-                if(selectedArtist.index >=0) {
-                    const artist = artists[selectedArtist.index];
-                    const index = getAlbumIndex(artist.albums, params.album);
+                if(selectedArtist.artist) {
+
+                    const index = getAlbumIndex(selectedArtist.albums, params.album);
                     if (index >= 0) {
-                        this.props.selectAlbum(index, artist.albums[index]);
+                        this.props.selectAlbum(index, selectedArtist.albums[index]);
                     }
                 }
             } else if(this.props.selectedAlbum.name){
@@ -107,13 +108,13 @@ class Main extends Component {
     render() {
         log('render', 'props=', this.props);
 
-        const {artists, settings} = this.props;
+        const {artists, isPlayRandom } = this.props;
 
         const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
 
         return (
             <div className="container-fluid">
-                <Navbar randomActive={settings.playRandom} setRandom={this.setRandom}/>
+                <Navbar randomActive={isPlayRandom} setRandom={this.setRandom}/>
                 <div className="row">
                     <div className="col-md-4">
                         <ArtistView />
@@ -140,7 +141,7 @@ class Main extends Component {
         artists: PropTypes.arrayOf(PropTypes.object).isRequired,
         selectedArtist: PropTypes.object.isRequired,
         selectedAlbum: PropTypes.object.isRequired,
-        settings: PropTypes.object.isRequired,
+        isPlayRandom: PropTypes.bool.isRequired,
         playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
 
         getCollection: PropTypes.func.isRequired,
@@ -152,28 +153,21 @@ class Main extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    const { collection, selection, playlist, settings } = state;
-    const props =  {
-        artists: collection.artists,
-        selectedArtist: selection.artist,
-        selectedAlbum: selection.album,
-        settings,
-        playlist
-    };
+const mapStateToProps = state => ({
+    artists: getArtists(state),
+    selectedArtist: getSelectedArtist(state),
+    selectedAlbum: getSelectedAlbum(state),
+    isPlayRandom: isSetInSettings(state, 'playRandom'),
+    playlist: state.playlist
+});
 
-    return props;
+const mapDispatchToProps = {
+    getCollection,
+    selectArtist,
+    unselectArtist,
+    selectAlbum,
+    unselectAlbum,
+    setPlayRandom
 };
 
-const mapDispatchToProps = () => {
-    return {
-        getCollection,
-        selectArtist,
-        unselectArtist,
-        selectAlbum,
-        unselectAlbum,
-        setPlayRandom
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps())(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

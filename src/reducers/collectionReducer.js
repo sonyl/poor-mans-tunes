@@ -34,11 +34,16 @@ const collection = (
 export default collection;
 
 // ------------ selectors
+
+export const getArtists = (state) => {
+    return state && state.artists || [];
+};
+
 export const getArtist = (state, artistIndex) => {
     if(artistIndex >= 0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
-        return artist || {};
+        return artist || null;
     }
     return null;
 };
@@ -48,7 +53,7 @@ export const getAlbum = (state, artistIndex, albumIndex) => {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         const album = artist && artist.albums[albumIndex];
-        return album || {};
+        return album || null;
     }
     return null;
 };

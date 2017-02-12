@@ -3,8 +3,7 @@ import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM } from '../
 
 const defaultState = {
     artist: {},
-    album: {},
-    set: {}
+    album: {}
 };
 
 const selection = (state = defaultState, action) => {
@@ -34,11 +33,18 @@ const selection = (state = defaultState, action) => {
         case UNSELECT_ALBUM:
             return {
                 ...state,
-                artist: state.artist,
                 album: {}
             };
     }
     return state;
+};
+
+export const getArtist = (state) => {
+    return state && state.artist;
+};
+
+export const getAlbum = (state) => {
+    return state && state.album;
 };
 
 export default selection;

@@ -14,7 +14,7 @@ import LevelMeter from '../components/LevelMeter';
 import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Player');
 
 
@@ -359,14 +359,11 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = dispatch => {
-
-    return {
-        setVolume: volume => dispatch(setVolume(volume)),
-        nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
-        requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
-    };
-};
+const mapDispatchToProps = dispatch => ({
+    setVolume: volume => dispatch(setVolume(volume)),
+    nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
+    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);
 

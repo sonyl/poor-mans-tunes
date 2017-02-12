@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import NavLink from '../components/NavLink';
 import { createLinkUrl, createLog } from '../components/utils';
+import { getArtists, getSelectedArtist } from '../reducers';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -83,7 +84,7 @@ class ArtistList extends Component {
         const categories = categorize(props.artists);
         this.state = {
             categories,
-            activeIndex: getActiveIndex(categories, props.selectedArtist && props.selectedArtist.name)
+            activeIndex: getActiveIndex(categories, props.selectedArtist.artist)
         };
 
         this.onTabChange = this.onTabChange.bind(this);
@@ -96,7 +97,7 @@ class ArtistList extends Component {
             const categories = categorize(nextProps.artists);
             this.setState( {
                 categories,
-                activeIndex: getActiveIndex(categories, nextProps.selectedArtist && nextProps.selectedArtist.name)
+                activeIndex: getActiveIndex(categories, nextProps.selectedArtist.artist)
             });
         }
     }
@@ -160,10 +161,10 @@ ArtistList.propTypes = {
     selectedArtist: PropTypes.object
 };
 
-function mapStateToProps({collection, selection}) {
+function mapStateToProps(state) {
     return {
-        artists: collection.artists,
-        selectedArtist: selection.artist
+        artists: getArtists(state),
+        selectedArtist: getSelectedArtist(state)
     };
 }
 

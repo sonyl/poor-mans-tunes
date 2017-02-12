@@ -2,7 +2,6 @@ import { addRandomSongToPlaylistIfNecessary } from './playlistActions';
 import { SET_PLAY_RANDOM, SET_VOLUME } from './actionKeys';
 
 
-/* ============ set actions =================*/
 const _setPlayRandom = playRandom => ({
     type: SET_PLAY_RANDOM,
     playRandom

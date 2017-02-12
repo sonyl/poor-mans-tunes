@@ -18,7 +18,7 @@ const receiveArtist = (artist, lastFmInfo, error) => ({
 
 export const requestArtistIfNotExists = artist => (dispatch, getState) => {
     if(!artist) {
-        return null;
+        return Promise.reject(new Error('required argument \'artist\' missing'));
     }
 
     const lastFm = getState().lastFm;
@@ -36,7 +36,7 @@ export const requestArtistIfNotExists = artist => (dispatch, getState) => {
             return response.json();
         })
         .then(json => {
-            console.log('Response-json', json);
+            //console.log('Response-json', json);
             if(json.corrections && json.corrections.correction && json.corrections.correction.artist
                 && json.corrections.correction.artist.name) {
                 return json.corrections.correction.artist.name;
@@ -51,11 +51,11 @@ export const requestArtistIfNotExists = artist => (dispatch, getState) => {
             return response.json();
         })
         .then(json => {
-            console.log('Response-json', json);
+            //console.log('Response-json', json);
             dispatch(receiveArtist(artist, json.artist));
         })
         .catch(e => {
-            console.log('Error occured', e);
+            //console.log('Error occured', e);
             dispatch(receiveArtist(artist, {}, e));
         });
 };
@@ -80,7 +80,7 @@ const receiveAlbum = (artist, album, lastFmInfo, error) => ({
 
 export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) => {
     if(!artist || !album) {
-        return null;
+        return Promise.reject(new Error('required argument \'artist\' or \'album\' missing'));
     }
 
     const lastFm = getState().lastFm;
@@ -99,11 +99,11 @@ export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) =
             return response.json();
         })
         .then(json => {
-            console.log('Response-json', json);
+            //console.log('Response-json', json);
             dispatch(receiveAlbum(artist, album, json.album));
         })
         .catch(e => {
-            console.log('Error during "album.getinfo":', e);
+            //console.log('Error during "album.getinfo":', e);
             dispatch(receiveAlbum(artist, album, {}, e));
         });
 };
