@@ -53,6 +53,7 @@ export default class AudioPlayer extends Component {
             this.load(url);
         }
         this.progress();
+        this.setVolume(this.props.volume);
     }
 
     componentWillUnmount() {
