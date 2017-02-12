@@ -1,4 +1,4 @@
-/* global process:false module:false */
+/* global process:false module:false, require:false */
 import React from 'react';
 import { render } from 'react-dom';
 import {Router, Route, browserHistory} from 'react-router';
@@ -27,6 +27,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const contextRoot = getConfig().contextRoot || '';
+
+if(module.hot) {        // enable hot reload of reducers
+    module.hot.accept('./reducers/', () => {
+        // eslint-disable-next-line      we need 'require' for dynamic imports
+        const nextRootReducer = require('./reducers/index').default;
+        store.replaceReducer(nextRootReducer);
+    });
+}
 
 render(
     <Provider store={store}>
