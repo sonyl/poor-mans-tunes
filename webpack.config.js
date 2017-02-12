@@ -3,14 +3,6 @@ const webpack = require('webpack');
 const path = require('path');
 
 var entry;
-const plugins = [
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.DefinePlugin({
-        'process.env': {
-            'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-        }
-    })
-];
 
 if(process.env.NODE_ENV === 'production'){
 
@@ -22,8 +14,6 @@ if(process.env.NODE_ENV === 'production'){
 
 } else {
 
-    plugins.push(new webpack.HotModuleReplacementPlugin());
-
     entry = [
         'webpack-dev-server/client?http://127.0.0.1:9000/',
         'webpack/hot/only-dev-server',
@@ -32,7 +22,6 @@ if(process.env.NODE_ENV === 'production'){
         './src'
     ];
 }
-
 
 module.exports = {
     devtool: 'inline-source-map',
@@ -59,16 +48,11 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
-                loader: 'react-hot-loader'
-            },
-            {
-                test: /\.jsx?$/,
-                include: [
-                    path.resolve(__dirname, 'src')
-                ],
-                use: [
-                    {
-                        loader: 'babel-loader', options: {
+                use: [{
+                    loader: 'react-hot-loader'
+                    }, {
+                        loader: 'babel-loader',
+                        options: {
                             presets: ['react', 'es2015'],
                             plugins: ['transform-object-rest-spread', 'transform-class-properties']
                         }
@@ -94,7 +78,14 @@ module.exports = {
         ]
     },
 
-    plugins,
+    plugins: [
+        new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+            }
+        })
+    ],
 
     devServer: {
         historyApiFallback: {
