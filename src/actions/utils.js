@@ -1,6 +1,7 @@
 import {lastFmApi} from '../credentials';
+import getConfig from '../config';
 
-const lastFmBase = 'http://ws.audioscrobbler.com/2.0/';
+const { lastFmBase } = getConfig({lastFmBase: 'http://ws.audioscrobbler.com/2.0/'});
 
 const DO_NOT_FETCH = false;
 
