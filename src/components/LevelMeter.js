@@ -6,7 +6,7 @@ const log = createLog(ENABLE_LOG, 'LevelMeter');
 
 
 const DB_MIN_SCALE = -48;
-const PEAK_BUFFER_SIZE = 50;
+const PEAK_BUFFER_SIZE = 20;
 const MIN_LIN = Math.pow(10, DB_MIN_SCALE / 20);
 
 function linToDb(lin) {
@@ -130,7 +130,7 @@ export default class LevelMeter extends Component {
     draw() {
         const  {canvas, leftPeakBuffer, rightPeakBuffer, channelPeak} = this;
         if(canvas && canvas.getContext && channelPeak) {
-            const  {textColor, warnColor } = this.props;
+
             const w = canvas.width  = canvas.offsetWidth;
             const h = canvas.height = canvas.offsetHeight;
 
@@ -138,8 +138,6 @@ export default class LevelMeter extends Component {
 
             const db_left = linToDb(channelPeak[0]);
             const db_right = linToDb(channelPeak[1]);
-            this.drawBar(ctx, 0 , h * 0.05,  w, h * 0.4, 1 - db_left / DB_MIN_SCALE);
-            this.drawBar(ctx, 0 , h * 0.55,  w, h * 0.4, 1 - db_right / DB_MIN_SCALE);
 
             leftPeakBuffer.write(db_left);
             rightPeakBuffer.write(db_right);
@@ -147,17 +145,15 @@ export default class LevelMeter extends Component {
             const leftPeak = leftPeakBuffer.getMax().toPrecision(2);
             const rightPeak = rightPeakBuffer.getMax().toPrecision(2);
 
-            if(leftPeak > DB_MIN_SCALE || rightPeak > DB_MIN_SCALE) {
-                ctx.fillStyle = textColor || warnColor;
-                ctx.font = '10px sans-serif';
-                ctx.fillText(' ' + leftPeak + 'db', 0, h * 0.25);
-                ctx.fillText(' ' + rightPeak + 'db', 0, h * 0.75);
-            }
+            this.drawBar(ctx, 0, h * 0.05,  w, h * 0.4, 1 - db_left / DB_MIN_SCALE,
+                h * 0.25, 1 - leftPeak / DB_MIN_SCALE, leftPeak);
+            this.drawBar(ctx, 0, h * 0.55,  w, h * 0.4, 1 - db_right / DB_MIN_SCALE,
+                h * 0.75, 1 - rightPeak / DB_MIN_SCALE, rightPeak);
+
         }
     }
 
-    drawBar(ctx, x, y, w, h, f) {
-
+    drawBar(ctx, x, y, w, h, f, yCenter, xPeak, dbPeak) {
         ctx.fillStyle = this.props.backgroundColor;
         ctx.fillRect(x, y, w, h);
 
@@ -168,6 +164,20 @@ export default class LevelMeter extends Component {
 
         ctx.fillStyle = grad;
         ctx.fillRect(x, y, w * f, h);
+
+        if(dbPeak > DB_MIN_SCALE) {
+            ctx.beginPath();
+            ctx.moveTo(w * xPeak, yCenter);
+            ctx.lineTo(w * xPeak + 20, yCenter - 10);
+            ctx.lineTo(w * xPeak + 20, yCenter + 10);
+            //ctx.fillStyle=this.props.alarmColor;
+            ctx.fill();
+
+            const  {textColor, warnColor } = this.props;
+            ctx.fillStyle = textColor || warnColor;
+            ctx.font = '10px sans-serif';
+            ctx.fillText(' ' + dbPeak + 'db', 0, yCenter);
+        }
     }
 
     render() {
