@@ -30,7 +30,8 @@ module.exports = {
 
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'bundle.js'
+        filename: 'bundle.js',
+        publicPath: '/',
     },
 
     resolve: {
@@ -84,7 +85,8 @@ module.exports = {
             'process.env': {
                 'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             }
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin()
     ],
 
     devServer: {
