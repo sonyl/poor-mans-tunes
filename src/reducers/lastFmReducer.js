@@ -51,7 +51,8 @@ const lastFm = (state = {}, action) => {
                         ...state[action.artist][action.album],
                         isFetching: false,
                         info: action.lastFmInfo,
-                        error: action.error
+                        error: action.error,
+                        receivedAt: action.receivedAt
                     }
                 }
             };
