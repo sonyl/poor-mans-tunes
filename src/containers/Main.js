@@ -129,7 +129,7 @@ class Main extends Component {
                 </div>
                 <ArtistList />
                 <Footer
-                    message="Poor Man&rsquo;s Tunes xxxx: &copy; 2017"
+                    message="Poor Man&rsquo;s Tunes: &copy; 2017"
                     artistCnt={artists.length}
                     albumCnt={albumCnt}
                     songCnt={songCnt} />

@@ -7,7 +7,6 @@ import settings, * as fromSettings from './settingsReducer';
 import lastFm, * as fromLastFm from './lastFmReducer';
 import collection, * as fromCollection from './collectionReducer';
 
-
 const rootReducer = combineReducers({
     collection,
     selection,
@@ -19,6 +18,7 @@ const rootReducer = combineReducers({
 
 export default rootReducer;
 
+/* ============ selectors ================= */
 export const getArtists = (state, ...args) => fromCollection.getArtists(state.collection, ...args);
 export const getAlbumByName = (state, ...args) => fromCollection.getAlbumByName(state.collection, ...args);
 export const getRandomSong = (state, ...args) => fromCollection.getRandomSong(state.collection, ...args);
