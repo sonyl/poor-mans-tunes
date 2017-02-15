@@ -10,12 +10,13 @@ const selection = (state = defaultState, action) => {
     switch (action.type) {
         case SELECT_ARTIST:
             if(!state.artist || state.artist.index !== action.index) {
-                return Object.assign({}, state, {
+                return {
                     artist: {
                         index: action.index,
                         name: action.name
-                    }
-                });
+                    },
+                    album: {}
+                };
             }
             break;
 
@@ -23,12 +24,13 @@ const selection = (state = defaultState, action) => {
             return defaultState;
 
         case SELECT_ALBUM:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 album: {
                     index: action.index,
                     name: action.name
                 }
-            });
+            };
 
         case UNSELECT_ALBUM:
             return {
