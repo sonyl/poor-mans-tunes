@@ -101,8 +101,8 @@ module.exports = {
         },
         proxy: {
             '/mp3': {
-  //              target: 'http://localhost:8083',
-                target: 'http://www.home',
+                target: 'http://localhost:8083',
+  //              target: 'http://www.home',
                 logLevel: 'debug'
             }
         }

@@ -1,11 +1,16 @@
-import { SET_PLAY_RANDOM, SET_VOLUME } from '../actions/actionKeys';
+import { SET_PLAY_RANDOM_SONG, SET_PLAY_RANDOM_ALBUM, SET_VOLUME } from '../actions/actionKeys';
 
 
 const settings = (state = {}, action) => {
     switch (action.type) {
-        case SET_PLAY_RANDOM:
-            if(state.playRandom !== !!action.playRandom) {
-                return {...state, playRandom: action.playRandom};
+        case SET_PLAY_RANDOM_SONG:
+            if(state.playRandomSong !== !!action.playRandom) {
+                return {...state, playRandomSong: action.playRandom};
+            }
+            break;
+        case SET_PLAY_RANDOM_ALBUM:
+            if(state.playRandomAlbum !== !!action.playRandom) {
+                return {...state, playRandomAlbum: action.playRandom};
             }
             break;
         case SET_VOLUME:

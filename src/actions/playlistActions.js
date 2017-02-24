@@ -1,4 +1,4 @@
-import { getRandomSong, isPlaylistEmpty, isSetInSettings } from '../reducers';
+import { getRandomSong, getRandomAlbumSongs, isPlaylistEmpty, isSetInSettings } from '../reducers';
 import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from './actionKeys';
 
 
@@ -15,24 +15,30 @@ export const removeSongAtIndexFromPlaylist = index => dispatch => {
         type: REMOVE_SONG_FROM_PLAYLIST,
         index
     });
-    dispatch(addRandomSongToPlaylistIfNecessary());
+    dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
 export const clearPlaylist = () => (dispatch) => {
     dispatch({type: CLEAR_PLAYLIST});
-    dispatch(addRandomSongToPlaylistIfNecessary());
+    dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
-export const addRandomSongToPlaylistIfNecessary = () => (dispatch, getState) => {
+export const addRandomSongsToPlaylistIfNecessary = () => (dispatch, getState) => {
     const state = getState();
-    if(isSetInSettings(state, 'playRandom') && isPlaylistEmpty(state)) {
-        const randomSong = getRandomSong(state);
-        if (randomSong) {
-            dispatch(addSongsToPlaylist(randomSong.artist, randomSong.album, randomSong.songs));
+    if(isPlaylistEmpty(state)) {
+        if (isSetInSettings(state, 'playRandomSong')) {
+            const randomSong = getRandomSong(state);
+            if (randomSong) {
+                dispatch(addSongsToPlaylist(randomSong.artist, randomSong.album, randomSong.songs));
+            }
+        } else if (isSetInSettings(state, 'playRandomAlbum')) {
+            const randomAlbumSongs = getRandomAlbumSongs(state);
+            if (randomAlbumSongs) {
+                dispatch(addSongsToPlaylist(randomAlbumSongs.artist, randomAlbumSongs.album, randomAlbumSongs.songs));
+            }
         }
     }
 };
-
 
 export const moveSongToPositionInPlaylist = (index, newIndex) => ({
     type: MOVE_SONG_TO_POSITION,

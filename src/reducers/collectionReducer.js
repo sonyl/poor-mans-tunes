@@ -70,7 +70,7 @@ export const getAlbumByName = (state, artist, album) => {
     return null;
 };
 
-export const getRandomSong = state => {
+const getRandomAlbum = state => {
     const maxArtists = state.artists && state.artists.length;
     if(maxArtists) {
         const randArtist = state.artists[Math.floor((Math.random() * maxArtists))];
@@ -79,20 +79,47 @@ export const getRandomSong = state => {
             const randAlbum = randArtist.albums[Math.floor((Math.random() * maxAlbums))];
             const maxSongs = randAlbum.songs && randAlbum.songs.length;
             if(maxSongs) {
-                const randSong = randAlbum.songs[Math.floor((Math.random() * maxSongs))];
-                if(randSong) {
-                    return {
-                        artist: randAlbum.artist,
-                        album: randAlbum.album,
-                        songs: [
-                            {
-                                song: randSong.title,
-                                url: randSong.mp3
-                            }
-                        ]
-                    };
-                }
+                return {
+                    artist: randAlbum.artist,
+                    album: randAlbum.album,
+                    songs: randAlbum.songs
+                };
             }
+        }
+    }
+    return null;
+};
+
+export const getRandomAlbumSongs = state => {
+    const randAlbum = getRandomAlbum(state);
+    if(randAlbum) {
+        return {
+            artist: randAlbum.artist,
+            album: randAlbum.album,
+            songs: randAlbum.songs.map(song => ({
+                song: song.title,
+                url:  song.mp3
+            }))
+        };
+    }
+    return null;
+};
+
+export const getRandomSong = state => {
+    const randAlbum = getRandomAlbum(state);
+    if(randAlbum) {
+        const randSong = randAlbum.songs[Math.floor((Math.random() * randAlbum.songs.length))];
+        if(randSong) {
+            return {
+                artist: randAlbum.artist,
+                album: randAlbum.album,
+                songs: [
+                    {
+                        song: randSong.title,
+                        url: randSong.mp3
+                    }
+                ]
+            };
         }
     }
     return null;

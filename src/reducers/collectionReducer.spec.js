@@ -1,6 +1,6 @@
 /* eslint-env node, jest */
 
-import { getArtists, getArtist, getAlbum, getAlbumByName, getRandomSong } from './collectionReducer';
+import { getArtists, getArtist, getAlbum, getAlbumByName, getRandomSong, getRandomAlbumSongs } from './collectionReducer';
 
 describe('collectionReducer', () => {
 
@@ -23,7 +23,8 @@ describe('collectionReducer', () => {
                     ]
                 }, {
                     album: 'Album3', artist: 'Artist2', songs: [
-                        {title: 'Song3', mp3: 'url3'}
+                        {title: 'Song3', mp3: 'url3'},
+                        {title: 'Song4', mp3: 'url4'}
                     ]
                 }
             ]
@@ -88,7 +89,27 @@ describe('collectionReducer', () => {
         });
 
         it('should return the song object selected by random', () => {
-            expect(['Song1', 'Song2', 'Song3']).toContainEqual(getRandomSong(state).songs[0].song);
+            const randomSong = getRandomSong(state);
+            expect(['Artist1', 'Artist2']).toContainEqual(randomSong.artist);
+            expect(['Album1', 'Album2', 'Album3']).toContainEqual(randomSong.album);
+            expect(['Song1', 'Song2', 'Song3', 'Song4']).toContainEqual(randomSong.songs[0].song);
+        });
+    });
+
+    describe('getRandomAlbum', () => {
+        it('should return null if collection is empty', () => {
+            expect(getRandomAlbumSongs({})).toBeNull();
+        });
+
+        it('should return the song object selected by random', () => {
+            let randomAlbum = {};
+
+            while(randomAlbum.album !== 'Album3') {
+                randomAlbum = getRandomAlbumSongs(state);       // try until random selects 'Album3'
+            }
+
+            expect(randomAlbum.artist).toBe('Artist2');
+            expect(randomAlbum.songs).toEqual([{song: 'Song3', url: 'url3'}, {song: 'Song4', url: 'url4'}]);
         });
     });
 });

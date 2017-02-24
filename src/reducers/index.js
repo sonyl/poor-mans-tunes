@@ -22,6 +22,7 @@ export default rootReducer;
 export const getArtists = (state, ...args) => fromCollection.getArtists(state.collection, ...args);
 export const getAlbumByName = (state, ...args) => fromCollection.getAlbumByName(state.collection, ...args);
 export const getRandomSong = (state, ...args) => fromCollection.getRandomSong(state.collection, ...args);
+export const getRandomAlbumSongs = (state, ...args) => fromCollection.getRandomAlbumSongs(state.collection, ...args);
 export const getArtistInfo = (state, ...args) => fromLastFm.getArtistInfo(state.lastFm, ...args);
 export const getAlbumInfo = (state, ...args) => fromLastFm.getAlbumInfo(state.lastFm, ...args);
 export const isPlaylistEmpty = (state) => fromPlaylist.isPlaylistEmpty(state.playlist);

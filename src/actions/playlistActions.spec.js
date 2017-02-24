@@ -3,7 +3,7 @@ import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 import * as actions from './playlistActions';
-import { setPlayRandom } from './settingsActions';
+import { setPlayRandomSong, setPlayRandomAlbum } from './settingsActions';
 
 
 const createStore = (initialState = {}) => {
@@ -67,7 +67,7 @@ describe('playlist actions', () => {
 
     describe('removeSongAtIndexFromPlaylist', () => {
 
-        it('should not add a roandom song to playlist if it is empty and \'playRandom\' is false', () => {
+        it('should not add a roandom song to playlist if it is empty and \'playRandomSong / Album\' is false', () => {
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
@@ -76,8 +76,8 @@ describe('playlist actions', () => {
             expect(store.getState().playlist.length).toEqual(0);
         });
 
-        it('should add a random song to playlist if it is empty and setRandom is true', () => {
-            store.dispatch(setPlayRandom(true));
+        it('should add a random song to playlist if it is empty and \'playRandomSong\' is true', () => {
+            store.dispatch(setPlayRandomSong(true));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
             store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
@@ -88,16 +88,37 @@ describe('playlist actions', () => {
             );
         });
 
+        it('should add all random albums songs to playlist if it is empty and \'playRandomAlbum\' is true', () => {
+            store.dispatch(setPlayRandomAlbum(true));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            store.dispatch(actions.removeSongAtIndexFromPlaylist(0));
+            expect(store.getState().playlist[0]).toEqual(
+                { album: 'Album', artist: 'Artist', song: 'Title', url: 'mp3'}
+            );
+        });
+
+
     });
 
     describe('clearPlaylist', () => {
-        it('should not add a song to playlist if \'playRandom\' is false', () => {
+        it('should not add a song to playlist if \'playRandomSong / Album\' is false', () => {
             store.dispatch(actions.clearPlaylist());
             expect(store.getState().playlist.length).toEqual(0);
         });
 
-        it('should add a song to playlist if \'playRandom\' is true', () => {
-            store.dispatch(setPlayRandom(true));
+        it('should add a song to playlist if \'playRandomSong\' is true', () => {
+            store.dispatch(setPlayRandomSong(true));
+            store.dispatch(actions.clearPlaylist());
+            expect(store.getState().playlist[0]).toEqual(
+                { album: 'Album', artist: 'Artist', song: 'Title', url: 'mp3'}
+            );
+        });
+
+        it('should add a song to playlist if \'playRandomAlbum\' is true', () => {
+            store.dispatch(setPlayRandomAlbum(true));
             store.dispatch(actions.clearPlaylist());
             expect(store.getState().playlist[0]).toEqual(
                 { album: 'Album', artist: 'Artist', song: 'Title', url: 'mp3'}

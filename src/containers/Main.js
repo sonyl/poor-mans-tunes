@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { getCollection } from '../actions/collectionActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
-import { setPlayRandom } from '../actions/settingsActions';
+import { setPlayRandomSong, setPlayRandomAlbum } from '../actions/settingsActions';
 import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings } from '../reducers';
 
 import PlaylistView from './PlaylistView';
@@ -100,21 +100,28 @@ class Main extends Component {
         }
     }
 
-    setRandom = newState => {
-        log('setRandom', 'newState=', newState);
-        this.props.setPlayRandom(!!newState);
+    setRandomSong = newState => {
+        log('setRandomSong', 'newState=', newState);
+        this.props.setPlayRandomSong(!!newState);
+    };
+
+    setRandomAlbum = newState => {
+        log('setRandomAlbum', 'newState=', newState);
+        this.props.setPlayRandomAlbum(!!newState);
     };
 
     render() {
         log('render', 'props=', this.props);
 
-        const {artists, isPlayRandom } = this.props;
+        const {artists, isPlayRandomSong, isPlayRandomAlbum} = this.props;
 
         const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
 
         return (
             <div className="container-fluid">
-                <Navbar randomActive={isPlayRandom} setRandom={this.setRandom}/>
+                <Navbar randomSongActive={isPlayRandomSong} setRandomSong={this.setRandomSong}
+                        randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
+                />
                 <div className="row">
                     <div className="col-md-4">
                         <ArtistView />
@@ -141,7 +148,8 @@ class Main extends Component {
         artists: PropTypes.arrayOf(PropTypes.object).isRequired,
         selectedArtist: PropTypes.object.isRequired,
         selectedAlbum: PropTypes.object.isRequired,
-        isPlayRandom: PropTypes.bool.isRequired,
+        isPlayRandomSong: PropTypes.bool.isRequired,
+        isPlayRandomAlbum: PropTypes.bool.isRequired,
         playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
 
         getCollection: PropTypes.func.isRequired,
@@ -149,7 +157,8 @@ class Main extends Component {
         unselectArtist: PropTypes.func.isRequired,
         selectAlbum: PropTypes.func.isRequired,
         unselectAlbum: PropTypes.func.isRequired,
-        setPlayRandom: PropTypes.func.isRequired
+        setPlayRandomSong: PropTypes.func.isRequired,
+        setPlayRandomAlbum: PropTypes.func.isRequired
     }
 }
 
@@ -157,7 +166,8 @@ const mapStateToProps = state => ({
     artists: getArtists(state),
     selectedArtist: getSelectedArtist(state),
     selectedAlbum: getSelectedAlbum(state),
-    isPlayRandom: isSetInSettings(state, 'playRandom'),
+    isPlayRandomSong: isSetInSettings(state, 'playRandomSong'),
+    isPlayRandomAlbum: isSetInSettings(state, 'playRandomAlbum'),
     playlist: state.playlist
 });
 
@@ -167,7 +177,8 @@ const mapDispatchToProps = {
     unselectArtist,
     selectAlbum,
     unselectAlbum,
-    setPlayRandom
+    setPlayRandomSong,
+    setPlayRandomAlbum
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

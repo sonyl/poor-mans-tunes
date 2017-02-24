@@ -36,16 +36,16 @@ describe('playlistActions', () => {
         });
     });
 
-    describe('setPlayRandom', () => {
+    describe('setPlayRandomSong', () => {
 
-        it('should set the playRandomFlag in the store', () => {
-            store.dispatch(actions.setPlayRandom(true));
-            expect(isSetInSettings(store.getState(), 'playRandom')).toEqual(true);
+        it('should set the playRandomSong-Flag in the store', () => {
+            store.dispatch(actions.setPlayRandomSong(true));
+            expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
         });
 
-        it('should reset the playRandomFlag in the store', () => {
-            store.dispatch(actions.setPlayRandom(false));
-            expect(isSetInSettings(store.getState(), 'playRandom')).toEqual(false);
+        it('should reset the playRandomSong-Flag in the store', () => {
+            store.dispatch(actions.setPlayRandomSong(false));
+            expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(false);
         });
 
         it('should add a song to playlist, if playlist is empty', () => {
@@ -69,8 +69,8 @@ describe('playlistActions', () => {
                 }
             });
             expect(store.getState().playlist.length).toEqual(0);
-            store.dispatch(actions.setPlayRandom(true));
-            expect(isSetInSettings(store.getState(), 'playRandom')).toEqual(true);
+            store.dispatch(actions.setPlayRandomSong(true));
+            expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
             expect(store.getState().playlist.length).toEqual(1);
         });
 
@@ -96,8 +96,8 @@ describe('playlistActions', () => {
                 playlist: [{}]
             });
             expect(store.getState().playlist.length).toEqual(1);
-            store.dispatch(actions.setPlayRandom(true));
-            expect(isSetInSettings(store.getState(), 'playRandom')).toEqual(true);
+            store.dispatch(actions.setPlayRandomSong(true));
+            expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
             expect(store.getState().playlist.length).toEqual(1);
         });
     });
