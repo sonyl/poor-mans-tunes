@@ -53,7 +53,7 @@ const ArtistView = ({artist, lastFmInfo}) => {
     return (
         <div className="panel panel-default">
             <div className="panel-heading">
-                <h3>Artist: { artist.artist }</h3>
+                <h3><small>Artist:</small> { artist.artist }</h3>
                 {renderThumbnail()}
             </div>
             <div className="panel-body">

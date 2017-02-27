@@ -1,5 +1,8 @@
 @font-size-base:          14px;
 
+@font-family-sans-serif:  'Rationale', sans-serif;
+
+
 //@btn-default-color: #e44515;
 //@btn-default-bg:          #eee;
 
@@ -14,3 +17,12 @@
   --main-heading-bg:    @panel-default-heading-bg;
 }
 
+/* link */
+a:hover, a:visited, a:link, a:active {
+  text-decoration: none!important;
+}
+
+a.nav-link.active {
+  font-weight: bold;
+  color: @btn-info-bg;
+}

@@ -31,7 +31,7 @@ function PlayNextIcon() {
 }
 
 function CdIcon() {
-    return <GlyphIcon iconName='cd' style={{fontSize: '96px'}}/>;
+    return <GlyphIcon iconName='cd' style={{fontSize: '96px', float: 'left', marginRight: '10px'}}/>;
 }
 
 function Button({children, onClick}) {
@@ -65,11 +65,9 @@ function Duration ({ className, seconds }) {
 function AlbumLink({artist, album, children, activate}) {
     if(artist && album) {
         return (
-            <div>
-                <NavLink activate={activate} to={createLinkUrl(artist, album)}>
-                    {children}
-                </NavLink>
-            </div>
+            <NavLink activate={activate} to={createLinkUrl(artist, album)} style={{}}>
+                {children}
+            </NavLink>
         );
     }
     return null;
@@ -184,18 +182,22 @@ class Player extends Component {
     };
 
     renderThumbnail() {
-        const {artist, album, albumInfo, colAlbum} = this.props;
+        const {artist, album, albumInfo, colAlbum, title} = this.props;
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
-            <AlbumLink artist={artist} album={album} activate={false}>
-                { url ?
-                    <img src={url} className="img-responsiv img-rounded"
-                         style={{maxWidth: '100px', maxHeight: 'auto'}}
-                    />
-                    :
-                    <CdIcon />
-                }
-            </AlbumLink>
+
+            <div style={{float: 'left', width: '100%'}}>
+                <AlbumLink artist={artist} album={album} activate={false}>
+                    { url ?
+                        <img src={url} className="img-responsiv img-rounded"
+                             style={{width: '100px', height: 'auto', float: 'left', marginRight: '10px'}}
+                        />
+                        :
+                        <CdIcon />
+                    }
+                    <h3>{title}</h3>
+                </AlbumLink>
+            </div>
         );
     }
 
@@ -205,37 +207,23 @@ class Player extends Component {
             playing, played, duration
         } = this.state;
 
-        const { url, title, artist, album, volume } = this.props;
+        const { url, volume } = this.props;
         let adjustedVol = volume===undefined ? 0.8 : volume;
         adjustedVol = Math.max(Math.min(adjustedVol , 1.0), 0.0);
         log('render', 'volume=', volume, 'adjustedVol', adjustedVol, Number.isNaN(volume), Number.isNaN(volume) ? 0.8 : volume);
         return (
             <div className="panel panel-default">
-                <div className="panel-heading">
-                    <div className="row">
-                        <div className="col-md-3">
-                            {this.renderThumbnail()}
-                        </div>
-                        <div className="col-md-9">
-                            <div className="row">
-                                <div className="col-md-12"><h3>Player:</h3></div>
-                            </div>
-                            <div className="row">
-                                <AlbumLink artist={artist} album={album}>
-                                    <div className="col-md-12"><h4>{title}</h4></div>
-                                </AlbumLink>
-                            </div>
-                        </div>
-                    </div>
+                <div className="panel-heading clearfix">
+                    {this.renderThumbnail()}
                 </div>
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
                         <LevelMeter audio={this.player && this.player.getAudio()}
-                            backgroundColor={this.backgroundColor}
-                            okColor={this.successColor}
-                            alarmColor={this.dangerColor}
-                            warnColor={this.warningColor}
-                            textColor={this.defaultColor}
+                                    backgroundColor={this.backgroundColor}
+                                    okColor={this.successColor}
+                                    alarmColor={this.dangerColor}
+                                    warnColor={this.warningColor}
+                                    textColor={this.defaultColor}
                         />
                     </div>
                     <AudioPlayer

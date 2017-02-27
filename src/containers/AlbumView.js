@@ -104,7 +104,7 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
     return (
         <div className="panel panel-default">
             <div className="panel-heading">
-                <h3>Album: { album.album }</h3>
+                <h3><small>Album:</small> { album.album }</h3>
                 {renderThumbnail()}
             </div>
             <div className="panel-body">
