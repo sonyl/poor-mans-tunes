@@ -103,8 +103,8 @@ export default class LevelMeter extends Component {
 
     disconnect() {
         log('disconnect');
-        this.props.audio.removeEventListener('play', this.audioOnPlay);
 
+        this.props.audio && this.props.audio.removeEventListener('play', this.audioOnPlay);
         this.meterNode && this.meterNode.disconnect();
         this.sourceNode && this.sourceNode.disconnect();
     }
