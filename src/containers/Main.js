@@ -23,7 +23,13 @@ function getArtistIndex(artists, artist) {
 }
 
 function getAlbumIndex(albums, album) {
-    return albums.findIndex(a => a.album === album);
+    return albums.findIndex(a => {
+        let title = a.album;
+        while(title.endsWith('?')) {    // e.g. (What's the Story) Morning Glory? ends with ? which is not part of route
+            title = title.slice(0, -1);
+        }
+        return title === album;
+    });
 }
 
 function parseUrl(path = '') {
@@ -63,6 +69,13 @@ function getAlbumAndSongCnt(artists) {
 
 class Main extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            activeTab: 'playing'
+        };
+    }
+
     componentDidMount() {
         this.props.getCollection();
     }
@@ -79,6 +92,9 @@ class Main extends Component {
                 const index = getArtistIndex(artists, params.artist);
                 if (index >= 0) {
                     this.props.selectArtist(index, artists[index].artist);
+                    this.setState({
+                        activeTab: 'playing'
+                    });
                 }
             } else if(this.props.selectedArtist.artist) {
                 this.props.unselectArtist();
@@ -110,10 +126,19 @@ class Main extends Component {
         this.props.setPlayRandomAlbum(!!newState);
     };
 
+    tabChanged = event => {
+        event.preventDefault();
+        const newTab = event.target.hash.substr(1);
+        if(newTab !== this.state.activeTab) {
+            this.setState({activeTab: newTab});
+        }
+    };
+
     render() {
         log('render', 'props=', this.props);
 
         const {artists, isPlayRandomSong, isPlayRandomAlbum} = this.props;
+        const {activeTab} = this.state;
 
         const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
 
@@ -122,19 +147,34 @@ class Main extends Component {
                 <Navbar randomSongActive={isPlayRandomSong} setRandomSong={this.setRandomSong}
                         randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
                 />
-                <div className="row">
-                    <div className="col-md-4">
-                        <ArtistView />
+                <div>
+                    <ul className="nav nav-tabs" role="tablist">
+                        <li role="presentation" className={activeTab ==='playing' ? 'active' : ''}>
+                            <a href="#playing" role="tab" onClick={this.tabChanged}>Currently Playing</a></li>
+                        <li role="presentation" className={activeTab ==='collection' ? 'active' : ''}>
+                            <a href="#collection" role="tab" onClick={this.tabChanged}>Collection</a></li>
+                    </ul>
+                </div>
+                <div className="tab-content">
+                    <div role="tabpanel" className={'tab-pane' +  (activeTab === 'playing' ? ' active' : '')}>
+                        <div className="row">
+                            <div className="col-md-4">
+                                <ArtistView />
+                            </div>
+                            <div className="col-md-4">
+                                <AlbumView  />
+                            </div>
+                            <div className="col-md-4">
+                                <Player />
+                                <PlaylistView />
+                            </div>
+                        </div>
                     </div>
-                    <div className="col-md-4">
-                        <AlbumView  />
-                    </div>
-                    <div className="col-md-4">
-                        <Player />
-                        <PlaylistView />
+                    <div role="tabpanel" className={'tab-pane' +  (activeTab === 'collection' ? ' active' : '')}>
+                        <ArtistList />
                     </div>
                 </div>
-                <ArtistList />
+
                 <Footer
                     message="Poor Man&rsquo;s Tunes: &copy; 2017"
                     artistCnt={artists.length}
