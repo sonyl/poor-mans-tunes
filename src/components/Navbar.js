@@ -8,7 +8,7 @@ function OkIcon(props) {
 }
 
 function CdIcon() {
-    return <GlyphIcon iconName='cd' style={{fontSize: '24px'}}/>;
+    return <GlyphIcon iconName='cd' style={{top: '5px'}}/>;
 }
 
 class Navbar extends Component {
@@ -37,35 +37,31 @@ class Navbar extends Component {
             <div role="navigation" className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <Link to="/" className="navbar-brand" style={{padding: '10px 10px'}}>
+                        <Link to="/" className="navbar-brand" style={{fontSize: '30px', padding: '5px'}}>
                             <CdIcon/>
-                            <span style={{marginLeft: '10px', lineHeight:2}}>Poor Man&rsquo;s Tunes</span>
+                            <span style={{marginLeft: '10px'}}>Poor Man&rsquo;s Tunes</span>
                         </Link>
                     </div>
-                    <div className="container">
-                        <button type="button"
-                                id="selectRandomSong"
-                                className={'btn btn-default navbar-btn' + (this.props.randomSongActive ? ' active' : '')}
-                                style={{maxWidth: '200px'}}
-                                onClick={this.onClick}
-                        >
-                            <OkIcon checked={this.props.randomSongActive}/> Play random song
-                        </button>
-                        &nbsp;
+                    <div>
+                        <form className="navbar-form navbar-right" role="search" onSubmit={(e) => e.preventDefault()}
+                        style={{marginTop: '11px'}}>
+                            <ArtistSearch/>
+                        </form>
                         <button type="button"
                                 id="selectRandomAlbum"
-                                className={'btn btn-default navbar-btn' + (this.props.randomAlbumActive ? ' active' : '')}
-                                style={{
-                                    marginLeft: '10px',
-                                    maxWidth: '200px'}}
+                                className={'navbar-right btn btn-default navbar-btn' + (this.props.randomAlbumActive ? ' active' : '')}
                                 onClick={this.onClick}
 
                         >
                             <OkIcon checked={this.props.randomAlbumActive}/> Play random album
                         </button>
-                        <form className="navbar-form navbar-right" role="search" onSubmit={(e) => e.preventDefault()}>
-                            <ArtistSearch/>
-                        </form>
+                        <button type="button"
+                                id="selectRandomSong"
+                                className={'navbar-right btn btn-default navbar-btn' + (this.props.randomSongActive ? ' active' : '')}
+                                onClick={this.onClick}
+                        >
+                            <OkIcon checked={this.props.randomSongActive}/> Play random song
+                        </button>
                     </div>
                 </div>
             </div>

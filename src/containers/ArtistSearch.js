@@ -162,10 +162,8 @@ class ArtistSearch extends Component {
             onChange: this.onChange
         };
 
-
         return (
 
-            <span>
                 <Autosuggest
                     theme={theme}
                     suggestions={suggestions}
@@ -177,7 +175,6 @@ class ArtistSearch extends Component {
                     renderInputComponent={renderInputComponent}
                     inputProps={inputProps}
                 />
-            </span>
         );
     }
 }
