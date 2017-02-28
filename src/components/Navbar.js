@@ -7,6 +7,10 @@ function OkIcon(props) {
     return <GlyphIcon iconName={props.checked ? 'ok' : 'remove' }/>;
 }
 
+function CdIcon() {
+    return <GlyphIcon iconName='cd' style={{fontSize: '24px'}}/>;
+}
+
 class Navbar extends Component {
 
     onClick = evt => {
@@ -33,7 +37,10 @@ class Navbar extends Component {
             <div role="navigation" className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <Link to="/" className="navbar-brand">Poor Man&rsquo;s Tunes</Link>
+                        <Link to="/" className="navbar-brand" style={{padding: '10px 10px'}}>
+                            <CdIcon/>
+                            <span style={{marginLeft: '10px', lineHeight:2}}>Poor Man&rsquo;s Tunes</span>
+                        </Link>
                     </div>
                     <div className="container">
                         <button type="button"
