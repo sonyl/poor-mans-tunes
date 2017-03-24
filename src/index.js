@@ -1,9 +1,10 @@
 /* global process:false module:false, require:false */
 import React from 'react';
 import { render } from 'react-dom';
-import {Router, Route, browserHistory} from 'react-router';
+import { BrowserRouter as Router , Route } from 'react-router-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
+import createHistory from 'history/createBrowserHistory';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
@@ -12,11 +13,13 @@ import Main from './containers/Main';
 import getConfig from './config.js';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const history = createHistory();
+const routerMw = routerMiddleware(history);
 
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk, createLogger())));
-
-// Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store);
+const store = createStore(
+    reducer,
+    composeEnhancers(applyMiddleware(thunk, routerMw, createLogger()))
+);
 
 
 if (process.env.NODE_ENV === 'production') {
@@ -38,12 +41,10 @@ if(module.hot) {        // enable hot reload of reducers
 
 render(
     <Provider store={store}>
-        <Router history={history}>
-            <Route path={contextRoot + '/'} component={Main}>
-                <Route path={contextRoot + '/app/:artist'} component={Main}>
-                    <Route path={contextRoot + '/app/:artist/:album'} component={Main}/>
-                </Route>
-            </Route>
-        </Router>
+        <ConnectedRouter history={history}>
+            <Router basename={contextRoot} >
+                <Route path="/" component={Main} />
+            </Router>
+        </ConnectedRouter>
     </Provider>, document.getElementById('app')
 );

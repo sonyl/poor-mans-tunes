@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import { browserHistory } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { createLinkUrl, createLog } from '../components/utils';
@@ -86,7 +86,8 @@ class ArtistSearch extends Component {
         this.state = {
             db: reorganize(props.artists),
             suggestions: [],
-            value: ''
+            value: '',
+            redirect: ''
         };
     }
 
@@ -143,7 +144,10 @@ class ArtistSearch extends Component {
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
         log('onSuggestionSelected', 'suggestion=%o, opts=%o', suggestion, opts);
         if(suggestion) {
-            browserHistory.push(createLinkUrl(suggestion.artist, suggestion.album));
+            this.setState({
+                redirect: createLinkUrl(suggestion.artist, suggestion.album)
+            });
+
         }
     };
 
@@ -163,7 +167,7 @@ class ArtistSearch extends Component {
         };
 
         return (
-
+             <span>
                 <Autosuggest
                     theme={theme}
                     suggestions={suggestions}
@@ -175,6 +179,8 @@ class ArtistSearch extends Component {
                     renderInputComponent={renderInputComponent}
                     inputProps={inputProps}
                 />
+                { redirect && <Redirect to={redirect} /> }
+             </span>
         );
     }
 }

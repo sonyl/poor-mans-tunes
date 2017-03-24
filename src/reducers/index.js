@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
     playlist,
     lastFm,
     settings,
-    routing: routerReducer
+    router: routerReducer
 });
 
 export default rootReducer;

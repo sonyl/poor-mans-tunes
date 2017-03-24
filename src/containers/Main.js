@@ -82,9 +82,9 @@ class Main extends Component {
 
     /* new route selected */
     componentWillReceiveProps(nextProps) {
-        // const {artists, selectedArtist, selectedAlbum, location} = nextProps;
-        // const params = parseUrl(location.pathname);
-        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
+        const {artists, selectedArtist, selectedAlbum, location} = nextProps;
+        const params = parseUrl(location.pathname);
+//        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
         log('componentWillReceiveProps', 'nextProps:', nextProps, params);
 
         if(params.artist !== selectedArtist.artist) {
