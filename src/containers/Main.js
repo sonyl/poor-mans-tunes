@@ -101,7 +101,7 @@ class Main extends Component {
             }
 
         }
-        if(params.album !== selectedAlbum.name ) {
+        if(params.album !== selectedAlbum.album ) {
             if(params.album) {
                 if(selectedArtist.artist) {
 
@@ -110,7 +110,7 @@ class Main extends Component {
                         this.props.selectAlbum(index, selectedArtist.albums[index]);
                     }
                 }
-            } else if(this.props.selectedAlbum.name){
+            } else if(this.props.selectedAlbum.album){
                 this.props.unselectAlbum();
             }
         }
