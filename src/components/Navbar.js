@@ -42,26 +42,31 @@ class Navbar extends Component {
                             <span style={{marginLeft: '10px'}}>Poor Man&rsquo;s Tunes</span>
                         </Link>
                     </div>
-                    <div>
+                    <div className="form-group">
                         <form className="navbar-form navbar-right" role="search" onSubmit={(e) => e.preventDefault()}
-                        style={{marginTop: '11px'}}>
+                        style={{marginTop: '20px'}}>
                             <ArtistSearch/>
                         </form>
-                        <button type="button"
+                        <form className="navbar-form navbar-right">
+                            <button type="button"
                                 id="selectRandomAlbum"
                                 className={'navbar-right btn btn-default navbar-btn' + (this.props.randomAlbumActive ? ' active' : '')}
                                 onClick={this.onClick}
 
-                        >
-                            <OkIcon checked={this.props.randomAlbumActive}/> Play random album
-                        </button>
-                        <button type="button"
+                            >
+                                <OkIcon checked={this.props.randomAlbumActive}/> Play random album
+                            </button>
+                            <button type="button"
                                 id="selectRandomSong"
                                 className={'navbar-right btn btn-default navbar-btn' + (this.props.randomSongActive ? ' active' : '')}
                                 onClick={this.onClick}
-                        >
-                            <OkIcon checked={this.props.randomSongActive}/> Play random song
-                        </button>
+                            >
+                                <OkIcon checked={this.props.randomSongActive}/> Play random song
+                            </button>
+                            <label htmlFor="selectRandomSong" className="navbar-text navbar-right" style={{marginRight: '5px'}}>
+                                If Playlist is empty:
+                            </label>
+                        </form>
                     </div>
                 </div>
             </div>
