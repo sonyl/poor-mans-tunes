@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scan": "babel-node $NODE_DEBUG_OPTION ./scanner.js",
+    "start": "nodemon --exec babel-node -- ./server.js"
+  },
+  "keywords": [],
+  "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "musicmetadata": "^2.0.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "nodemon": "^1.11.0"
+  }
+}

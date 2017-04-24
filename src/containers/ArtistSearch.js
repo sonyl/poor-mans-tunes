@@ -12,7 +12,7 @@ const log = createLog(ENABLE_LOG, 'ArtistSearch');
 
 const theme = {
     input: {
-        width: '500px'
+        width: '300px'
     },
     containerOpen: {
 
