@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 
 function btnClassNames(size) {
@@ -93,7 +94,7 @@ SplitButton.propTypes = {
     defaultLabel: PropTypes.string.isRequired,
     defaultOnClick: PropTypes.func,
     defaultIcon: PropTypes.element,
-    size: React.PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
+    size: PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
 };
 
 SplitButton.defaultProps = {

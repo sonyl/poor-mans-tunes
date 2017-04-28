@@ -1,4 +1,5 @@
-import React, {PropTypes, Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
