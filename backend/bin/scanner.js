@@ -3,11 +3,9 @@ import path from 'path';
 import musicmetadata from 'musicmetadata';
 import Promise from 'promise';
 
-const root = '../mp3';
-//const root = '/mnt/public/mp3';
-const output = '../public/files2.json';
+const output = './collection.json';
 
-function file2url(file) {
+function file2url(file, root) {
     return encodeURI(file.startsWith(root) ? file.substring(root.length) : file);
 }
 
@@ -25,12 +23,12 @@ function scan(name) {
     });
 }
 
-function metaToSong({artist, albumartist, album, title, track, disk}, file) {
+function metaToSong({artist, albumartist, album, title, track, disk}, file, root) {
     const songArtist = albumartist[0] || artist[0];
 
     if(!songArtist || !album) return;
     const song = {
-        mp3: file2url(file),
+        mp3: file2url(file, root),
         artist: songArtist,
         album,
         title,
@@ -48,7 +46,7 @@ function metaToSong({artist, albumartist, album, title, track, disk}, file) {
     return song;
 }
 
-function walk (start) {
+function walk (root) {
 
     var loops = 0;
 
@@ -68,7 +66,7 @@ function walk (start) {
                     if (fs.statSync(abspath).isDirectory()) {
                         walker(abspath, callback);
                     } else if (i.endsWith('.mp3')) {
-                        acc.push(scan(abspath).then(m => metaToSong(m, abspath)));
+                        acc.push(scan(abspath).then(m => metaToSong(m, abspath, root)));
                     }
                     return acc;
                 }, []);
@@ -80,7 +78,7 @@ function walk (start) {
 
     return new Promise(resolve => {
         var allFiles = [];
-        walker(start, (err, files) => {
+        walker(root, (err, files) => {
             if(err) {
                 console.log('Error while walking directory tree:', err);
             } else {
@@ -125,21 +123,33 @@ function sortAndFlatten(collection) {
 }
 
 function write(collection) {
-    collection.forEach(artist => {
-        artist.albums.forEach(album => {
-            console.log(`Album: Artist: ${artist.artist}, album: ${album.album}, songs: ${album.songs.map(s => s.track + '. ' + s.title)}`);
+    return new Promise((resolve, reject) => {
+        collection.forEach(artist => {
+            artist.albums.forEach(album => {
+                console.log(`Album: Artist: ${artist.artist}, album: ${album.album}, 
+                            songs: ${album.songs.map(s => s.track + '. ' + s.title)}`);
+            });
+        });
+        fs.writeFile(output, JSON.stringify(collection, null, 2), error => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
         });
     });
-    fs.writeFileSync(output, JSON.stringify(collection, null, 2));
 }
 
-walk(root)
-    .then(Promise.all)
-    .then(reduce)
-    .then(sortAndFlatten)
-    .then(write)
-    .catch(error => {
-        console.log(error);
-    });
+export function rescan(path) {
+    return walk(path)
+        .then(Promise.all)
+        .then(reduce)
+        .then(sortAndFlatten)
+        .then(write)
+        .catch(error => {
+            console.log(error);
+            return Promise.reject(error);
+        });
+}
 
 

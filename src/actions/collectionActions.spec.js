@@ -74,4 +74,11 @@ describe('getCollection', () => {
             return null;
         });
     });
+
+    it('does not fetch if current collection is valid', () => {
+
+        store = createStore({collection: { artists: ['some artist'], didInvalidate: false}});
+
+        expect(store.dispatch(actions.getCollection())).toBeUndefined;
+    });
 });

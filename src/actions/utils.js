@@ -5,7 +5,16 @@ const { lastFmBase } = getConfig({lastFmBase: 'http://ws.audioscrobbler.com/2.0/
 
 const DO_NOT_FETCH = false;
 
-function buildUrl(baseUrl, params) {
+export function replaceRequestPlaceholders (templ, params) {
+    const regExp = new RegExp('\\$\\{(.*?)\\}');  // *? means non-greedy, we do not use 'g' flag intentionally
+    let match;
+    while ((match = regExp.exec(templ)) != null) {
+        templ = templ.substring(0, match.index) + (params[match[1]] || '') + templ.substring(match.index + match[0].length);
+    }
+    return templ;
+}
+
+export function addRequestParams(baseUrl, params) {
 
     const esc = encodeURIComponent;
     const query = Object.keys(params)
@@ -27,5 +36,5 @@ export const fetchLastFm = (method, args) => {
         return Promise.reject(new Error('Fetching is disabled'));
     }
 
-    return fetch(buildUrl(lastFmBase, params));
+    return fetch(addRequestParams(lastFmBase, params));
 };

@@ -11,7 +11,8 @@ const collection = (
         case INVALIDATE_COLLECTION:
             return {
                 ...state,
-                didInvalidate: true
+                didInvalidate: true,
+                lastUpdated: null
             };
         case REQUEST_COLLECTION:
             return {
@@ -34,6 +35,10 @@ const collection = (
 export default collection;
 
 // ------------ selectors
+
+export const getLastUpdate = (state) => {
+    return state && state.lastUpdated;
+};
 
 export const getArtists = (state) => {
     return state && state.artists || [];

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getCollection } from '../actions/collectionActions';
+import { requestServerSettings } from '../actions/serverActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
 import { setPlayRandomSong, setPlayRandomAlbum } from '../actions/settingsActions';
 import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings } from '../reducers';
@@ -14,6 +15,7 @@ import ArtistView from './ArtistView';
 import AlbumView from './AlbumView';
 import Player from './Player';
 import Footer from '../components/Footer';
+import Settings from './Settings';
 import { createLog } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -79,6 +81,7 @@ class Main extends Component {
 
     componentDidMount() {
         this.props.getCollection();
+        this.props.requestServerSettings();
     }
 
     /* new route selected */
@@ -154,6 +157,8 @@ class Main extends Component {
                             <a href="#playing" role="tab" onClick={this.tabChanged}>Currently Playing</a></li>
                         <li role="presentation" className={activeTab ==='collection' ? 'active' : ''}>
                             <a href="#collection" role="tab" onClick={this.tabChanged}>Collection</a></li>
+                        <li role="presentation" className={activeTab ==='settings' ? 'active' : ''}>
+                            <a href="#settings" role="tab" onClick={this.tabChanged}>Settings</a></li>
                     </ul>
                 </div>
                 <div className="tab-content">
@@ -173,6 +178,9 @@ class Main extends Component {
                     </div>
                     <div role="tabpanel" className={'tab-pane' +  (activeTab === 'collection' ? ' active' : '')}>
                         <ArtistList />
+                    </div>
+                    <div role="tabpanel" className={'tab-pane' +  (activeTab === 'settings' ? ' active' : '')}>
+                        <Settings />
                     </div>
                 </div>
 
@@ -194,6 +202,7 @@ class Main extends Component {
         playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
 
         getCollection: PropTypes.func.isRequired,
+        requestServerSettings: PropTypes.func.isRequired,
         selectArtist: PropTypes.func.isRequired,
         unselectArtist: PropTypes.func.isRequired,
         selectAlbum: PropTypes.func.isRequired,
@@ -214,6 +223,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     getCollection,
+    requestServerSettings,
     selectArtist,
     unselectArtist,
     selectAlbum,

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "scan": "babel-node $NODE_DEBUG_OPTION ./scanner.js",
-    "start": "nodemon --exec babel-node -- ./server.js"
+    "start": "nodemon --watch bin --exec babel-node -- ./bin/server.js"
   },
   "keywords": [],
   "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
