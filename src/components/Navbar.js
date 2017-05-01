@@ -65,7 +65,7 @@ class Navbar extends Component {
                                 <OkIcon checked={this.props.randomSongActive}/> Play random song
                             </button>
                             <label htmlFor="selectRandomSong" className="navbar-text navbar-right" style={{marginRight: '5px'}}>
-                                If Playlist is empty:
+                                If playlist is empty:
                             </label>
                         </form>
                     </div>

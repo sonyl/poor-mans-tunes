@@ -69,8 +69,15 @@ app.put('/api/status/rescan', (req, res) => {
     console.log('rescan requested');
 
     if(settings.mp3Path) {
-        fs.unlinkSync(COLLECTION);
-        rescan(settings.mp3Path);
+        try {
+            fs.unlinkSync(COLLECTION);
+        } catch(error) {
+            console.log("unable to delete: ", error);
+        }
+        rescan(settings.mp3Path).then(() => {
+            express.
+            staticFiles = express.static(settings.mp3Path);
+        });
         res.json({ok: true});
     } else {
         res.status(500).json({
@@ -130,16 +137,14 @@ app.get('/api/collection', (req, res) => {
     rstream.pipe(res);
 });
 
-const staticFiles = express.static(settings.mp3Path);
-app.use('/mp3', (req, res, next) => {
+app.use('/mp3', (req, res) => {
     console.log('song requested!', req.url);
-    next();
-}, staticFiles, (req, res, next) => {
-    console.dir('behind staticFiles', req, res, next);
-    next();
+    const path = req.url;
+    res.sendfile(path, {root: settings.mp3Path});
 });
 
 app.use((req, res) => {
+    console.log('not found', req.url, req);
     res.status(404).json({
         errors: {
             global: 'Still working on it. Please try later'
