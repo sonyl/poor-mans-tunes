@@ -72,7 +72,7 @@ app.put('/api/status/rescan', (req, res) => {
         try {
             fs.unlinkSync(COLLECTION);
         } catch(error) {
-            console.log("unable to delete: ", error);
+            console.log('unable to delete: ', error);
         }
         rescan(settings.mp3Path).then(() => {
             express.
