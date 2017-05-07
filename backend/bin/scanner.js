@@ -4,12 +4,8 @@ import musicmetadata from 'musicmetadata';
 import Promise from 'promise';
 import sharp from 'sharp';
 
-function file2url(file, root) {
-    return encodeURI(file.startsWith(root) ? file.substring(root.length) : file);
-}
-
-function scan(name) {
-    const stream = fs.createReadStream(name);
+export function scanFile(path) {
+    const stream = fs.createReadStream(path);
     return new Promise((resolve, reject) => {
         musicmetadata(stream, (err, metadata) => {
             stream.close();
@@ -20,6 +16,28 @@ function scan(name) {
             }
         });
     });
+}
+
+export function scanTree(path, destFilename) {
+    console.log('scanning: %s', path);
+    console.time('finished');
+    return walk(path)
+        .then(Promise.all)
+        .then(reduce)
+        .then(sortAndFlatten)
+        .then(findEmbeddedArtwork)
+        .then(c => write(c, destFilename))
+        .then(() => {
+            console.timeEnd('finished');
+        })
+        .catch(error => {
+            console.log(error);
+            return Promise.reject(error);
+        });
+}
+
+function file2url(file, root) {
+    return encodeURI(file.startsWith(root) ? file.substring(root.length) : file);
 }
 
 function metaToSong({artist, albumartist, album, title, track, disk, year, picture}, file, root) {
@@ -76,7 +94,7 @@ function walk (root) {
                     if (fs.statSync(abspath).isDirectory()) {
                         walker(abspath, callback);
                     } else if (i.endsWith('.mp3')) {
-                        acc.push(scan(abspath).then(m => metaToSong(m, abspath, root)));
+                        acc.push(scanFile(abspath).then(m => metaToSong(m, abspath, root)));
                     }
                     return acc;
                 }, []);
@@ -167,24 +185,6 @@ function write(collection, destFilename) {
             }
         });
     });
-}
-
-export function rescan(path, destFilename) {
-    console.log('scanning: %s', path);
-    console.time('finished');
-    return walk(path)
-        .then(Promise.all)
-        .then(reduce)
-        .then(sortAndFlatten)
-        .then(findEmbeddedArtwork)
-        .then(c => write(c, destFilename))
-        .then(() => {
-            console.timeEnd('finished');
-        })
-        .catch(error => {
-            console.log(error);
-            return Promise.reject(error);
-        });
 }
 
 
