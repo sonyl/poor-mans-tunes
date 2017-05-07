@@ -14,7 +14,8 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "musicmetadata": "^2.0.5"
+    "musicmetadata": "^2.0.5",
+    "sharp": "^0.17.3"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

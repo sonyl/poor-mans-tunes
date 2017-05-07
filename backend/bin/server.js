@@ -1,6 +1,9 @@
+/* eslint-env node */
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
+import path from 'path';
 import {rescan} from './scanner';
 
 const PORT = 9001;
@@ -72,9 +75,10 @@ app.put('/api/status/rescan', (req, res) => {
         try {
             fs.unlinkSync(COLLECTION);
         } catch(error) {
-            console.log('unable to delete: ', error);
+            const collFile = path.normalize(path.resolve('.') + '/' + COLLECTION);
+            console.log(`unable to delete: ${collFile}`, error.message);
         }
-        rescan(settings.mp3Path).then(() => {
+        rescan(settings.mp3Path, COLLECTION).then(() => {
             express.
             staticFiles = express.static(settings.mp3Path);
         });
