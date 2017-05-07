@@ -22,7 +22,7 @@ function scan(name) {
     });
 }
 
-function metaToSong({artist, albumartist, album, title, track, disk, picture}, file, root) {
+function metaToSong({artist, albumartist, album, title, track, disk, year, picture}, file, root) {
     const songArtist = albumartist[0] || artist[0];
     if(!songArtist || !album) return;
     const song = {
@@ -30,7 +30,9 @@ function metaToSong({artist, albumartist, album, title, track, disk, picture}, f
         artist: songArtist,
         album,
         title,
-        track: track.no
+        track: track.no,
+        year
+
     };
     if(track.of) {
         song.tt = track.of;
@@ -47,7 +49,7 @@ function metaToSong({artist, albumartist, album, title, track, disk, picture}, f
             song.picture = { format: metadata.format, width: metadata.width, height: metadata.height};
             return song;
         }).catch(error => {
-            console.log(`Error reading metadata of: ${albumartist}:${album}:${title}`, error);
+            console.log(`Error reading metadata of: ${songArtist}:${album}:${title}`, error);
             return song;
         });
     }
