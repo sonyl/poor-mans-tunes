@@ -110,8 +110,8 @@ class Player extends Component {
         if(this.props.url !== nextProps.url) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
-                sendDesktopNotification(`Now playing: ${nextProps.title}`);
-                this.props.sendNotification(`Now playing: ${nextProps.title}`);
+                sendDesktopNotification('Now playing:', nextProps.title);
+                this.props.sendNotification('Now playing:', nextProps.title);
             } else {
                 newState.played = 0;
                 newState.duration = 0;
@@ -356,7 +356,7 @@ const mapDispatchToProps = dispatch => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
     requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album)),
-    sendNotification: (head, msg) => dispatch(sendNotification(head,msg))
+    sendNotification: (head, msg) => dispatch(sendNotification(head, msg))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);
