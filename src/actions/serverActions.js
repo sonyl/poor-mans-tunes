@@ -1,6 +1,7 @@
 import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_RESCAN_FILES,
     REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from './actionKeys';
 
+import { sendNotification, sendSuccessNotification, sendDangerNotification, dismissNotification } from './notificationsActions';
 import { replaceRequestPlaceholders } from './utils';
 
 const GETSTATUS_URL = '/api/status';
@@ -72,6 +73,8 @@ export const updateServerSettings = (key, value) => dispatch => {
         throw new Error('please provide key and value');
     }
     console.log('updateServerSettings: key=%s, value=%s', key, value);
+    const sendNotificiation = sendNotification('Saving...', `updating: ${key}`);
+    dispatch(sendNotificiation);
     return fetch(replaceRequestPlaceholders(UPDATESETTINSG_URL, {key, value}),
         {
             method: 'PUT',
@@ -88,8 +91,11 @@ export const updateServerSettings = (key, value) => dispatch => {
             }
         }).then(json => {
             dispatch(receiveServerSettings(json));
+            dispatch(dismissNotification(sendNotificiation.alert));
+            dispatch(sendSuccessNotification('Saving...', `${key} sucessfully saved`));
         }).catch(error => {
-            //do nothing
+            dispatch(dismissNotification(sendNotificiation.alert));
+            dispatch(sendDangerNotification('Saving...', `${key} could not be saved`));
         });
 };
 

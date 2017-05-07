@@ -22,7 +22,7 @@ const notify = (title, body, icon) => {
     setTimeout(n.close.bind(n), 5000);
 };
 
-export const sendNotification = (title, body, icon) => {
+export const sendDesktopNotification = (title, body, icon) => {
     if (!('Notification' in window)) {
         console.log('This browser does not support desktop notifications: ', title, body);
         return;

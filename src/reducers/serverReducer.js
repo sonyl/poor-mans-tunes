@@ -59,7 +59,6 @@ export const getSettings = ({settings, error, lastUpdated}) => {
         error,
         lastUpdated
     };
-    console.log('getSettings will return', s);
     return s;
 };
 

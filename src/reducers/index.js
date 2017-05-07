@@ -7,6 +7,7 @@ import settings, * as fromSettings from './settingsReducer';
 import lastFm, * as fromLastFm from './lastFmReducer';
 import collection, * as fromCollection from './collectionReducer';
 import server, * as fromServer from './serverReducer';
+import notifications from './notificationsReducer';
 
 const rootReducer = combineReducers({
     collection,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     lastFm,
     settings,
     server,
+    notifications,
     routing: routerReducer
 });
 

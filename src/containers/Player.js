@@ -2,6 +2,7 @@ import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
+import { sendNotification } from '../actions/notificationsActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
 import { setVolume } from '../actions/settingsActions';
 import { getAlbumInfo, getAlbumByName, getValueFromSettings } from '../reducers';
@@ -12,7 +13,7 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
+import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -89,7 +90,8 @@ class Player extends Component {
             if(props.artist && props.album) {
                 this.props.requestAlbum(props.artist, props.album);
             }
-            sendNotification('Now playing:', props.title);
+            sendDesktopNotification('Now playing:', props.title);
+            props.sendNotification('Now playing:', props.title);
         }
     }
 
@@ -108,7 +110,8 @@ class Player extends Component {
         if(this.props.url !== nextProps.url) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
-                sendNotification(`Now playing: ${nextProps.title}`);
+                sendDesktopNotification(`Now playing: ${nextProps.title}`);
+                this.props.sendNotification(`Now playing: ${nextProps.title}`);
             } else {
                 newState.played = 0;
                 newState.duration = 0;
@@ -329,7 +332,8 @@ Player.propTypes = {
     albumInfo: PropTypes.object,
     colAlbum: PropTypes.object,
     nextSong: PropTypes.func,
-    requestAlbum: PropTypes.func
+    requestAlbum: PropTypes.func,
+    sendNotification: PropTypes.func
 };
 
 const mapStateToProps = state => {
@@ -351,7 +355,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
-    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
+    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album)),
+    sendNotification: (head, msg) => dispatch(sendNotification(head,msg))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);

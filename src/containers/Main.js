@@ -16,6 +16,7 @@ import AlbumView from './AlbumView';
 import Player from './Player';
 import Footer from '../components/Footer';
 import Settings from './Settings';
+import Notifications from './Notifications';
 import { createLog } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -148,6 +149,7 @@ class Main extends Component {
 
         return (
             <div className="container-fluid">
+                <Notifications />
                 <Navbar randomSongActive={isPlayRandomSong} setRandomSong={this.setRandomSong}
                         randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
                 />
