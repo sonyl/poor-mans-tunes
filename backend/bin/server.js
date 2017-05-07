@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import path from 'path';
-import {rescan} from './scanner';
+import {scanTree, scanFile} from './scanner';
 
 const PORT = 9001;
 const COLLECTION = './collection.json';
@@ -78,7 +78,7 @@ app.put('/api/status/rescan', (req, res) => {
             const collFile = path.normalize(path.resolve('.') + '/' + COLLECTION);
             console.log(`unable to delete: ${collFile}`, error.message);
         }
-        rescan(settings.mp3Path, COLLECTION).then(() => {
+        scanTree(settings.mp3Path, COLLECTION).then(() => {
             express.
             staticFiles = express.static(settings.mp3Path);
         });
@@ -141,6 +141,37 @@ app.get('/api/collection', (req, res) => {
     rstream.pipe(res);
 });
 
+function getContentType(type) {
+    type = type || '';
+    if(['jpg', 'jpeg'].indexOf(type.toLowerCase()) >= 0) {
+        return 'image/jpeg';
+    }
+    if(['png'].indexOf(type.toLowerCase()) >= 0) {
+        return 'image/png';
+    }
+    throw new Error('unknown media format');
+}
+
+app.get('/img/*', (req, res) => {
+    const mp3Path = decodeURI(req.url.substr(4));
+    console.log('image request', mp3Path);
+
+    scanFile(settings.mp3Path + mp3Path)
+    .then(meta => {
+        if(meta && meta.picture[0]) {
+            const pic = meta.picture[0];
+            res.set('Content-Type', getContentType(pic.format));
+            res.send(pic.data);
+        } else {
+            throw new Error('no artwork found');
+        }
+    }).catch(error => {
+        res.status(500).json({
+            error: error.message
+        });
+    });
+});
+
 app.use('/mp3', (req, res) => {
     console.log('song requested!', req.url);
     const path = req.url;
@@ -154,7 +185,6 @@ app.use((req, res) => {
             global: 'Still working on it. Please try later'
         }
     });
-
 });
 
 app.listen(PORT, () => console.log('server is running on localhost:', PORT));
