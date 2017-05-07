@@ -109,7 +109,12 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:9001',
                 logLevel: 'debug'
+            },
+            '/img': {
+                target: 'http://localhost:9001',
+                logLevel: 'debug'
             }
+
         },
     }
 };

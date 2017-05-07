@@ -10,7 +10,7 @@ develop: {
 const config = {
     develop: {
         contextRoot: '',
-        baseUrl:  'http://localhost:9000/mp3',
+        baseUrl:  'http://localhost:9000',
 //        collectionUrl: '/public/files2.json',
         collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
