@@ -32,7 +32,7 @@ class Notifications extends Component {
                 message: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.object]).isRequired
             })
         ).isRequired,
-        dismissAlert: PropTypes.function
+        dismissAlert: PropTypes.func
     };
 
     static defaultProps = {

@@ -13,7 +13,9 @@ const config = {
         baseUrl:  'http://localhost:9000',
 //        collectionUrl: '/public/files2.json',
         collectionUrl: '/api/collection',
-        lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
+        lastFmBase: 'http://ws.audioscrobbler.com/2.0/',
+        skipLastFmArtist: false,
+        skipLastFmAlbum: false
     },
 
     test: {

@@ -66,7 +66,7 @@ export const getLastFmThumbnail = (lastFmInfo, maxSize=LASTFM_IMG_SIZE_ULTRA) =>
 export const getCoverUrl = album => {
     // const coverUrl = album && album.coverUrl;
     // return coverUrl ? baseUrl + coverUrl : null;
-    const mp3Song = album && album.picture && album.picture.mp3;
+    const mp3Song = album && album.picture && (album.picture.mp3 || album.picture.img);
     return mp3Song ? baseUrl + '/img' + mp3Song : null;
 };
 

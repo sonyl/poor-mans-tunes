@@ -2,6 +2,8 @@
 const webpack = require('webpack');
 const path = require('path');
 
+const server = 'http://localhost:9001';
+
 var entry;
 
 if(process.env.NODE_ENV === 'production'){
@@ -101,17 +103,15 @@ module.exports = {
         },
         proxy: {
             '/mp3': {
-//                target: 'http://localhost:8083',
-//                target: 'http://www.home',
-                target: 'http://localhost:9001',
+                target: server,
                 logLevel: 'debug'
             },
             '/api': {
-                target: 'http://localhost:9001',
+                target: server,
                 logLevel: 'debug'
             },
             '/img': {
-                target: 'http://localhost:9001',
+                target: server,
                 logLevel: 'debug'
             }
 
