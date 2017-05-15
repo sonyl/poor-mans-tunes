@@ -129,16 +129,7 @@ app.put('/api/settings/:key', (req, res) => {
 
 app.get('/api/collection', (req, res) => {
     console.log('collection requested!');
-    const rstream = fs.createReadStream(COLLECTION, 'utf8');
-    rstream.on('error', err => {
-        res.status(500).json({
-            error: {
-                text: 'error reading file',
-                detail: err
-            }
-        });
-    });
-    rstream.pipe(res);
+    res.sendFile(COLLECTION, {root: __dirname + '/..'});
 });
 
 function getContentType(type) {
@@ -153,29 +144,34 @@ function getContentType(type) {
 }
 
 app.get('/img/*', (req, res) => {
-    const mp3Path = decodeURI(req.url.substr(4));
-    console.log('image request', mp3Path);
+    const imgPath = decodeURI(req.url.substr(4));
+    console.log('image request', imgPath);
 
-    scanFile(settings.mp3Path + mp3Path)
-    .then(meta => {
-        if(meta && meta.picture[0]) {
-            const pic = meta.picture[0];
-            res.set('Content-Type', getContentType(pic.format));
-            res.send(pic.data);
-        } else {
-            throw new Error('no artwork found');
-        }
-    }).catch(error => {
-        res.status(500).json({
-            error: error.message
+    if(imgPath.endsWith('.mp3')){
+        scanFile(settings.mp3Path + imgPath)
+        .then(meta => {
+            if(meta && meta.picture[0]) {
+                const pic = meta.picture[0];
+                res.set('Content-Type', getContentType(pic.format));
+                res.send(pic.data);
+            } else {
+                throw new Error('no artwork found');
+            }
+        }).catch(error => {
+            res.status(500).json({
+                error: error.message
+            });
         });
-    });
+    } else {
+        res.sendFile(imgPath, {root: settings.mp3Path});
+    }
+
 });
 
 app.use('/mp3', (req, res) => {
-    console.log('song requested!', req.url);
-    const path = req.url;
-    res.sendfile(path, {root: settings.mp3Path});
+    const path = decodeURI(req.url);
+    console.log('song requested!', path);
+    res.sendFile(path, {root: settings.mp3Path});
 });
 
 app.use((req, res) => {
