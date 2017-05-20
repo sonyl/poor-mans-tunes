@@ -27,7 +27,7 @@ const config = {
 
     production: {
         contextRoot: '',
-        baseUrl: 'http://localhost:9001',
+ //       baseUrl: 'http://localhost:9001',
         collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
     }
