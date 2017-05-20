@@ -297,6 +297,18 @@ class Player extends Component {
                     <div className="row">
                         <div className="col-xs-12">
                             <div className="form-group">
+                                <Slider
+                                    id="player-volume"
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    value={adjustedVol}
+                                    onChange={this.setVolume} />
+                                <label htmlFor="player-volume">Volume</label>
+                            </div>
+                        </div>
+                        <div className="col-xs-12">
+                            <div className="form-group">
                                 <Slider id="player-seek"
                                         min={0} max={1} step={0.01}
                                         value={played}
@@ -306,18 +318,6 @@ class Player extends Component {
                                         onMouseUp={this.onSeekMouseUp}
                                 />
                                 <label htmlFor="player-seek">Seek</label>
-                            </div>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="form-group">
-                                <Slider
-                                    id="player-volume"
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={adjustedVol}
-                                    onChange={this.setVolume} />
-                                <label htmlFor="player-volume">Volume</label>
                             </div>
                         </div>
                         <div className="col-xs-12">
