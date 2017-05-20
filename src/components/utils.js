@@ -28,6 +28,17 @@ export const sendDesktopNotification = (title, body, icon) => {
         return;
     }
 
+    if (!('hidden' in document)) {
+        console.log('This browser does not support document.hidden, we don\'t know if application window is hidden: ', title, body);
+        return;
+    }
+
+    if(!document.hidden) {
+        console.log('The application window is visible, we do not need to send notifications: ', title, body);
+        return;
+    }
+
+
     // Let's check whether notification permissions have already been granted
     if (Notification.permission === 'granted') {
         // If it's okay let's create a notification
