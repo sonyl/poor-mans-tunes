@@ -2,6 +2,7 @@
 
 import express from 'express';
 import bodyParser from 'body-parser';
+import history from 'connect-history-api-fallback';
 import fs from 'fs';
 import path from 'path';
 import {scanTree, scanFile} from './scanner';
@@ -11,7 +12,8 @@ const COLLECTION = './collection.json';
 const SETTINGS = './settings.json';
 
 const DEFAULT_SETTINGS = {
-    mp3Path: '../mp3'
+    mp3Path: '../mp3',
+    distPath: '../dist'
 };
 
 const settings = function readSettings() {
@@ -38,6 +40,16 @@ console.log('Settings: %j', settings);
 
 const app = express();
 app.use(bodyParser.json());
+app.use(history({
+    verbose: true,
+    rewrites: [{
+        from: /.*\/bundle\.js$/,
+        to: '/bundle.js'
+    }, {
+        from: /^\/app\/.*$/,
+        to: '/index.html'
+    }]
+}));
 
 app.get('/api/status', (req, res) => {
     console.log('status requested');
@@ -79,8 +91,9 @@ app.put('/api/status/rescan', (req, res) => {
             console.log(`unable to delete: ${collFile}`, error.message);
         }
         scanTree(settings.mp3Path, COLLECTION).then(() => {
-            express.
-            staticFiles = express.static(settings.mp3Path);
+            express.staticFiles = express.static(settings.mp3Path);
+        }).catch(err => {
+            console.log(`unable to scan tree: ${settings.mp3Path}:`, err.message);
         });
         res.json({ok: true});
     } else {
@@ -168,17 +181,23 @@ app.get('/img/*', (req, res) => {
 
 });
 
-app.use('/mp3', (req, res) => {
-    const path = decodeURI(req.url);
+app.get('/mp3/*', (req, res) => {
+    const path = decodeURI(req.url.substr(4));
     console.log('song requested!', path);
     res.sendFile(path, {root: settings.mp3Path});
 });
 
+
 app.use((req, res) => {
-    console.log('not found', req.url, req);
-    res.status(404).json({
-        errors: {
-            global: 'Still working on it. Please try later'
+    console.log('resource requested: %s', req.url);
+    res.sendFile(req.url, {root: settings.distPath}, error => {
+        if(error) {
+            console.log('not found: ', error.message);
+            res.status(404).json({
+                errors: {
+                    global: 'Still working on it. Please try later'
+                }
+            });
         }
     });
 });

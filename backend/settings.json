@@ -1,3 +1,4 @@
 {
-    "mp3Path": "/home/gerhard/Music/mp3"
+    "mp3Path": "/home/gerhard/Music/mp3",
+    "distPath": "../dist"
 }
