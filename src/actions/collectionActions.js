@@ -3,6 +3,9 @@ import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from '.
 const { collectionUrl } = getConfig({
     collectionUrl: 'http://localhost:9001/api/collection'
 });
+const headers = new Headers({
+    accept: 'application/json'
+});
 
 const requestCollection = () => ({
     type: REQUEST_COLLECTION
@@ -25,7 +28,7 @@ export const getCollection = () => (dispatch, getState) => {
 
         dispatch(requestCollection());
 
-        return fetch(collectionUrl)
+        return fetch(collectionUrl, {headers})
             .then(response => {
                 if (response.ok) {
                     return response.json();

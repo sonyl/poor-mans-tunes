@@ -8,6 +8,10 @@ const GETSTATUS_URL = '/api/status';
 const GETSETTINSG_URL = '/api/settings';
 const UPDATESETTINSG_URL = '/api/settings/${key}';
 const RESCAN_FILES_URL = '/api/status/rescan';
+const headers = new Headers({
+    accept: 'application/json'
+});
+
 
 /* ============ status actions =================*/
 
@@ -24,7 +28,7 @@ export const requestServerStatus = () => (dispatch, getState) => {
         dispatch({
             type: REQUEST_SERVER_STATUS
         });
-        return fetch(GETSTATUS_URL)
+        return fetch(GETSTATUS_URL, {headers})
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -53,7 +57,7 @@ export const requestServerSettings = () => (dispatch, getState) => {
         dispatch({
             type: REQUEST_SERVER_SETTINGS
         });
-        return fetch(GETSETTINSG_URL)
+        return fetch(GETSETTINSG_URL, {headers})
             .then(response => {
                 if (response.ok) {
                     return response.json();
