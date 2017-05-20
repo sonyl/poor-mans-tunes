@@ -26,9 +26,9 @@ const config = {
     },
 
     production: {
-        contextRoot: '/~gerhard/poor-mans-tunes',
-        baseUrl: 'http://www',
-        collectionUrl: '/~gerhard/poor-mans-tunes/files.json',
+        contextRoot: '',
+        baseUrl: 'http://localhost:9001',
+        collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
     }
 };
