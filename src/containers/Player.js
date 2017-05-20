@@ -95,18 +95,29 @@ class Player extends Component {
         }
     }
 
-    componentDidMount() {
-        log('componentDidMount');
-        const bodyStyle = window.getComputedStyle(document.body);
-        this.backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg');
-        this.defaultColor = bodyStyle.getPropertyValue('--main-default-color');
-        this.successColor = bodyStyle.getPropertyValue('--main-success-color');
-        this.warningColor = bodyStyle.getPropertyValue('--main-warning-color');
-        this.dangerColor = bodyStyle.getPropertyValue('--main-danger-color');
+    // read style from css variables lazily,
+    // in prod mode the css variables are not yet set when componentDidMount is called (webpack specific)
+    updateStyle() {
+        log('updateStyle');
+        if(!this.state.style) {
+            const bodyStyle = window.getComputedStyle(document.body);
+            const backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg') || undefined;
+            const defaultColor = bodyStyle.getPropertyValue('--main-default-color') || undefined;
+            const successColor = bodyStyle.getPropertyValue('--main-success-color') || undefined;
+            const warningColor = bodyStyle.getPropertyValue('--main-warning-color') || undefined;
+            const dangerColor = bodyStyle.getPropertyValue('--main-danger-color') || undefined;
+
+            if(backgroundColor || defaultColor || successColor || warningColor || dangerColor) {
+                this.setState({
+                    style: {backgroundColor, defaultColor, successColor, warningColor, dangerColor}
+                });
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps){
         log('componentWillReceiveProps', nextProps, this.props);
+        this.updateStyle();
         if(this.props.url !== nextProps.url) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
@@ -208,7 +219,7 @@ class Player extends Component {
     render () {
         log('render', this.state, this.props);
         const {
-            playing, played, duration
+            playing, played, duration, style
         } = this.state;
 
         const { url, volume } = this.props;
@@ -223,11 +234,11 @@ class Player extends Component {
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
                         <LevelMeter audio={this.player && this.player.getAudio()}
-                                    backgroundColor={this.backgroundColor}
-                                    okColor={this.successColor}
-                                    alarmColor={this.dangerColor}
-                                    warnColor={this.warningColor}
-                                    textColor={this.defaultColor}
+                                    backgroundColor={style && style.backgroundColor}
+                                    okColor={style && style.successColor}
+                                    alarmColor={style && style.dangerColor}
+                                    warnColor={style && style.warningColor}
+                                    textColor={style && style.defaultColor}
                         />
                     </div>
                     <AudioPlayer
