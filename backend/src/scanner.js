@@ -2,8 +2,31 @@ import fs from 'fs';
 import path from 'path';
 import musicmetadata from 'musicmetadata';
 import imgSizeOf from 'image-size';
+import promiseLimit from 'promise-limit';
+
+// promisify the fs functions used
+const readdirAsync = dir => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(dir, (err, list) => { if(err) reject(err); else resolve(list);});
+    });
+};
+
+const statAsync = file => {
+    return new Promise((resolve, reject) => {
+        fs.stat(file, (err, stat) => { if (err) reject(err);  else resolve(stat);});
+    });
+};
+
+const fileReadLimit = promiseLimit(10);
+
+function logQueueDepth() {
+    if(fileReadLimit.queue > 0 && fileReadLimit.queue % 100 === 0) {
+        console.log('\rRemaining:', fileReadLimit.queue);
+    }
+}
 
 export function scanFile(path) {
+    logQueueDepth();
     const stream = fs.createReadStream(path);
     return new Promise((resolve, reject) => {
         musicmetadata(stream, (err, metadata) => {
@@ -21,7 +44,7 @@ export function scanTree(path, destFilename) {
     console.log('scanning: %s', path);
     console.time('finished');
     return walk(path)
-        .then(Promise.all)
+        .then(promises => Promise.all(promises))
         .then(reduce)
         .then(sortAndFlatten)
         .then(findEmbeddedImage)
@@ -77,6 +100,7 @@ function metaToSong({artist, albumartist, album, title, track, disk, year, pictu
 }
 
 function readImgMeta(path) {
+    logQueueDepth();
     if (typeof path !== 'string') {
         throw new TypeError('invalid argument type');
     }
@@ -101,66 +125,45 @@ function metaToImage({type: format, width, height}, file, root) {
     };
 }
 
-function walk (root) {
 
-    var loops = 0;
-
+function walk(root) {
     function hasImageExtension(filename) {
         const f = filename.toLowerCase();
-        var found = false;
+        let found = false;
         ['.jpg', '.png', '.jpeg'].forEach(ext => {
-            if(filename.endsWith(ext)) {
+            if (filename.endsWith(ext)) {
                 found = true;
             }
         });
         return found;
     }
 
-    function walker(start, callback) {
-        loops++;
-        fs.stat(start, function (err, stat) {
-            if (err) {
-                return callback(err);
-            }
-            if (!stat.isDirectory()) {
-                return callback(new Error(`path: ${start} is not a directory`));
-            }
-            fs.readdir(start, function (err, files) {
-                const allFiles = files.reduce(function (acc, i) {
-                    var abspath = path.join(start, i);
-
-                    if (fs.statSync(abspath).isDirectory()) {
-                        walker(abspath, callback);
-                    } else if (i.endsWith('.mp3')) {
-                        acc.push(scanFile(abspath).then(m => metaToSong(m, abspath, root)));
-                    } else if (hasImageExtension(i)) {
-                        acc.push(readImgMeta(abspath).then(m => metaToImage(m, abspath, root)).catch(error => {
-                            console.log('`Error reading image: %s, %s', abspath, error.message);
+    function walker(dir) {
+        return readdirAsync(dir).then(list => {
+            return Promise.all(list.map(file => {
+                file = path.join(dir, file);
+                return statAsync(file).then(stat => {
+                    if (stat.isDirectory()) {
+                        return walker(file);
+                    } else if (file.endsWith('.mp3')) {
+                        return fileReadLimit(() => scanFile(file).then(m => metaToSong(m, file, root)));
+                    } else if (hasImageExtension(file)) {
+                        return fileReadLimit(() => readImgMeta(file).then(m => metaToImage(m, file, root)).catch(error => {
+                            console.log('`Error reading image: %s, %s', file, error.message);
                             return null;
                         }));
                     }
-                    return acc;
-                }, []);
-
-                return callback(null, allFiles);
-            });
+                });
+            }));
+        }).then(function (results) {
+            // flatten the array of arrays
+            return Array.prototype.concat.apply([], results);
         });
     }
 
-    return new Promise(resolve => {
-        var allFiles = [];
-        walker(root, (err, files) => {
-            if(err) {
-                console.log('Error while walking directory tree:', err);
-            } else {
-                allFiles.push(...files);
-            }
-            if(--loops === 0) {
-                resolve(allFiles);
-            }
-        });
-    });
+    return walker(root);
 }
+
 
 function reduce(songsAndImages) {
     if(!Array.isArray(songsAndImages)) {
