@@ -2,6 +2,7 @@ npm-debug.log*
 node_modules
 .idea
 /src/credentials.js
+/src/version.js
 *.iml
 dist
 mp3

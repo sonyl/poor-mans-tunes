@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { version } from '../version';
 
 import { getCollection } from '../actions/collectionActions';
 import { requestServerSettings } from '../actions/serverActions';
@@ -187,7 +188,7 @@ class Main extends Component {
                 </div>
 
                 <Footer
-                    message="Poor Man&rsquo;s Tunes: &copy; 2017"
+                    message={'Poor Man\'s Tunes: \xA9 2017 Build: ' + version.buildDate + ' (env: ' + version.env + ')'}
                     artistCnt={artists.length}
                     albumCnt={albumCnt}
                     songCnt={songCnt} />

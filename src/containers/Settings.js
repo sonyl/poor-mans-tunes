@@ -6,6 +6,8 @@ import dateFormat from 'dateformat';
 import { getCollection, invalidateCollection } from '../actions/collectionActions';
 import { requestServerStatus, requestRescanFiles, updateServerSettings } from '../actions/serverActions';
 
+import ProgressBar from '../components/ProgressBar';
+
 function formatDate(date) {
     return dateFormat(date, 'dd.mm.yy HH:MM:ss');
 }
@@ -97,10 +99,13 @@ class Settings extends Component {
                     <div className="form-group">
                         <div className="col-xs-3">
                             <button className="btn btn-default btn-lg btn-block" id="rescanBtn" onClick={this.buttonClicked}>
-                                Rescan files
+                                rescan files
                             </button>
                         </div>
-                        <div className="col-xs-9"/>
+                        <div className="col-xs-8">
+                            <ProgressBar id='scan-progress' maxValue={100} value={80} text="80%"/>
+                        </div>
+                        <div className="col-xs-1"/>
                     </div>
                     <div className="form-group">
                         <div className="col-xs-3">
