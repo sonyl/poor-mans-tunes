@@ -5,12 +5,13 @@ import bodyParser from 'body-parser';
 import history from 'connect-history-api-fallback';
 import fs from 'fs';
 import path from 'path';
-import {scanTree, scanFile} from './scanner';
+import {scanTree, scanFile, scanStats} from './scanner';
 
 const PORT = 9001;
 const COLLECTION = './collection.json';
+const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
-
+let scanning = false;
 const DEFAULT_SETTINGS = {
     mp3Path: '../mp3',
     distPath: '../dist'
@@ -53,29 +54,33 @@ app.use(history({
 
 app.get('/api/status', (req, res) => {
     console.log('status requested');
-    fs.readFile(COLLECTION, 'utf8', (err, data) =>{
+    fs.readFile(COLLECTION, 'utf8', (err, data) => {
+        let collectionAvailable = true;
         if(err) {
-            res.json({
-                status: 'not ready'
-            });
-        } else {
+            collectionAvailable = false;
+        }
+        let collInfo = {};
+        if(collectionAvailable) {
             try {
                 const collection = JSON.parse(data);
-
-                res.json({
-                    status: 'ready',
+                collInfo = {
                     artists: collection.length,
-                    albums:  collection.reduce((acc, val) => acc + val.albums.length, 0)
-                });
-            } catch(error) {
-                res.status(500).json({
-                    error: {
-                        text: 'error parsing collection file',
-                        detail: error
-                    }
-                });
+                    albums: collection.reduce((acc, val) => acc + val.albums.length, 0),
+                };
+            } catch (error) {
+                collInfo = {
+                    text: 'error parsing collection file',
+                    detail: error.message
+                };
             }
         }
+
+        res.json({
+            status: collectionAvailable ? 'ready' : 'collection missing',
+            scanning,
+            collection: collInfo,
+            scanStatistics: scanStats()
+        });
     });
 });
 
@@ -83,24 +88,34 @@ app.get('/api/status', (req, res) => {
 app.put('/api/status/rescan', (req, res) => {
     console.log('rescan requested');
 
-    if(settings.mp3Path) {
-        try {
-            fs.unlinkSync(COLLECTION);
-        } catch(error) {
-            const collFile = path.normalize(path.resolve('.') + '/' + COLLECTION);
-            console.log(`unable to delete: ${collFile}`, error.message);
-        }
-        scanTree(settings.mp3Path, COLLECTION).then(() => {
-            express.staticFiles = express.static(settings.mp3Path);
-        }).catch(err => {
-            console.log(`unable to scan tree: ${settings.mp3Path}:`, err.message);
-        });
-        res.json({ok: true});
-    } else {
+    if(!settings.mp3Path) {
         res.status(500).json({
             error: 'settings incorrect, please specify mp3Path'
         });
+        return;
+    } else if(scanning) {
+        res.status(409).json({
+            error: 'scan already running'
+        });
+        return;
     }
+
+    try {
+        fs.unlinkSync(NEW_COLLECTION);
+    } catch(error) {
+        // do nothing, this may happen
+    }
+    scanning = true;
+    scanTree(settings.mp3Path, NEW_COLLECTION).then(() => {
+        const currPath = path.resolve('.');
+        fs.renameSync(path.normalize(currPath + '/' + NEW_COLLECTION), path.normalize(currPath + '/' + COLLECTION));
+        express.staticFiles = express.static(settings.mp3Path);
+        scanning = false;
+    }).catch(err => {
+        scanning = false;
+        console.log(`unable to scan tree: ${settings.mp3Path}:`, err.message);
+    });
+    res.json({ok: true});
 });
 
 app.get('/api/settings', (req, res) => {

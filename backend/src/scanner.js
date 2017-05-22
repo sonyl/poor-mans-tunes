@@ -4,6 +4,11 @@ import musicmetadata from 'musicmetadata';
 import imgSizeOf from 'image-size';
 import promiseLimit from 'promise-limit';
 
+let scanActive = false;
+let filesToScan = 0;
+let filesScanned = 0;
+
+
 // promisify the fs functions used
 const readdirAsync = dir => {
     return new Promise((resolve, reject) => {
@@ -19,18 +24,30 @@ const statAsync = file => {
 
 const fileReadLimit = promiseLimit(10);
 
-function logQueueDepth() {
-    if(fileReadLimit.queue > 0 && fileReadLimit.queue % 100 === 0) {
-        console.log('\rRemaining:', fileReadLimit.queue);
+export function scanStats() {
+    if(scanActive) {
+        const percentDone = 100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan);
+        return {
+            percentDone,
+            filesToScan,
+            filesScanned
+        };
     }
 }
 
+
 export function scanFile(path) {
-    logQueueDepth();
+    return _scanFile(path, false);
+}
+
+function _scanFile(path, updateState = true) {
     const stream = fs.createReadStream(path);
     return new Promise((resolve, reject) => {
         musicmetadata(stream, (err, metadata) => {
             stream.close();
+            if(updateState) {
+                filesScanned++;
+            }
             if(err) {
                 reject(err);
             } else {
@@ -41,6 +58,11 @@ export function scanFile(path) {
 }
 
 export function scanTree(path, destFilename) {
+    if(scanActive === true) {
+        throw new Error('Scan already running');
+    }
+    scanActive = true;
+    filesToScan = filesScanned = 0;
     console.log('scanning: %s', path);
     console.time('finished');
     return walk(path)
@@ -51,9 +73,11 @@ export function scanTree(path, destFilename) {
         .then(selectBestImage)
         .then(c => write(c, destFilename))
         .then(() => {
+            scanActive = false;
             console.timeEnd('finished');
         })
         .catch(error => {
+            scanActive = false;
             console.log(error);
             return Promise.reject(error);
         });
@@ -100,13 +124,13 @@ function metaToSong({artist, albumartist, album, title, track, disk, year, pictu
 }
 
 function readImgMeta(path) {
-    logQueueDepth();
     if (typeof path !== 'string') {
         throw new TypeError('invalid argument type');
     }
 
     return new Promise((resolve, reject) => {
         imgSizeOf(path, (error, dimensions) => {
+            filesScanned++;
             if(error) {
                 reject(error);
             } else {
@@ -146,8 +170,10 @@ function walk(root) {
                     if (stat.isDirectory()) {
                         return walker(file);
                     } else if (file.endsWith('.mp3')) {
-                        return fileReadLimit(() => scanFile(file).then(m => metaToSong(m, file, root)));
+                        filesToScan++;
+                        return fileReadLimit(() => _scanFile(file).then(m => metaToSong(m, file, root)));
                     } else if (hasImageExtension(file)) {
+                        filesToScan++;
                         return fileReadLimit(() => readImgMeta(file).then(m => metaToImage(m, file, root)).catch(error => {
                             console.log('`Error reading image: %s, %s', file, error.message);
                             return null;
@@ -209,7 +235,11 @@ function sortAndFlatten(db) {
         const artist = collection[artKey];
         artist.albums = Object.keys(artist.albums).sort().map(albKey => artist.albums[albKey]);
         artist.albums.forEach(album => {
-            album.songs.sort((a, b) => a.track - b.track);
+            album.songs.sort((a, b) => {
+                const diskA = a.disk || Number.MAX_VALUE;
+                const diskB = b.disk || Number.MAX_VALUE;
+                return (diskA === diskB) ? a.track - b.track : diskA - diskB;
+            });
         });
         return artist;
     }));
@@ -270,6 +300,20 @@ function selectBestImage(db) {
                         album.picture = db.images[mainDir];
                     }
                 }
+            } else {
+                const commonParent = getCommonParent(songDirs);
+                if(commonParent && db.images[commonParent]) {
+                    if(isCover(db.images[commonParent].img)){
+                        album.picture = db.images[mainDir];
+                    } else {
+                        // replace album picture if it isn't set already
+                        if (!album.picture) {
+                            console.log('found image for %s-%s: in common parent dir %s: %j',
+                                album.artist, album.album, mainDir, db.images[commonParent]);
+                            album.picture = db.images[commonParent];
+                        }
+                    }
+                }
             }
             if(album.picture) {
                 delete album.picture.width;
@@ -283,6 +327,20 @@ function selectBestImage(db) {
 
 function isCover(fullPath) {
     return path.basename(fullPath).toLowerCase().startsWith('cover.');
+}
+
+function getCommonParent(songDirs) {
+    const dirs = Object.keys(songDirs);
+    if(dirs.length < 2) {
+        return;
+    }
+    return dirs.reduce((acc, dir) => {
+        if(acc === undefined) {
+            return path.resolve(dir, '..');
+        } else if(acc) {
+            return (acc === path.resolve(dir, '..')) ? acc : '';
+        }
+    }, undefined);
 }
 
 function write(db, destFilename) {
