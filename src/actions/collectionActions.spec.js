@@ -1,11 +1,11 @@
 /* eslint-env node, jest */
+import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 import * as actions from './collectionActions';
 import nock from 'nock';
 //eslint-disable-next-line
-import fetch from 'isomorphic-fetch';
 
 
 const createStore = (initialState = {}) => {
