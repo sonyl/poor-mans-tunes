@@ -139,10 +139,10 @@ function metaToImage({type: format, width, height}, file, root) {
 
 function walk(root) {
     function hasImageExtension(filename) {
-        const f = filename.toLowerCase();
+        const fLower = filename.toLowerCase();
         let found = false;
         ['.jpg', '.png', '.jpeg'].forEach(ext => {
-            if (filename.endsWith(ext)) {
+            if (fLower.endsWith(ext)) {
                 found = true;
             }
         });
