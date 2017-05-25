@@ -1,20 +1,19 @@
 /* eslint-env node */
-
+import fs from 'fs';
 import express from 'express';
 import bodyParser from 'body-parser';
 import history from 'connect-history-api-fallback';
-import fs from 'fs';
 import path from 'path';
 import {scanTree, scanFile, scanStats} from './scanner';
-
-const PORT = 9001;
+import fsp from './fs-promise';
 const COLLECTION = './collection.json';
 const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
 let scanning = false;
 const DEFAULT_SETTINGS = {
     mp3Path: '../mp3',
-    distPath: '../dist'
+    distPath: '../dist',
+    port: 9000
 };
 
 const settings = function readSettings() {
@@ -53,34 +52,12 @@ app.use(history({
 }));
 
 app.get('/api/status', (req, res) => {
-    console.log('status requested');
-    fs.readFile(COLLECTION, 'utf8', (err, data) => {
-        let collectionAvailable = true;
-        if(err) {
-            collectionAvailable = false;
-        }
-        let collInfo = {};
-        if(collectionAvailable) {
-            try {
-                const collection = JSON.parse(data);
-                collInfo = {
-                    artists: collection.length,
-                    albums: collection.reduce((acc, val) => acc + val.albums.length, 0),
-                };
-            } catch (error) {
-                collInfo = {
-                    text: 'error parsing collection file',
-                    detail: error.message
-                };
-            }
-        }
-
-        res.json({
-            status: collectionAvailable ? 'ready' : 'collection missing',
-            scanning,
-            collection: collInfo,
-            scanStatistics: scanStats()
-        });
+    const full = 'full' === req.query.full || 'true' === req.query.full;
+    console.log('status requested. full=', full);
+    getStatus(full).then(status => {
+        res.json(status);
+    }).catch(err => {
+        res.json({ error: err.message });
     });
 });
 
@@ -115,7 +92,11 @@ app.put('/api/status/rescan', (req, res) => {
         scanning = false;
         console.log(`unable to scan tree: ${settings.mp3Path}:`, err.message);
     });
-    res.json({ok: true});
+    getStatus(false).then(status => {
+        res.json(status);
+    }).catch(err => {
+        res.json({ error: err.message });
+    });
 });
 
 app.get('/api/settings', (req, res) => {
@@ -217,4 +198,44 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => console.log('server is running on localhost:', PORT));
+app.listen(settings.port, () => console.log('server is running on localhost:', settings.port));
+
+function getStatus(full) {
+    let promise;
+    if(full) {
+        promise = fsp.readFile(COLLECTION, 'utf8').
+            then(data => {
+                let collInfo = {};
+                try {
+                    const collection = JSON.parse(data);
+                    collInfo = {
+                        artists: collection.length,
+                        albums: collection.reduce((acc, val) => acc + val.albums.length, 0)
+                    };
+                } catch (error) {
+                    collInfo = {
+                        text: 'error parsing collection file',
+                        detail: error.message
+                    };
+                }
+                return {
+                    status: 'ready',
+                    collection: collInfo
+                };
+            }, () => {
+                return {
+                    status: 'collection missing'
+                };
+            });
+    } else {
+        promise = fsp.stat(COLLECTION)
+            .then(stats => ({ status: 'ready' }),
+                  err => ({ status: 'collection missing' }));
+    }
+
+    return promise.then(status => {
+        status.scanning = scanning;
+        status.scanStatistics = scanStats();
+        return status;
+    });
+}

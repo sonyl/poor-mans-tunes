@@ -2,7 +2,7 @@ import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_RESCAN_FILES,
     REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from './actionKeys';
 
 import { sendNotification, sendSuccessNotification, sendDangerNotification, dismissNotification } from './notificationsActions';
-import { replaceRequestPlaceholders } from './utils';
+import { replaceRequestPlaceholders, addRequestParams } from './utils';
 
 const GETSTATUS_URL = '/api/status';
 const GETSETTINSG_URL = '/api/settings';
@@ -11,7 +11,6 @@ const RESCAN_FILES_URL = '/api/status/rescan';
 const headers = new Headers({
     accept: 'application/json'
 });
-
 
 /* ============ status actions =================*/
 
@@ -22,25 +21,30 @@ const receiveServerStatus = (status, error) => ({
     receivedAt: Date.now()
 });
 
-export const requestServerStatus = () => (dispatch, getState) => {
+export const requestServerStatus = (full = false) => (dispatch, getState) => {
     const status = getState();
-    if(!status.server.status.isFetching) {
-        dispatch({
-            type: REQUEST_SERVER_STATUS
-        });
-        return fetch(GETSTATUS_URL, {headers})
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Error fetching data: ' + response.statusText);
-                }
-            }).then(json => {
-                dispatch(receiveServerStatus(json));
-            }).catch(error => {
-                dispatch(receiveServerStatus(null, error));
-            });
+    if(status.server.status.isFetching) {
+        return Promise.resolve('isFetching');
     }
+
+    dispatch({
+        type: REQUEST_SERVER_STATUS
+    });
+
+    return fetch(addRequestParams(GETSTATUS_URL, full ? { full: 'full' } : null), {headers})
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error fetching data: ' + response.statusText);
+            }
+        }).then(json => {
+            dispatch(receiveServerStatus(json));
+            return json;
+        }).catch(error => {
+            dispatch(receiveServerStatus(null, error));
+            return error;
+        });
 };
 
 /* ============ settings actions =================*/
@@ -113,8 +117,26 @@ export const requestRescanFiles = () => (dispatch, getState) => {
             }
         }).then(json => {
             console.log('Successfull response from server:', json);
+            dispatch(receiveServerStatus(json));
+            startStatusPolling(dispatch, getState);
+
         }).catch(error => {
             console.log('Error response from server:', error);
         });
 };
 
+function startStatusPolling(dispatch, getState) {
+
+    const registerHandler = timeout => {
+        setTimeout(() => {
+            const res = dispatch(requestServerStatus(false));
+            res.then(result => {
+                if (result && (result === 'isFetching' || result.scanning)) {
+                    registerHandler(1000);
+                }
+            });
+
+        }, timeout); //
+    };
+    registerHandler(2000);
+}

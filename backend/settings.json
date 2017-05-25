@@ -1,4 +1,5 @@
 {
-    "mp3Path": "/mnt/public/mp3",
-    "distPath": "../dist"
+    "mp3Path": "/home/gerhard/Music/mp3",
+    "distPath": "../dist",
+    "port": 9001
 }

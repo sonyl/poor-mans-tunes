@@ -37,7 +37,7 @@ class Settings extends Component {
             invalidateCollection();
             getCollection();
         } else if(event.target.id === 'updateStatusBtn') {
-            requestServerStatus();
+            requestServerStatus(true);
         } else if(event.target.id === 'rescanBtn') {
             requestRescanFiles();
         } else if(event.target.id === 'updateSettingsBtn') {
@@ -46,15 +46,26 @@ class Settings extends Component {
     };
 
     onChange = event => {
-        console.log('Input changed', event.target.value);
         this.setState({
             mp3Path: event.target.value
         });
     };
 
+    renderProgressBar() {
+        const status = this.props.serverStatus && this.props.serverStatus.status;
+        if (status && status.scanning && status.scanStatistics) {
+            return (
+                <ProgressBar id='scan-progress' maxValue={100} value={status.scanStatistics.percentDone}
+                                text={status.scanStatistics.percentDone + '%'} />
+            );
+        }
+    }
+
     render = () => {
 
         const {lastUpdate, serverStatus, serverSettings} = this.props;
+        const scanning = serverStatus && serverStatus.status && serverStatus.status.scanning;
+        const ready = serverStatus && serverStatus.status && serverStatus.status.status ==='ready';
         let mp3PathInput;
 
         return (
@@ -98,19 +109,20 @@ class Settings extends Component {
                     </div>
                     <div className="form-group">
                         <div className="col-xs-3">
-                            <button className="btn btn-default btn-lg btn-block" id="rescanBtn" onClick={this.buttonClicked}>
+                            <button className="btn btn-default btn-lg btn-block" id="rescanBtn"
+                                    disabled={scanning} onClick={this.buttonClicked}>
                                 rescan files
                             </button>
                         </div>
-                        <div className="col-xs-8">
-                            <ProgressBar id='scan-progress' maxValue={100} value={80} text="80%"/>
+                        <div className="col-xs-8" style={{'marginTop': '10px'}}>
+                            { this.renderProgressBar() }
                         </div>
                         <div className="col-xs-1"/>
                     </div>
                     <div className="form-group">
                         <div className="col-xs-3">
                             <button className="btn btn-default btn-lg btn-block" id="reloadCollectionBtn"
-                                    onClick={this.buttonClicked}>
+                                    disabled={!ready} onClick={this.buttonClicked}>
                                 reload collection
                             </button>
                         </div>

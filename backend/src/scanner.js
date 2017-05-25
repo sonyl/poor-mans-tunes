@@ -3,30 +3,17 @@ import path from 'path';
 import musicmetadata from 'musicmetadata';
 import imgSizeOf from 'image-size';
 import promiseLimit from 'promise-limit';
+import fsp from './fs-promise';
 
 let scanActive = false;
 let filesToScan = 0;
 let filesScanned = 0;
 
-
-// promisify the fs functions used
-const readdirAsync = dir => {
-    return new Promise((resolve, reject) => {
-        fs.readdir(dir, (err, list) => { if(err) reject(err); else resolve(list);});
-    });
-};
-
-const statAsync = file => {
-    return new Promise((resolve, reject) => {
-        fs.stat(file, (err, stat) => { if (err) reject(err);  else resolve(stat);});
-    });
-};
-
 const fileReadLimit = promiseLimit(10);
 
 export function scanStats() {
     if(scanActive) {
-        const percentDone = 100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan);
+        const percentDone = !filesToScan ? 0 : (100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan));
         return {
             percentDone,
             filesToScan,
@@ -71,7 +58,7 @@ export function scanTree(path, destFilename) {
         .then(sortAndFlatten)
         .then(findEmbeddedImage)
         .then(selectBestImage)
-        .then(c => write(c, destFilename))
+        .then(c => fsp.writeFile(destFilename, JSON.stringify(c.collection, null, 2)))
         .then(() => {
             scanActive = false;
             console.timeEnd('finished');
@@ -163,10 +150,10 @@ function walk(root) {
     }
 
     function walker(dir) {
-        return readdirAsync(dir).then(list => {
+        return fsp.readdir(dir).then(list => {
             return Promise.all(list.map(file => {
                 file = path.join(dir, file);
-                return statAsync(file).then(stat => {
+                return fsp.stat(file).then(stat => {
                     if (stat.isDirectory()) {
                         return walker(file);
                     } else if (file.endsWith('.mp3')) {
@@ -342,19 +329,3 @@ function getCommonParent(songDirs) {
         }
     }, undefined);
 }
-
-function write(db, destFilename) {
-    //fs.writeFileSync(destFilename + '.raw', JSON.stringify(db, null, 2));
-
-    return new Promise((resolve, reject) => {
-        fs.writeFile(destFilename, JSON.stringify(db.collection, null, 2), error => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
-
-

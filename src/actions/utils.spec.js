@@ -46,6 +46,18 @@ describe('utils', () => {
 
 
     describe('addRequestParams', () => {
+        it('should add nothing if argument is null or empty', () => {
+            const replaced = addRequestParams('http://server', null);
+            expect(replaced).toEqual('http://server/');
+
+            const replaced2 = addRequestParams('http://server', undefined);
+            expect(replaced2).toEqual('http://server/');
+        });
+        it('should add nothing if argument has no keys', () => {
+            const replaced = addRequestParams('http://server', {});
+            expect(replaced).toEqual('http://server/');
+        });
+
         it('should add single parameter', () => {
             const replaced = addRequestParams('http://server', {abc: 'xyz'});
             expect(replaced).toEqual('http://server/?abc=xyz');

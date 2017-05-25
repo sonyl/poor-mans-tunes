@@ -11,7 +11,12 @@ const server = (state = {status: {isFetching: false}, settings: {isFetching: fal
                     isFetching: true
                 }
             };
-        case RECEIVE_SERVER_STATUS:
+        case RECEIVE_SERVER_STATUS: {
+            // TODO: reorganize state
+            const prevCollection = state.status && state.status.status && state.status.status.collection;
+            if (action.status && !action.status.collection && state.status && prevCollection) {
+                action.status.collection = prevCollection;
+            }
             return {
                 ...state,
                 status: {
@@ -21,6 +26,7 @@ const server = (state = {status: {isFetching: false}, settings: {isFetching: fal
                     error: action.error
                 }
             };
+        }
         case REQUEST_SERVER_SETTINGS:
             return {
                 ...state,

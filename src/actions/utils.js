@@ -16,12 +16,18 @@ export function replaceRequestPlaceholders (templ, params) {
 
 export function addRequestParams(baseUrl, params) {
 
-    const esc = encodeURIComponent;
-    const query = Object.keys(params)
-        .map(k => esc(k) + '=' + esc(params[k]))
-        .join('&');
+    if(params !== null && typeof params === 'object') {
+        const keys = Object.keys(params);
+        if(keys.length) {
+            const esc = encodeURIComponent;
+            const query = Object.keys(params)
+                .map(k => esc(k) + '=' + esc(params[k]))
+                .join('&');
 
-    return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
+            return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
+        }
+    }
+    return baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 }
 
 export const fetchLastFm = (method, args) => {
