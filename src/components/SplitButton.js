@@ -23,6 +23,7 @@ class SplitButton extends Component {
 
         this.toggleState = this.toggleState.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.onBlur = this.onBlur.bind(this);
     }
 
 
@@ -31,7 +32,6 @@ class SplitButton extends Component {
     }
 
     onClick(e) {
-        e.preventDefault();
         const name = e.currentTarget.name;
 
         if(this.state.open) {
@@ -51,6 +51,13 @@ class SplitButton extends Component {
         }
     }
 
+    onBlur() {
+        setTimeout(() => { // if(nothing is clicked in dropdown after 200ms, the SplitButtin has lost focus, -> close()
+            if(this.state.open) {
+                this.setState({open: false});
+            }
+        }, 200);
+    }
 
     render() {
 
@@ -70,7 +77,8 @@ class SplitButton extends Component {
                 <button type="button" className={btnClassNames(size)} onClick={this.onClick} name="default">
                     { getDefaulLabel() }
                 </button>
-                <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={this.toggleState}>
+                <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={this.toggleState}
+                        onBlur={this.onBlur}>
                     <span className="caret"/>
                 </button>
                 <ul className="dropdown-menu">
