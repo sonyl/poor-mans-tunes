@@ -1,6 +1,8 @@
-import React, { Component, PropTypes }  from 'react';
+import React, { Component }  from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
+import { sendNotification } from '../actions/notificationsActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
 import { setVolume } from '../actions/settingsActions';
 import { getAlbumInfo, getAlbumByName, getValueFromSettings } from '../reducers';
@@ -11,7 +13,7 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
+import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -88,26 +90,39 @@ class Player extends Component {
             if(props.artist && props.album) {
                 this.props.requestAlbum(props.artist, props.album);
             }
-            sendNotification('Now playing:', props.title);
+            sendDesktopNotification('Now playing:', props.title);
+            props.sendNotification('Now playing:', props.title);
         }
     }
 
-    componentDidMount() {
-        log('componentDidMount');
-        const bodyStyle = window.getComputedStyle(document.body);
-        this.backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg');
-        this.defaultColor = bodyStyle.getPropertyValue('--main-default-color');
-        this.successColor = bodyStyle.getPropertyValue('--main-success-color');
-        this.warningColor = bodyStyle.getPropertyValue('--main-warning-color');
-        this.dangerColor = bodyStyle.getPropertyValue('--main-danger-color');
+    // read style from css variables lazily,
+    // in prod mode the css variables are not yet set when componentDidMount is called (webpack specific)
+    updateStyle() {
+        log('updateStyle');
+        if(!this.state.style) {
+            const bodyStyle = window.getComputedStyle(document.body);
+            const backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg') || undefined;
+            const defaultColor = bodyStyle.getPropertyValue('--main-default-color') || undefined;
+            const successColor = bodyStyle.getPropertyValue('--main-success-color') || undefined;
+            const warningColor = bodyStyle.getPropertyValue('--main-warning-color') || undefined;
+            const dangerColor = bodyStyle.getPropertyValue('--main-danger-color') || undefined;
+
+            if(backgroundColor || defaultColor || successColor || warningColor || dangerColor) {
+                this.setState({
+                    style: {backgroundColor, defaultColor, successColor, warningColor, dangerColor}
+                });
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps){
         log('componentWillReceiveProps', nextProps, this.props);
+        this.updateStyle();
         if(this.props.url !== nextProps.url) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
-                sendNotification(`Now playing: ${nextProps.title}`);
+                sendDesktopNotification('Now playing:', nextProps.title);
+                this.props.sendNotification('Now playing:', nextProps.title);
             } else {
                 newState.played = 0;
                 newState.duration = 0;
@@ -204,7 +219,7 @@ class Player extends Component {
     render () {
         log('render', this.state, this.props);
         const {
-            playing, played, duration
+            playing, played, duration, style
         } = this.state;
 
         const { url, volume } = this.props;
@@ -219,11 +234,11 @@ class Player extends Component {
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
                         <LevelMeter audio={this.player && this.player.getAudio()}
-                                    backgroundColor={this.backgroundColor}
-                                    okColor={this.successColor}
-                                    alarmColor={this.dangerColor}
-                                    warnColor={this.warningColor}
-                                    textColor={this.defaultColor}
+                                    backgroundColor={style && style.backgroundColor}
+                                    okColor={style && style.successColor}
+                                    alarmColor={style && style.dangerColor}
+                                    warnColor={style && style.warningColor}
+                                    textColor={style && style.defaultColor}
                         />
                     </div>
                     <AudioPlayer
@@ -282,6 +297,18 @@ class Player extends Component {
                     <div className="row">
                         <div className="col-xs-12">
                             <div className="form-group">
+                                <Slider
+                                    id="player-volume"
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    value={adjustedVol}
+                                    onChange={this.setVolume} />
+                                <label htmlFor="player-volume">Volume</label>
+                            </div>
+                        </div>
+                        <div className="col-xs-12">
+                            <div className="form-group">
                                 <Slider id="player-seek"
                                         min={0} max={1} step={0.01}
                                         value={played}
@@ -291,18 +318,6 @@ class Player extends Component {
                                         onMouseUp={this.onSeekMouseUp}
                                 />
                                 <label htmlFor="player-seek">Seek</label>
-                            </div>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="form-group">
-                                <Slider
-                                    id="player-volume"
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={adjustedVol}
-                                    onChange={this.setVolume} />
-                                <label htmlFor="player-volume">Volume</label>
                             </div>
                         </div>
                         <div className="col-xs-12">
@@ -328,7 +343,8 @@ Player.propTypes = {
     albumInfo: PropTypes.object,
     colAlbum: PropTypes.object,
     nextSong: PropTypes.func,
-    requestAlbum: PropTypes.func
+    requestAlbum: PropTypes.func,
+    sendNotification: PropTypes.func
 };
 
 const mapStateToProps = state => {
@@ -350,7 +366,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
-    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album))
+    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album)),
+    sendNotification: (head, msg) => dispatch(sendNotification(head, msg))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);

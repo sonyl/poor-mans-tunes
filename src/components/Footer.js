@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 
 
 function Footer({message, artistCnt, albumCnt, songCnt}) {

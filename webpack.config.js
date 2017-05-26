@@ -1,6 +1,12 @@
 /* eslint-env node */
 const webpack = require('webpack');
 const path = require('path');
+const VersionFile = require('webpack-version-file');
+const versionTemplate = '/* eslint max-len: 0 */ \n'
+        + 'export const version = '
+        + '{name: \'<%= name %>\', version: \'<%= version %>\', buildDate: \'<%= buildDate %>\', env: \'<%= env %>\'};';
+
+const server = 'http://localhost:9001';
 
 var entry;
 
@@ -31,7 +37,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'bundle.js',
-        publicPath: '/',
+        publicPath: '/'
     },
 
     resolve: {
@@ -86,7 +92,15 @@ module.exports = {
                 'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             }
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new VersionFile({
+            output: path.join(__dirname, 'src', 'version.js'),
+            data: {
+                env: process.env.NODE_ENV || 'development'
+            },
+            templateString: versionTemplate
+
+        })
     ],
 
     devServer: {
@@ -101,10 +115,18 @@ module.exports = {
         },
         proxy: {
             '/mp3': {
-                target: 'http://localhost:8083',
-  //              target: 'http://www.home',
+                target: server,
+                logLevel: 'debug'
+            },
+            '/api': {
+                target: server,
+                logLevel: 'debug'
+            },
+            '/img': {
+                target: server,
                 logLevel: 'debug'
             }
+
         }
     }
 };

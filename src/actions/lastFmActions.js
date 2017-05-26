@@ -1,5 +1,9 @@
 import {fetchLastFm} from './utils';
 import { REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM } from './actionKeys';
+import getConfig from '../config';
+
+const { skipLastFmArtist, skipLastFmAlbum  } = getConfig({skipLastFmArtist: false, skipLastFmAlbum: false});
+
 
 /* ============ artist actions =================*/
 const requestArtist = (artist) => ({
@@ -27,6 +31,10 @@ export const requestArtistIfNotExists = artist => (dispatch, getState) => {
     }
 
     dispatch(requestArtist(artist));
+    if(skipLastFmArtist) {
+        dispatch(receiveArtist(artist, {}, 'switched off'));
+        return Promise.resolve();
+    }
 
     return fetchLastFm('artist.getcorrection', {artist})
         .then(response => {
@@ -90,6 +98,11 @@ export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) =
     }
 
     dispatch(requestAlbum(artist, album));
+
+    if(skipLastFmAlbum) {
+        dispatch(receiveAlbum(artist, album, {}, 'switched off'));
+        return Promise.resolve();
+    }
 
     return fetchLastFm('album.getinfo', {artist, album, autocorrect: '1'})
         .then(response => {

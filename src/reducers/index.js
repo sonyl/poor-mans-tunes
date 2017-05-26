@@ -6,6 +6,8 @@ import selection, * as fromSelection from './selectionReducer';
 import settings, * as fromSettings from './settingsReducer';
 import lastFm, * as fromLastFm from './lastFmReducer';
 import collection, * as fromCollection from './collectionReducer';
+import server, * as fromServer from './serverReducer';
+import notifications from './notificationsReducer';
 
 const rootReducer = combineReducers({
     collection,
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
     playlist,
     lastFm,
     settings,
+    server,
+    notifications,
     router: routerReducer
 });
 
@@ -20,6 +24,7 @@ export default rootReducer;
 
 /* ============ selectors ================= */
 export const getArtists = (state, ...args) => fromCollection.getArtists(state.collection, ...args);
+export const getLastCollectionUpdate = (state) => fromCollection.getLastUpdate(state.collection);
 export const getAlbumByName = (state, ...args) => fromCollection.getAlbumByName(state.collection, ...args);
 export const getRandomSong = (state, ...args) => fromCollection.getRandomSong(state.collection, ...args);
 export const getRandomAlbumSongs = (state, ...args) => fromCollection.getRandomAlbumSongs(state.collection, ...args);
@@ -28,6 +33,8 @@ export const getAlbumInfo = (state, ...args) => fromLastFm.getAlbumInfo(state.la
 export const isPlaylistEmpty = (state) => fromPlaylist.isPlaylistEmpty(state.playlist);
 export const getValueFromSettings = (state, ...args) => fromSettings.getValue(state.settings, ...args);
 export const isSetInSettings = (state, ...args) => fromSettings.isSet(state.settings, ...args);
+export const getServerStatus = (state) => fromServer.getStatus(state.server.status);
+export const getServerSettings = (state) => fromServer.getSettings(state.server.settings);
 
 export const getSelectedArtist = state => fromCollection.getArtist(
     state.collection,

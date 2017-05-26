@@ -22,11 +22,22 @@ const notify = (title, body, icon) => {
     setTimeout(n.close.bind(n), 5000);
 };
 
-export const sendNotification = (title, body, icon) => {
+export const sendDesktopNotification = (title, body, icon) => {
     if (!('Notification' in window)) {
         console.log('This browser does not support desktop notifications: ', title, body);
         return;
     }
+
+    if (!('hidden' in document)) {
+        console.log('This browser does not support document.hidden, we don\'t know if application window is hidden: ', title, body);
+        return;
+    }
+
+    if(!document.hidden) {
+        console.log('The application window is visible, we do not need to send notifications: ', title, body);
+        return;
+    }
+
 
     // Let's check whether notification permissions have already been granted
     if (Notification.permission === 'granted') {
@@ -64,12 +75,14 @@ export const getLastFmThumbnail = (lastFmInfo, maxSize=LASTFM_IMG_SIZE_ULTRA) =>
 };
 
 export const getCoverUrl = album => {
-    const coverUrl = album && album.coverUrl;
-    return coverUrl ? baseUrl + coverUrl : null;
+    // const coverUrl = album && album.coverUrl;
+    // return coverUrl ? baseUrl + coverUrl : null;
+    const mp3Song = album && album.picture && (album.picture.mp3 || album.picture.img);
+    return mp3Song ? baseUrl + '/img' + mp3Song : null;
 };
 
 export const createMp3Url = (part) => {
-    return part ? (baseUrl + part) : null;
+    return part ? (baseUrl + '/mp3' + part) : null;
 };
 
 

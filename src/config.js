@@ -1,11 +1,21 @@
 /* global process:false */
-
+/*
+develop: {
+    contextRoot: '',
+        baseUrl:  'http://localhost:9000',
+        collectionUrl: '/public/files2.json',
+        lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
+},
+*/
 const config = {
     develop: {
         contextRoot: '',
         baseUrl:  'http://localhost:9000',
-        collectionUrl: '/public/files.json',
-        lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
+//        collectionUrl: '/public/files2.json',
+        collectionUrl: '/api/collection',
+        lastFmBase: 'http://ws.audioscrobbler.com/2.0/',
+        skipLastFmArtist: false,
+        skipLastFmAlbum: false
     },
 
     test: {
@@ -16,9 +26,9 @@ const config = {
     },
 
     production: {
-        contextRoot: '/~gerhard/poor-mans-tunes',
-        baseUrl: 'http://www',
-        collectionUrl: '/~gerhard/poor-mans-tunes/files.json',
+        contextRoot: '',
+ //       baseUrl: 'http://localhost:9001',
+        collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
     }
 };

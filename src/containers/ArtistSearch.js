@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
@@ -11,7 +12,7 @@ const log = createLog(ENABLE_LOG, 'ArtistSearch');
 
 const theme = {
     input: {
-        width: '500px'
+        width: '300px'
     },
     containerOpen: {
 

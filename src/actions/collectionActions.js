@@ -1,7 +1,10 @@
 import getConfig from '../config.js';
 import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from './actionKeys';
 const { collectionUrl } = getConfig({
-    collectionUrl: '/public/files.json'
+    collectionUrl: 'http://localhost:9001/api/collection'
+});
+const headers = new Headers({
+    accept: 'application/json'
 });
 
 const requestCollection = () => ({
@@ -15,22 +18,29 @@ const receiveCollection = (artists, error) => ({
     receivedAt: Date.now()
 });
 
-export const getCollection = () => dispatch => {
+const shouldFetchCollection = state => {
+    const collection = state.collection;
+    return !collection || collection.didInvalidate != false;
+};
 
-    dispatch(requestCollection());
+export const getCollection = () => (dispatch, getState) => {
+    if(shouldFetchCollection(getState())) {
 
-    return fetch(collectionUrl)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Error fetching data: ' + response.statusText);
-            }
-        }).then(json => {
-            dispatch(receiveCollection(json));
-        }).catch(e => {
-            dispatch(receiveCollection([], e));
-        });
+        dispatch(requestCollection());
+
+        return fetch(collectionUrl, {headers})
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error fetching data: ' + response.statusText);
+                }
+            }).then(json => {
+                dispatch(receiveCollection(json));
+            }).catch(e => {
+                dispatch(receiveCollection([], e));
+            });
+    }
 };
 
 export const invalidateCollection = () => ({

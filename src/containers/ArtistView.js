@@ -1,11 +1,12 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
 import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
 import NavLink from '../components/NavLink';
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'ArtistView');
 
 const ArtistView = ({artist, lastFmInfo}) => {

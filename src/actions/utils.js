@@ -5,14 +5,29 @@ const { lastFmBase } = getConfig({lastFmBase: 'http://ws.audioscrobbler.com/2.0/
 
 const DO_NOT_FETCH = false;
 
-function buildUrl(baseUrl, params) {
+export function replaceRequestPlaceholders (templ, params) {
+    const regExp = new RegExp('\\$\\{(.*?)\\}');  // *? means non-greedy, we do not use 'g' flag intentionally
+    let match;
+    while ((match = regExp.exec(templ)) != null) {
+        templ = templ.substring(0, match.index) + (params[match[1]] || '') + templ.substring(match.index + match[0].length);
+    }
+    return templ;
+}
 
-    const esc = encodeURIComponent;
-    const query = Object.keys(params)
-        .map(k => esc(k) + '=' + esc(params[k]))
-        .join('&');
+export function addRequestParams(baseUrl, params) {
 
-    return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
+    if(params !== null && typeof params === 'object') {
+        const keys = Object.keys(params);
+        if(keys.length) {
+            const esc = encodeURIComponent;
+            const query = Object.keys(params)
+                .map(k => esc(k) + '=' + esc(params[k]))
+                .join('&');
+
+            return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
+        }
+    }
+    return baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 }
 
 export const fetchLastFm = (method, args) => {
@@ -27,5 +42,5 @@ export const fetchLastFm = (method, args) => {
         return Promise.reject(new Error('Fetching is disabled'));
     }
 
-    return fetch(buildUrl(lastFmBase, params));
+    return fetch(addRequestParams(lastFmBase, params));
 };

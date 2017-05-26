@@ -1,4 +1,5 @@
-import React, {PropTypes, Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
@@ -7,7 +8,7 @@ import SplitButton from '../components/SplitButton';
 import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
 
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AlbumView');
 
 

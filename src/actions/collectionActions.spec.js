@@ -1,11 +1,11 @@
 /* eslint-env node, jest */
+import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 import * as actions from './collectionActions';
 import nock from 'nock';
 //eslint-disable-next-line
-import fetch from 'isomorphic-fetch';
 
 
 const createStore = (initialState = {}) => {
@@ -73,5 +73,12 @@ describe('getCollection', () => {
             expect(store.getState().collection).toEqual(expectedState);
             return null;
         });
+    });
+
+    it('does not fetch if current collection is valid', () => {
+
+        store = createStore({collection: { artists: ['some artist'], didInvalidate: false}});
+
+        expect(store.dispatch(actions.getCollection())).toBeUndefined;
     });
 });
