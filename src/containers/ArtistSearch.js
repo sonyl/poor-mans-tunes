@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { createLinkUrl, createLog } from '../components/utils';
@@ -87,8 +87,7 @@ class ArtistSearch extends Component {
         this.state = {
             db: reorganize(props.artists),
             suggestions: [],
-            value: '',
-            redirect: ''
+            value: ''
         };
     }
 
@@ -145,20 +144,14 @@ class ArtistSearch extends Component {
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
         log('onSuggestionSelected', 'suggestion=%o, opts=%o', suggestion, opts);
         if(suggestion) {
-            this.setState({
-                redirect: createLinkUrl(suggestion.artist, suggestion.album)
-            });
-
+            this.props.history.push(createLinkUrl(suggestion.artist, suggestion.album));
         }
     };
 
     render() {
-        const { value, suggestions, redirect } = this.state;
+        const { value, suggestions } = this.state;
 
         log('render', 'props=', this.props);
-        if(redirect) {
-            log('render', 'redirect:', redirect);
-        }
 
         // Autosuggest will pass through all these props to the input element.
         const inputProps = {
@@ -168,20 +161,17 @@ class ArtistSearch extends Component {
         };
 
         return (
-             <span>
-                <Autosuggest
-                    theme={theme}
-                    suggestions={suggestions}
-                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                    onSuggestionSelected={this.onSuggestionSelected}
-                    getSuggestionValue={getSuggestionValue}
-                    renderSuggestion={renderSuggestion}
-                    renderInputComponent={renderInputComponent}
-                    inputProps={inputProps}
-                />
-                { redirect && <Redirect to={redirect} /> }
-             </span>
+            <Autosuggest
+                theme={theme}
+                suggestions={suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                onSuggestionSelected={this.onSuggestionSelected}
+                getSuggestionValue={getSuggestionValue}
+                renderSuggestion={renderSuggestion}
+                renderInputComponent={renderInputComponent}
+                inputProps={inputProps}
+            />
         );
     }
 }
@@ -190,4 +180,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps)(ArtistSearch);
+export default withRouter(connect(mapStateToProps)(ArtistSearch));

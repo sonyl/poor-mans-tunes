@@ -1,7 +1,7 @@
 /* global process:false module:false, require:false */
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router , Route } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
@@ -42,9 +42,9 @@ if(module.hot) {        // enable hot reload of reducers
 render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
-            <Router basename={contextRoot} >
+            <BrowserRouter basename={contextRoot} >
                 <Route path="/" component={Main} />
-            </Router>
+            </BrowserRouter>
         </ConnectedRouter>
     </Provider>, document.getElementById('app')
 );

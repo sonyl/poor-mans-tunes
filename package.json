@@ -20,6 +20,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "dateformat": "^2.0.0",
+    "history": "^4.6.1",
     "prop-types": "^15.5.8",
     "react": "^15.4.1",
     "react-autosuggest": "^9.0.0",
@@ -28,7 +29,7 @@
     "react-dom": "^15.5.0",
     "react-redux": "^5.0.1",
     "react-router-dom": "^4.0.0",
-    "react-router-redux": "^5.0.0-alpha.4",
+    "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "sanitize-html": "^1.13.0",

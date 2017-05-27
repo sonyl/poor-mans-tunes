@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom'; // NavLink was introduced in react-router(-dom) v4
 
 export default ({activate=true, ...props}) => {
-    const activeClassName = activate ? 'active' : '';  // not used in latest v4 relase, TODO: find v4 solution
-    return <Link {...props}  activeClassName={activeClassName} className="nav-link"/>;
+    const activeClassName = activate ? 'active' : '';
+    return <NavLink {...props}  activeClassName={activeClassName} className="nav-link"/>;
 };
