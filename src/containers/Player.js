@@ -192,6 +192,10 @@ class Player extends Component {
     onEnded = () => {
         this.setState({ playing: false, played: 0});
         this.nextSong();
+        const modal = this.props.modal;
+        if(modal) {
+            modal.hide();
+        }
     };
 
     onPause = () => {
