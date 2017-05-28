@@ -1,11 +1,16 @@
 /* eslint-env node, jest */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
+import { MemoryRouter } from 'react-router-dom';
 import NavLink from './NavLink';
 
-function setup(props = {}) {
+function setup(props = {to: 'http://dummy.com'}) {
 
-    const enzymeWrapper = shallow(<NavLink {...props} />);
+    const enzymeWrapper = mount(
+        <MemoryRouter location="/">
+            <NavLink to="http://dummy.com" {...props} />
+        </MemoryRouter>
+    );
 
     return {
         props,
@@ -17,20 +22,22 @@ describe('NavLink', () => {
 
     it('should render self', () => {
         const { enzymeWrapper } = setup();
-        expect(enzymeWrapper.find('Link').hasClass('nav-link')).toBe(true);
-        expect(enzymeWrapper.find('Link').prop('activeClassName')).toBe('active');
+        //console.log(enzymeWrapper.debug());
+        expect(enzymeWrapper.find('NavLink').hasClass('nav-link')).toBe(true);
+        expect(enzymeWrapper.find('NavLink').prop('activeClassName')).toBe('active');
     });
 
     it('should be able to deactivate activeClassName feature', () => {
         const { enzymeWrapper } = setup({activate: false});
-        expect(enzymeWrapper.find('Link').hasClass('nav-link')).toBe(true);
-        expect(enzymeWrapper.find('Link').prop('activeClassName')).toBe('');
+        expect(enzymeWrapper.find('NavLink').hasClass('nav-link')).toBe(true);
+        expect(enzymeWrapper.find('NavLink').prop('activeClassName')).toBe('');
     });
 
     it('should render self and 	pass-through props', () => {
         const { enzymeWrapper } = setup({style:{backgroundColor: 'black'}});
-        expect(enzymeWrapper.find('Link').hasClass('nav-link')).toBe(true);
-        expect(enzymeWrapper.find('Link').prop('style')).toEqual({backgroundColor: 'black'});
+        expect(enzymeWrapper.find('NavLink').hasClass('nav-link')).toBe(true);
+        expect(enzymeWrapper.find('NavLink').prop('style')).toEqual({backgroundColor: 'black'});
     });
 
 });
+
