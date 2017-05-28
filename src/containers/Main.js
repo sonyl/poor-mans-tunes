@@ -7,7 +7,7 @@ import { getCollection } from '../actions/collectionActions';
 import { requestServerSettings } from '../actions/serverActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
 import { setPlayRandomSong, setPlayRandomAlbum } from '../actions/settingsActions';
-import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings } from '../reducers';
+import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings, getLyrics, getCurrentSong } from '../reducers';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -18,7 +18,9 @@ import Player from './Player';
 import Footer from '../components/Footer';
 import Settings from './Settings';
 import Notifications from './Notifications';
-import { createLog } from '../components/utils';
+import Modal from 'boron/ScaleModal';
+
+import { sanitizeHtml, createLog } from '../components/utils';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Main');
@@ -140,10 +142,24 @@ class Main extends Component {
         }
     };
 
+    hideModal = () => {
+        this.modal.hide();
+    };
+
     render() {
         log('render', 'props=', this.props);
 
-        const {artists, isPlayRandomSong, isPlayRandomAlbum} = this.props;
+        const modalStyle = {
+            height: '90vh',
+            overflowY: 'auto',
+            fontSize: '18px'
+        };
+
+        const contentStyle = {
+            paddingLeft: '10px'
+        };
+
+        const {artists, isPlayRandomSong, isPlayRandomAlbum, lyrics} = this.props;
         const {activeTab} = this.state;
 
         const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
@@ -174,7 +190,7 @@ class Main extends Component {
                                 <AlbumView  />
                             </div>
                             <div className="col-md-4">
-                                <Player />
+                                <Player modal={this.modal}/>
                                 <PlaylistView />
                             </div>
                         </div>
@@ -186,6 +202,17 @@ class Main extends Component {
                         <Settings />
                     </div>
                 </div>
+                <Modal ref={ modal => this.modal = modal } modalStyle={modalStyle} contentStyle={contentStyle}>
+                    {
+                        (lyrics && (lyrics.lyrics || lyrics.error)) ?
+                            <div dangerouslySetInnerHTML={sanitizeHtml(lyrics.lyrics || lyrics.error)}/>
+                                :
+                            <div />
+                        }
+                    <div className="text-center">
+                        <button className="btn btn-primary btn-md" onClick={this.modal && this.modal.hide}>Close</button>
+                    </div>
+                </Modal>
 
                 <Footer
                     message={'Poor Man\'s Tunes: \xA9 2017 Build: ' + version.buildDate + ' (env: ' + version.env + ')'}
@@ -202,7 +229,6 @@ class Main extends Component {
         selectedAlbum: PropTypes.object.isRequired,
         isPlayRandomSong: PropTypes.bool.isRequired,
         isPlayRandomAlbum: PropTypes.bool.isRequired,
-        playlist: PropTypes.arrayOf(PropTypes.object).isRequired,
 
         getCollection: PropTypes.func.isRequired,
         requestServerSettings: PropTypes.func.isRequired,
@@ -221,7 +247,7 @@ const mapStateToProps = state => ({
     selectedAlbum: getSelectedAlbum(state),
     isPlayRandomSong: isSetInSettings(state, 'playRandomSong'),
     isPlayRandomAlbum: isSetInSettings(state, 'playRandomAlbum'),
-    playlist: state.playlist
+    lyrics: getLyrics( state)
 });
 
 const mapDispatchToProps = {

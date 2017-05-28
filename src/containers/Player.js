@@ -5,7 +5,8 @@ import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
 import { sendNotification } from '../actions/notificationsActions';
 import { requestAlbumIfNotExists } from '../actions/lastFmActions';
 import { setVolume } from '../actions/settingsActions';
-import { getAlbumInfo, getAlbumByName, getValueFromSettings } from '../reducers';
+import { requestSongLyricsIfNotExists } from '../actions/lyricsActions';
+import { getAlbumInfo, getAlbumByName, getValueFromSettings, getLyrics } from '../reducers';
 
 import AudioPlayer from '../components/AudioPlayer';
 import Slider from '../components/Slider';
@@ -135,6 +136,14 @@ class Player extends Component {
         }
     }
 
+    showLyrics = () => {
+        const {artist, song, modal} = this.props;
+        console.log('Show lyrics pressed:', artist, song);
+        this.props.requestSongLyricsIfNotExists(artist, song).then(() => {
+            modal.show();
+        });
+    };
+
     playPause = () => {
         this.setState({ playing: !this.state.playing && !!this.props.url});
     };
@@ -196,11 +205,10 @@ class Player extends Component {
         }
     };
 
-    renderThumbnail() {
-        const {artist, album, albumInfo, colAlbum, title} = this.props;
+    renderAlbumLinkHeader() {
+        const {artist, album, albumInfo, colAlbum, title, lyrics} = this.props;
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
-
             <div style={{float: 'left', width: '100%'}}>
                 <AlbumLink artist={artist} album={album} activate={false}>
                     { url ?
@@ -212,6 +220,19 @@ class Player extends Component {
                     }
                     <h3>{title}</h3>
                 </AlbumLink>
+                <button className="btn btn-default"
+                        onClick={this.showLyrics} disabled={lyrics && lyrics.error}>show lyrics</button>
+            </div>
+        );
+    }
+
+    renderDummyHeader() {
+        const {artist, album, albumInfo, colAlbum, title} = this.props;
+        const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
+        return (
+            <div style={{float: 'left', width: '100%'}}>
+                <CdIcon />
+                <h3>no song selected</h3>
             </div>
         );
     }
@@ -222,14 +243,14 @@ class Player extends Component {
             playing, played, duration, style
         } = this.state;
 
-        const { url, volume } = this.props;
+        const { url, volume, title } = this.props;
         let adjustedVol = volume===undefined ? 0.8 : volume;
         adjustedVol = Math.max(Math.min(adjustedVol , 1.0), 0.0);
         log('render', 'volume=', volume, 'adjustedVol', adjustedVol, Number.isNaN(volume), Number.isNaN(volume) ? 0.8 : volume);
         return (
             <div className="panel panel-default">
                 <div className="panel-heading clearfix">
-                    {this.renderThumbnail()}
+                    { title ? this.renderAlbumLinkHeader() : this.renderDummyHeader() }
                 </div>
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
@@ -359,7 +380,8 @@ const mapStateToProps = state => {
         title,
         volume: getValueFromSettings(state, 'volume'),
         albumInfo: getAlbumInfo(state, artist, album),
-        colAlbum: getAlbumByName(state, artist, album)
+        colAlbum: getAlbumByName(state, artist, album),
+        lyrics: getLyrics(state)
     };
 };
 
@@ -367,7 +389,8 @@ const mapDispatchToProps = dispatch => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
     requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album)),
-    sendNotification: (head, msg) => dispatch(sendNotification(head, msg))
+    sendNotification: (head, msg) => dispatch(sendNotification(head, msg)),
+    requestSongLyricsIfNotExists: (artist, song) => dispatch(requestSongLyricsIfNotExists(artist, song))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);

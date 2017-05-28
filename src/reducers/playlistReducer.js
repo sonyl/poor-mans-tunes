@@ -52,7 +52,12 @@ const playlist = (state = [], props) => {
 
 export default playlist;
 
-export const isPlaylistEmpty = state => {
-    return !state || state.length == 0;
+export const isPlaylistEmpty = playlist => {
+    return !playlist || playlist.length == 0;
 };
+
+export const getCurrentSong = playlist => {
+    return playlist && playlist.length > 0 ? { artist: playlist[0].artist, song: playlist[0].song } : null;
+};
+
 

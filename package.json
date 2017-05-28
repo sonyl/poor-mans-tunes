@@ -19,12 +19,12 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "boron": "^0.2.3",
     "dateformat": "^2.0.0",
     "history": "^4.6.1",
     "prop-types": "^15.5.8",
     "react": "^15.4.1",
     "react-autosuggest": "^9.0.0",
-    "react-bootstrap-sweetalert": "^3.0.0",
     "react-bs-notifier": "^4.3.2",
     "react-dom": "^15.5.0",
     "react-redux": "^5.0.1",

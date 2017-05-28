@@ -125,6 +125,10 @@ module.exports = {
             '/img': {
                 target: server,
                 logLevel: 'debug'
+            },
+            '/lyrics': {
+                target: server,
+                logLevel: 'debug'
             }
 
         }
