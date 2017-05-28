@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import history from 'connect-history-api-fallback';
 import path from 'path';
+import lyrics from 'lyric-get';
 import {scanTree, scanFile, scanStats} from './scanner';
 import fsp from './fs-promise';
 const COLLECTION = './collection.json';
@@ -183,6 +184,22 @@ app.get('/mp3/*', (req, res) => {
     res.sendFile(path, {root: settings.mp3Path});
 });
 
+app.get('/lyrics/:artist/:song', (req, res) => {
+    const { artist, song } = req.params;
+    console.log('lyrics requested: %s --- %s', artist, song);
+    lyrics.get(req.params.artist, req.params.song, (err, lyrics) => {
+        if(err) {
+            if(err==='not found') {
+                res.status(404).json({error: err.message});
+            } else {
+                res.status(500).json({error: err.message});
+            }
+        } else {
+            res.json({ artist, song, lyrics });
+        }
+    });
+});
+
 
 app.use((req, res) => {
     console.log('resource requested: %s', req.url);
@@ -199,6 +216,13 @@ app.use((req, res) => {
 });
 
 app.listen(settings.port, () => console.log('server is running on localhost:', settings.port));
+
+
+function getLyrics(artist, song) {
+    return new Promise((resolve, reject) => {
+        lyrics.get(artist, song, (err, res) => err ? reject(err) : resolve(res));
+    });
+}
 
 function getStatus(full) {
     let promise;
