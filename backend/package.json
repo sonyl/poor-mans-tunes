@@ -19,6 +19,7 @@
     "image-size": "^0.5.3",
     "lyric-get": "^1.0.3",
     "musicmetadata": "^2.0.5",
+    "node-fetch": "^1.7.0",
     "promise-limit": "^2.4.0"
   },
   "devDependencies": {
