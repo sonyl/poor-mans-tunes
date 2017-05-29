@@ -138,7 +138,6 @@ class Player extends Component {
 
     showLyrics = () => {
         const {artist, song, modal} = this.props;
-        console.log('Show lyrics pressed:', artist, song);
         this.props.requestSongLyricsIfNotExists(artist, song).then(() => {
             modal.show();
         });
@@ -210,7 +209,7 @@ class Player extends Component {
     };
 
     renderAlbumLinkHeader() {
-        const {artist, album, albumInfo, colAlbum, title, lyrics} = this.props;
+        const {artist, album, albumInfo, colAlbum, title, lyricsNotAvail} = this.props;
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
             <div style={{float: 'left', width: '100%'}}>
@@ -225,7 +224,7 @@ class Player extends Component {
                     <h3>{title}</h3>
                 </AlbumLink>
                 <button className="btn btn-default"
-                        onClick={this.showLyrics} disabled={lyrics && lyrics.error}>show lyrics</button>
+                        onClick={this.showLyrics} disabled={lyricsNotAvail}>show lyrics</button>
             </div>
         );
     }
@@ -365,17 +364,23 @@ Player.propTypes = {
     album: PropTypes.string,
     song: PropTypes.string,
     title: PropTypes.string,
+    volume: PropTypes.string,
     albumInfo: PropTypes.object,
     colAlbum: PropTypes.object,
+    lyricsNotAvail: PropTypes.bool,
+
+    setVolume: PropTypes.func,
     nextSong: PropTypes.func,
     requestAlbum: PropTypes.func,
-    sendNotification: PropTypes.func
+    sendNotification: PropTypes.func,
+    requestSongLyricsIfNotExists: PropTypes.func
 };
 
 const mapStateToProps = state => {
     const { playlist } = state;
     const {artist, album, song, url} = playlist[0] || {};
     const title = artist && song ? `${artist} :  ${song}` : '';
+    const lyrics = getLyrics(state);
     return {
         url: createMp3Url(url),
         artist,
@@ -385,7 +390,7 @@ const mapStateToProps = state => {
         volume: getValueFromSettings(state, 'volume'),
         albumInfo: getAlbumInfo(state, artist, album),
         colAlbum: getAlbumByName(state, artist, album),
-        lyrics: getLyrics(state)
+        lyricsNotAvail: !!(lyrics && lyrics.error)
     };
 };
 

@@ -57,7 +57,7 @@ export const isPlaylistEmpty = playlist => {
 };
 
 export const getCurrentSong = playlist => {
-    return playlist && playlist.length > 0 ? { artist: playlist[0].artist, song: playlist[0].song } : null;
+    return playlist && playlist.length > 0 ? playlist[0] : undefined;
 };
 
 

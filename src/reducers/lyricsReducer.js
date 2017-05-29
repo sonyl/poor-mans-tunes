@@ -23,7 +23,9 @@ const lyrics = (state = {}, action) => {
                     ...state[action.artist],
                     [action.song]: {
                         isFetching: false,
-                        lyrics: action.lyrics,
+                        lyrics: action.lyrics && action.lyrics.lyrics,
+                        artist: action.lyrics && action.lyrics.artist,
+                        song: action.lyrics && action.lyrics.song,
                         error: action.error,
                         receivedAt: action.receivedAt
                     }
@@ -36,10 +38,10 @@ const lyrics = (state = {}, action) => {
 export default lyrics;
 
 /* ============ selectors =================*/
-export const getLyrics = (state={}, playlist=[]) => {
-    if(playlist.length > 0) {
-        const {artist, song} = playlist[0];
-        return state[artist] && state[artist][song] && state[artist][song];
+export const getLyrics = (state={}, {artist, song} = {}) => {
+    if(artist && song) {
+        const lyrics = state[artist] && state[artist][song] && state[artist][song];
+        return lyrics || undefined;
     }
-    return null;
+    return undefined;
 };

@@ -38,7 +38,7 @@ export const getValueFromSettings = (state, ...args) => fromSettings.getValue(st
 export const isSetInSettings = (state, ...args) => fromSettings.isSet(state.settings, ...args);
 export const getServerStatus = (state) => fromServer.getStatus(state.server.status);
 export const getServerSettings = (state) => fromServer.getSettings(state.server.settings);
-export const getLyrics = (state) => fromLyrics.getLyrics(state.lyrics, state.playlist);
+export const getLyrics = (state) => fromLyrics.getLyrics(state.lyrics, getCurrentSong(state));
 
 export const getSelectedArtist = state => fromCollection.getArtist(
     state.collection,

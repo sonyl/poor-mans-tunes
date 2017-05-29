@@ -41,12 +41,16 @@ export const requestSongLyricsIfNotExists = (artist, song) => (dispatch, getStat
             if (response.ok) {
                 return response.json();
             } else {
-                throw new Error('Error fetching data: ' + response.statusText);
+                return response.json().then(json => {
+                    throw new Error('Error fetching data: ' + response.statusText + ': ' + json.error);
+                }, err => {
+                    throw new Error('Error fetching data: ' + response.statusText);
+                });
             }
         }).then(json => {
-            console.log('received lyrics:', json.lyrics);
-            const lyrics = json.lyrics.replace(/\n/g, '<br />');
-            dispatch(receiveSongLyrics(artist, song, lyrics));
+            console.log('received lyrics:', json);
+            json.lyrics = json.lyrics.replace(/\n/g, '<br />');
+            dispatch(receiveSongLyrics(artist, song, json));
             return;
         })
         .catch(e => {

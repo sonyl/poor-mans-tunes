@@ -7,7 +7,7 @@ import { getCollection } from '../actions/collectionActions';
 import { requestServerSettings } from '../actions/serverActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
 import { setPlayRandomSong, setPlayRandomAlbum } from '../actions/settingsActions';
-import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings, getLyrics, getCurrentSong } from '../reducers';
+import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings, getLyrics } from '../reducers';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -18,7 +18,7 @@ import Player from './Player';
 import Footer from '../components/Footer';
 import Settings from './Settings';
 import Notifications from './Notifications';
-import Modal from 'boron/ScaleModal';
+import Modal from '../components/Modal';
 
 import { sanitizeHtml, createLog } from '../components/utils';
 
@@ -142,10 +142,6 @@ class Main extends Component {
         }
     };
 
-    hideModal = () => {
-        this.modal.hide();
-    };
-
     render() {
         log('render', 'props=', this.props);
 
@@ -202,17 +198,10 @@ class Main extends Component {
                         <Settings />
                     </div>
                 </div>
-                <Modal ref={ modal => this.modal = modal } modalStyle={modalStyle} contentStyle={contentStyle}>
-                    {
-                        (lyrics && (lyrics.lyrics || lyrics.error)) ?
-                            <div dangerouslySetInnerHTML={sanitizeHtml(lyrics.lyrics || lyrics.error)}/>
-                                :
-                            <div />
-                        }
-                    <div className="text-center">
-                        <button className="btn btn-primary btn-md" onClick={this.modal && this.modal.hide}>Close</button>
-                    </div>
-                </Modal>
+
+                <Modal ref={ modal => this.modal = modal }
+                       title={(lyrics && lyrics.artist && lyrics.song) ? (lyrics.artist + ': ' + lyrics.song) : 'Could not fetch lyrics: ' }
+                       body={lyrics && (lyrics.lyrics || lyrics.error)} />
 
                 <Footer
                     message={'Poor Man\'s Tunes: \xA9 2017 Build: ' + version.buildDate + ' (env: ' + version.env + ')'}
@@ -229,6 +218,7 @@ class Main extends Component {
         selectedAlbum: PropTypes.object.isRequired,
         isPlayRandomSong: PropTypes.bool.isRequired,
         isPlayRandomAlbum: PropTypes.bool.isRequired,
+        lyrics: PropTypes.object,
 
         getCollection: PropTypes.func.isRequired,
         requestServerSettings: PropTypes.func.isRequired,
