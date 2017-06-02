@@ -23,6 +23,7 @@ const rootReducer = combineReducers({
 });
 
 export default rootReducer;
+const NO_SELECTION = {};
 
 /* ============ selectors ================= */
 export const getArtists = (state, ...args) => fromCollection.getArtists(state.collection, ...args);
@@ -43,13 +44,13 @@ export const getLyrics = (state) => fromLyrics.getLyrics(state.lyrics, getCurren
 export const getSelectedArtist = state => fromCollection.getArtist(
     state.collection,
     fromSelection.getArtist(state.selection).index)
-    || {};
+    || NO_SELECTION;
 
 export const getSelectedAlbum = state => fromCollection.getAlbum(
     state.collection,
     fromSelection.getArtist(state.selection).index,
     fromSelection.getAlbum(state.selection).index)
-    || {};
+    || NO_SELECTION;
 
 export const getSelectedArtistInfo = state => fromLastFm.getArtistInfo(state.lastFm,
         fromSelection.getArtist(state.selection).name);
