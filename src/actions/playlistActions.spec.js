@@ -25,7 +25,7 @@ describe('playlist actions', () => {
                     artist: 'Artist',
                     albums: [
                         { album: 'Album', artist: 'Artist', songs: [
-                            { title: 'Title', mp3: 'mp3' }
+                            { title: 'Title', src: 'mp3' }
                         ]}
                     ]
                 }]

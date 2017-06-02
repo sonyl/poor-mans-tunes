@@ -40,10 +40,10 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
     function addAlbumSongToPlaylist(index, top=false) {
         let songs;
         if(index === null) {
-            songs = album.songs.map(s => ({song: s.title, url: s.mp3 }));
+            songs = album.songs.map(s => ({song: s.title, url: s.src }));
         } else {
             const song = album.songs[index];
-            songs = [{ song: song.title, url: song.mp3}];
+            songs = [{ song: song.title, url: song.src}];
         }
         addSongsToPlaylist(album.artist, album.album, songs, top);
     }

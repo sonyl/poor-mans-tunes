@@ -60,7 +60,7 @@ describe('playlistActions', () => {
                                 songs: [
                                     {
                                         title: 'title',
-                                        mp3: 'mp3'
+                                        src: 'mp3'
                                     }
                                 ]
                             }
@@ -86,7 +86,7 @@ describe('playlistActions', () => {
                                 songs: [
                                     {
                                         title: 'title',
-                                        mp3: 'mp3'
+                                        src: 'mp3'
                                     }
                                 ]
                             }

@@ -113,24 +113,10 @@ module.exports = {
                 to: '/index.html'
             }]
         },
-        proxy: {
-            '/mp3': {
-                target: server,
-                logLevel: 'debug'
-            },
-            '/api': {
-                target: server,
-                logLevel: 'debug'
-            },
-            '/img': {
-                target: server,
-                logLevel: 'debug'
-            },
-            '/lyrics': {
-                target: server,
-                logLevel: 'debug'
-            }
-
-        }
+        proxy: [{
+            context: ['/audio/**', '/img/**', '/lyrics/**', '/api/**'],
+            target: server,
+            logLevel: 'debug'
+        }]
     }
 };

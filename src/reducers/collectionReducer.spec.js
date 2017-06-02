@@ -10,7 +10,7 @@ describe('collectionReducer', () => {
             albums: [
                 {
                     album: 'Album1', artist: 'Artist1', songs: [
-                        {title: 'Song1', mp3: 'url1'}
+                        {title: 'Song1', src: 'url1'}
                     ]
                 }
             ]
@@ -19,12 +19,12 @@ describe('collectionReducer', () => {
             albums: [
                 {
                     album: 'Album2', artist: 'Artist2', songs: [
-                        {title: 'Song2', mp3: 'url2'}
+                        {title: 'Song2', src: 'url2'}
                     ]
                 }, {
                     album: 'Album3', artist: 'Artist2', songs: [
-                        {title: 'Song3', mp3: 'url3'},
-                        {title: 'Song4', mp3: 'url4'}
+                        {title: 'Song3', src: 'url3'},
+                        {title: 'Song4', src: 'url4'}
                     ]
                 }
             ]

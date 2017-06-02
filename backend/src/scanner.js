@@ -79,7 +79,7 @@ function metaToSong({artist, albumartist, album, title, track, disk, year, pictu
     const songArtist = albumartist[0] || artist[0];
     if(!songArtist || !album) return;
     const song = {
-        mp3: file2path(file, root),
+        src: file2path(file, root),
         artist: songArtist,
         album,
         title,
@@ -149,6 +149,16 @@ function walk(root) {
         return found;
     }
 
+    function isSupportedAudio(filename) {
+        if(filename.endsWith('.mp3')) {
+            return true;
+        }
+        if(filename.endsWith('.ogg')) {
+            return true;
+        }
+        return false;
+    }
+
     function walker(dir) {
         return fsp.readdir(dir).then(list => {
             return Promise.all(list.map(file => {
@@ -156,7 +166,7 @@ function walk(root) {
                 return fsp.stat(file).then(stat => {
                     if (stat.isDirectory()) {
                         return walker(file);
-                    } else if (file.endsWith('.mp3')) {
+                    } else if (isSupportedAudio(file)) {
                         filesToScan++;
                         return fileReadLimit(() => _scanFile(file).then(m => metaToSong(m, file, root)));
                     } else if (hasImageExtension(file)) {
@@ -186,7 +196,7 @@ function reduce(songsAndImages) {
     return songsAndImages.reduce((acc, s) => {
         if(!s) return acc;
 
-        if (s.mp3) {
+        if (s.src) {
             const artist = acc.collection[s.artist] = acc.collection[s.artist] || {artist: s.artist, albums: {}};
             const album = artist.albums[s.album] = artist.albums[s.album] || {album: s.album, artist: s.artist, songs: []};
             delete s.artist;
@@ -245,7 +255,7 @@ function findEmbeddedImage(db) {
                         return acc;
                     } else {
                         picture.area = area;
-                        picture.mp3 = song.mp3;
+                        picture.src = song.src;
                         return picture;
                     }
 
@@ -265,9 +275,9 @@ function selectBestImage(db) {
         artist.albums.forEach(album => {
             // count all directories for album songs
             const songDirs = album.songs.reduce((acc, song) => {
-                const {mp3} = song;
-                if (mp3) {
-                    const dir = path.dirname(mp3);
+                const {src} = song;
+                if (src) {
+                    const dir = path.dirname(src);
                     acc[dir] = (acc[dir] || 0) + 1;
                 }
                 return acc;

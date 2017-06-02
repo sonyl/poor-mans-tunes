@@ -92,6 +92,7 @@ class ArtistList extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        log('componentWillReceiveProps()', ' this.props = %o, nextProps = %o', this.props, nextProps);
         if(nextProps.artists !== this.props.artists
             || nextProps.selectedArtist !== this.props.selectedArtist) {
 

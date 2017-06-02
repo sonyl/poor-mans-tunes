@@ -14,7 +14,7 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createMp3Url, createLog,
+import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudio3Url, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -382,7 +382,7 @@ const mapStateToProps = state => {
     const title = artist && song ? `${artist} :  ${song}` : '';
     const lyrics = getLyrics(state);
     return {
-        url: createMp3Url(url),
+        url: createAudio3Url(url),
         artist,
         album,
         song,

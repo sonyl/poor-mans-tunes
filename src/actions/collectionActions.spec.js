@@ -53,7 +53,7 @@ describe('getCollection', () => {
             artist: 'Artist',
             albums: [{
                 album: 'Album', artist: 'Artist', songs:[
-                    {title: 'Song', mp3: 'a url'}
+                    {title: 'Song', src: 'a url'}
                 ]}
             ]
         }];

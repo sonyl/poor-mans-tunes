@@ -12,7 +12,7 @@ const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
 let scanning = false;
 const DEFAULT_SETTINGS = {
-    mp3Path: '../mp3',
+    audioPath: '../mp3',
     distPath: '../dist',
     port: 9000
 };
@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
 const settings = function readSettings() {
     try {
         const settings = JSON.parse(fs.readFileSync(SETTINGS, 'utf8'));
-        return settings && settings.mp3Path ? settings : DEFAULT_SETTINGS;
+        return settings && settings.audioPath ? settings : DEFAULT_SETTINGS;
     } catch(error) {
         console.log('Error reading settings: %j, using defaults', error);
         return DEFAULT_SETTINGS;
@@ -66,9 +66,9 @@ app.get('/api/status', (req, res) => {
 app.put('/api/status/rescan', (req, res) => {
     console.log('rescan requested');
 
-    if(!settings.mp3Path) {
+    if(!settings.audioPath) {
         res.status(500).json({
-            error: 'settings incorrect, please specify mp3Path'
+            error: 'settings incorrect, please specify audioPath'
         });
         return;
     } else if(scanning) {
@@ -84,14 +84,14 @@ app.put('/api/status/rescan', (req, res) => {
         // do nothing, this may happen
     }
     scanning = true;
-    scanTree(settings.mp3Path, NEW_COLLECTION).then(() => {
+    scanTree(settings.audioPath, NEW_COLLECTION).then(() => {
         const currPath = path.resolve('.');
         fs.renameSync(path.normalize(currPath + '/' + NEW_COLLECTION), path.normalize(currPath + '/' + COLLECTION));
-        express.staticFiles = express.static(settings.mp3Path);
+        express.staticFiles = express.static(settings.audioPath);
         scanning = false;
     }).catch(err => {
         scanning = false;
-        console.log(`unable to scan tree: ${settings.mp3Path}:`, err.message);
+        console.log(`unable to scan tree: ${settings.audioPath}:`, err.message);
     });
     getStatus(false).then(status => {
         res.json(status);
@@ -101,6 +101,7 @@ app.put('/api/status/rescan', (req, res) => {
 });
 
 app.get('/api/settings', (req, res) => {
+    console.log('settings parameter requested');
     res.json(settings);
 });
 
@@ -119,8 +120,15 @@ app.delete('/api/settings/:key', (req, res) => {
 
 app.put('/api/settings/:key', (req, res) => {
     console.log('Updated settings with %j, =>%j:', req.params, req.body.value);
-    if(req.body.value) {
-        settings[req.params.key] = req.body.value;
+    const key = req.params.key;
+    let value = req.body.value;
+    if(value) {
+        if(key === 'audioPath') {
+            if(value.endsWith('/')) {
+                value = value.slice(0, -1);
+            }
+        }
+        settings[key] = value;
         if(updateSettings()) {
             res.json(settings);
         } else {
@@ -158,7 +166,7 @@ app.get('/img/*', (req, res) => {
     console.log('image request', imgPath);
 
     if(imgPath.endsWith('.mp3')){
-        scanFile(settings.mp3Path + imgPath)
+        scanFile(settings.audioPath + imgPath)
         .then(meta => {
             if(meta && meta.picture[0]) {
                 const pic = meta.picture[0];
@@ -173,15 +181,15 @@ app.get('/img/*', (req, res) => {
             });
         });
     } else {
-        res.sendFile(imgPath, {root: settings.mp3Path});
+        res.sendFile(imgPath, {root: settings.audioPath});
     }
 
 });
 
-app.get('/mp3/*', (req, res) => {
-    const path = decodeURI(req.url.substr(4));
+app.get('/audio/*', (req, res) => {
+    const path = decodeURI(req.url.substr(6));
     console.log('song requested!', path);
-    res.sendFile(path, {root: settings.mp3Path});
+    res.sendFile(path, {root: settings.audioPath});
 });
 
 app.get('/lyrics/:artist/:song', (req, res) => {

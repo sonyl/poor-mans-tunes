@@ -18,14 +18,14 @@ class Settings extends Component {
         super(props);
         const { serverSettings } = props;
         this.state = {
-            mp3Path: serverSettings.settings && serverSettings.settings.mp3Path || ''
+            audioPath: serverSettings.settings && serverSettings.settings.audioPath || ''
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        const mp3Path = nextProps.serverSettings.settings && nextProps.serverSettings.settings.mp3Path || '';
-        if (mp3Path !== this.state.mp3Path) {
-            this.setState({ mp3Path });
+        const audioPath = nextProps.serverSettings.settings && nextProps.serverSettings.settings.audioPath || '';
+        if (audioPath !== this.state.audioPath) {
+            this.setState({ audioPath });
         }
     }
 
@@ -41,13 +41,13 @@ class Settings extends Component {
         } else if(event.target.id === 'rescanBtn') {
             requestRescanFiles();
         } else if(event.target.id === 'updateSettingsBtn') {
-            updateServerSettings('mp3Path', this.state.mp3Path);
+            updateServerSettings('audioPath', this.state.audioPath);
         }
     };
 
     onChange = event => {
         this.setState({
-            mp3Path: event.target.value
+            audioPath: event.target.value
         });
     };
 
@@ -66,25 +66,25 @@ class Settings extends Component {
         const {lastUpdate, serverStatus, serverSettings} = this.props;
         const scanning = serverStatus && serverStatus.status && serverStatus.status.scanning;
         const ready = serverStatus && serverStatus.status && serverStatus.status.status ==='ready';
-        let mp3PathInput;
+        let audioPathInput;
 
         return (
             <div>
                 <h3>Settings:</h3>
                 <div className="form-horizontal">
                     <div className="form-group ">
-                        <label className="col-xs-1 control-label" htmlFor="exampleInputEmail1">
-                            mp3 path:
+                        <label className="col-xs-2 control-label" htmlFor="exampleInputEmail1">
+                            audio path:
                         </label>
                         <div className="col-xs-5">
                             <div className="input-group">
-                                <input id="mp3Path" type="text" className="form-control"
-                                       placeholder="path to scan fro mp3 files"
+                                <input id="audioPath" type="text" className="form-control"
+                                       placeholder="path to scan for audio files"
                                        onChange = { this.onChange }
                                        ref={(input) => {
-                                           mp3PathInput = input;
+                                           audioPathInput = input;
                                        }}
-                                       value={ this.state.mp3Path }
+                                       value={ this.state.audioPath }
                                 />
                                 <span className="input-group-btn">
                                             <button className="btn btn-primary" id="updateSettingsBtn"
@@ -93,7 +93,7 @@ class Settings extends Component {
                                         </span>
                             </div>
                         </div>
-                        <div className="col-xs-4">
+                        <div className="col-xs-5">
                             {JSON.stringify(serverSettings)}
                         </div>
                     </div>

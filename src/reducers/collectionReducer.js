@@ -103,7 +103,7 @@ export const getRandomAlbumSongs = state => {
             album: randAlbum.album,
             songs: randAlbum.songs.map(song => ({
                 song: song.title,
-                url:  song.mp3
+                url:  song.src
             }))
         };
     }
@@ -121,7 +121,7 @@ export const getRandomSong = state => {
                 songs: [
                     {
                         song: randSong.title,
-                        url: randSong.mp3
+                        url: randSong.src
                     }
                 ]
             };
