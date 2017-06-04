@@ -81,8 +81,14 @@ export const getCoverUrl = album => {
     return audioSrc ? baseUrl + '/img' + audioSrc : null;
 };
 
-export const createAudio3Url = (part) => {
-    return part ? (baseUrl + '/audio' + part) : null;
+export const createAudioUrls = partUrls => {
+    if(partUrls) {
+        if(Array.isArray(partUrls)) {
+            return partUrls.map(url => url ? (baseUrl + '/audio' + url) : null);
+        } else {
+            return partUrls ? (baseUrl + '/audio' + partUrls) : null;
+        }
+    }
 };
 
 
@@ -94,3 +100,31 @@ export function createLog(enabled, component){
     return enabled ? log : function () {};
 
 }
+
+/**
+ *
+ * @param url {string or array}
+ * @param newUrl {string or arry}
+ * @returns {boolean} if both are equal
+ */
+export const urlsEqual = (url, newUrl) => {
+    // if this one of the array is a falsy value, return true if the other is also falsy, false otherwise
+    if (!url || !newUrl) {
+        return !!url === !!newUrl;
+    }
+
+    // at least one of the arguments isn't an array compare
+    if (!Array.isArray(url) || ! Array.isArray(newUrl)) {
+        return url === newUrl;
+    }
+
+    // compare lengths - can save a lot of time
+    if(url.length != newUrl.length) {
+        return false;
+    }
+
+    return !url.find((u, i) => {
+        return u !== newUrl[i];
+    });
+};
+

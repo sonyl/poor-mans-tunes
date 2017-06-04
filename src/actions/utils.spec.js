@@ -67,4 +67,6 @@ describe('utils', () => {
             expect(replaced).toEqualOneOf('http://server/?p1=abc&p2=xyz', 'http://server/?p2=xyz&p1=abc');
         });
     });
+
+
 });

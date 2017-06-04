@@ -14,7 +14,7 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
-import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudio3Url, createLog,
+import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudioUrls, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 const ENABLE_LOG = false;
@@ -119,7 +119,7 @@ class Player extends Component {
     componentWillReceiveProps(nextProps){
         log('componentWillReceiveProps', nextProps, this.props);
         this.updateStyle();
-        if(this.props.url !== nextProps.url) {
+        if(this.props.title !== nextProps.title) {
             const newState = {playing: !!nextProps.url};
             if(!!nextProps.url && nextProps.title) {
                 sendDesktopNotification('Now playing:', nextProps.title);
@@ -359,7 +359,10 @@ class Player extends Component {
 
 
 Player.propTypes = {
-    url: PropTypes.string,
+    url: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string)
+    ]),
     artist: PropTypes.string,
     album: PropTypes.string,
     song: PropTypes.string,
@@ -382,7 +385,7 @@ const mapStateToProps = state => {
     const title = artist && song ? `${artist} :  ${song}` : '';
     const lyrics = getLyrics(state);
     return {
-        url: createAudio3Url(url),
+        url: createAudioUrls(url),
         artist,
         album,
         song,

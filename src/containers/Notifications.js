@@ -11,7 +11,6 @@ class Notifications extends Component {
     }
 
     onAlertDismiss = alert => {
-        console.log('Dismissing alert:', alert );
         this.props.dismissAlert(alert);
     };
 

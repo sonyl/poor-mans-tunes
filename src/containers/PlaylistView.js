@@ -94,7 +94,12 @@ PlaylistView.propTypes = {
         artist: PropTypes.string.isRequired,
         album: PropTypes.string.isRequired,
         song: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired
+        url: PropTypes.oneOfType(
+            [
+                PropTypes.string,
+                PropTypes.arrayOf(PropTypes.string)
+            ]
+        ).isRequired
     })).isRequired,
     removeSongAtIndexFromPlaylist: PropTypes.func.isRequired,
     moveSongToPositionInPlaylist: PropTypes.func.isRequired,

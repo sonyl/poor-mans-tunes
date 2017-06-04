@@ -7,6 +7,7 @@ import path from 'path';
 import getLyrics from './lyricsearch';
 import {scanTree, scanFile, scanStats} from './scanner';
 import fsp from './fs-promise';
+import {hasExtension} from './scanner-utils';
 const COLLECTION = './collection.json';
 const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
@@ -165,7 +166,7 @@ app.get('/img/*', (req, res) => {
     const imgPath = decodeURI(req.url.substr(4));
     console.log('image request', imgPath);
 
-    if(imgPath.endsWith('.mp3')){
+    if(hasExtension(imgPath, '.mp3', '.ogg')){
         scanFile(settings.audioPath + imgPath)
         .then(meta => {
             if(meta && meta.picture[0]) {

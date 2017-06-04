@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createLog } from './utils';
+import { createLog, urlsEqual } from './utils';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AudioPlayer');
@@ -8,7 +8,10 @@ const log = createLog(ENABLE_LOG, 'AudioPlayer');
 export default class AudioPlayer extends Component {
 
     static propTypes = {
-        url: PropTypes.string,
+        url: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.string)
+        ]),
         playing: PropTypes.bool,
         volume: PropTypes.number,
         hidden: PropTypes.bool,
@@ -72,10 +75,11 @@ export default class AudioPlayer extends Component {
     componentWillReceiveProps (nextProps) {
         const { url, playing, volume} = this.props;
         // Invoke player methods based on incoming props
-        if (url !== nextProps.url && nextProps.url) {
+        const urlsChanged = !urlsEqual(url, nextProps.url);
+        if (urlsChanged && nextProps.url) {
             log('componentWillReceiveProps', 'url set, url=', nextProps.url);
             this.load(nextProps.url);
-        } else if (url && !nextProps.url) {
+        } else if (urlsChanged && !nextProps.url) {
             log('componentWillReceiveProps', 'url unset');
             this.load('');
             this.seekTo(0);
@@ -94,7 +98,7 @@ export default class AudioPlayer extends Component {
         }
     }
 
-    /* this changing props has no effect on the rendering of the component */
+    /* changing props has no effect on the rendering of the component */
     shouldComponentUpdate(nextProps) {
         return false;
     }
@@ -151,11 +155,28 @@ export default class AudioPlayer extends Component {
         this.props.onError(reason);
     };
 
-    load (url) {
-        log('load', 'url=', url);
-
-        this.player.src = url;
-        this.isReady = false;
+    load (urls) {
+        log('load', 'url=', urls);
+        if(Array.isArray(urls)) {
+            urls.find(url => {
+                log('load', 'multiple urls provided checking: %s', url);
+                if(url.toLowerCase().endsWith('.ogg') && this.canPlay('ogg')) {
+                    log('load', 'ogg format found and player can play ogg, url=%s', url);
+                    this.player.src = url;
+                    this.isReady = false;
+                    return true;
+                }
+                if(url.toLowerCase().endsWith('.mp3') && this.canPlay('mp3')) {
+                    log('load', 'mp3 format found and player can play mp3, url=%s', url);
+                    this.player.src = url;
+                    this.isReady = false;
+                    return true;
+                }
+            });
+        } else {
+            this.player.src = urls;
+            this.isReady = false;
+        }
     }
 
     play () {
@@ -204,6 +225,15 @@ export default class AudioPlayer extends Component {
         return this.player;
     }
 
+    canPlay(type) {
+        const mimeTypes = {
+            mp3: 'audio/mpeg;',
+            ogg: 'audio/ogg; codecs="vorbis"'
+        };
+        const mimeType = mimeTypes[type];
+        return !!(mimeType && this.player.canPlayType && this.player.canPlayType(mimeType).replace(/no/, ''));
+    }
+
     progress = () => {
         if (this.props.url && this.player) {
             const loaded = this.getFractionLoaded() || 0;
@@ -236,7 +266,7 @@ export default class AudioPlayer extends Component {
         return (
             <div className={className} hidden={hidden}>
                 <audio
-                    ref={ player => window.player = this.player = player }
+                    ref={ player => this.player = player }
                     style={ mediaStyle }
                     preload='auto'
                     { ...attributes }

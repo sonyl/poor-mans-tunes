@@ -7,7 +7,7 @@ import { createLinkUrl, createLog } from '../components/utils';
 import { getArtists } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'ArtistSearch');
 
 const theme = {
