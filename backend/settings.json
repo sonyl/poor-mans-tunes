@@ -1,5 +1,6 @@
 {
     "audioPath": "/home/gerhard/Music/mp3",
     "distPath": "../dist",
-    "port": 9001
+    "port": 9001,
+    "publicBaseUrl": "http://egon.home:9001"
 }

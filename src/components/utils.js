@@ -82,15 +82,10 @@ export const getCoverUrl = album => {
 };
 
 export const createAudioUrls = partUrls => {
-    if(partUrls) {
-        if(Array.isArray(partUrls)) {
-            return partUrls.map(url => url ? (baseUrl + '/audio' + url) : null);
-        } else {
-            return partUrls ? (baseUrl + '/audio' + partUrls) : null;
-        }
-    }
-};
+    const cvrt = partUrl => !partUrl ? partUrl : baseUrl + '/audio' + partUrl;
 
+    return !partUrls ? partUrls : Array.isArray(partUrls) ? partUrls.map(cvrt) : cvrt(partUrls);
+};
 
 export function createLog(enabled, component){
     function log (method, fmt='', ...args) {

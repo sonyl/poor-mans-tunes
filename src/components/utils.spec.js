@@ -1,5 +1,5 @@
 /* eslint-env node, jest */
-import { urlsEqual } from './utils';
+import { urlsEqual, createAudioUrls } from './utils';
 
 describe('urlsEqual', () => {
     it('should return true, if both args are equal strings', () => {
@@ -29,5 +29,18 @@ describe('urlsEqual', () => {
     it('should return true, if both args are arrays with same string elements', () => {
         expect(urlsEqual(['abc'], ['abc'])).toBe(true);
         expect(urlsEqual(['abc', 'xyz'], ['abc', 'xyz'])).toBe(true);
+    });
+});
+
+describe('createAudioUrls', () => {
+    it('should return undefined, if no parameter provided', () => {
+        expect(createAudioUrls()).toBeUndefined();
+    });
+    it('should return converted url, if parameter is single partial url', () => {
+        expect(createAudioUrls('/foo/bar.txt')).toEqual('http://localhost:9000/audio/foo/bar.txt');
+    });
+    it('should return converted urls in array, if parameter is array with partial urls', () => {
+        expect(createAudioUrls(['/foo/bar.txt', null, '/foo/baz.txt']))
+            .toEqual(['http://localhost:9000/audio/foo/bar.txt', null, 'http://localhost:9000/audio/foo/baz.txt']);
     });
 });

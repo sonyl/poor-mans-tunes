@@ -7,15 +7,18 @@ import path from 'path';
 import getLyrics from './lyricsearch';
 import {scanTree, scanFile, scanStats} from './scanner';
 import fsp from './fs-promise';
+import * as Sonos from './sonos-support';
 import {hasExtension} from './scanner-utils';
 const COLLECTION = './collection.json';
 const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
+const DEFAULT_PORT = 9000;
 let scanning = false;
 const DEFAULT_SETTINGS = {
     audioPath: '../mp3',
     distPath: '../dist',
-    port: 9000
+    port: DEFAULT_PORT,
+    publicBaseUrl: 'http://localhost:' + DEFAULT_PORT
 };
 
 const settings = function readSettings() {
@@ -38,12 +41,13 @@ function updateSettings() {
     }
 }
 
-console.log('Settings: %j', settings);
+const ENV = process.env.NODE_ENV || 'dev';
+console.log('Poor-Mans-Tuns starting in %s environment. Settings: %j', ENV, settings);
 
 const app = express();
 app.use(bodyParser.json());
 app.use(history({
-    verbose: true,
+    verbose: ENV === 'production' ? false : true,
     rewrites: [{
         from: /.*\/bundle\.js$/,
         to: '/bundle.js'
@@ -142,6 +146,30 @@ app.put('/api/settings/:key', (req, res) => {
         res.status(400).json({
             error: 'empty value not allowed',
             settings
+        });
+    }
+});
+
+app.post('/api/sonos/play', (req, res) => {
+    console.log('Api sonos play =>%j:', req.body);
+    const src = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
+    if(src) {
+        Sonos.playSong(Sonos.createAudioUrls(settings.publicBaseUrl, src)).then(
+            () => {
+                console.log('Successfully started song on sonos:', src);
+                res.json({
+                    status: 'ok'
+                });
+            },
+            err => {
+                console.log('Error starting song on sonos:', err);
+                res.status(500).json({
+                    error: err.message || err
+                });
+            });
+    } else {
+        res.status(400).json({
+            error: 'empty src not allowed'
         });
     }
 });

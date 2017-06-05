@@ -8,9 +8,8 @@ const GETSTATUS_URL = '/api/status';
 const GETSETTINSG_URL = '/api/settings';
 const UPDATESETTINSG_URL = '/api/settings/${key}';
 const RESCAN_FILES_URL = '/api/status/rescan';
-const headers = new Headers({
-    accept: 'application/json'
-});
+const SONOS_PLAY_URL = '/api/sonos/play';
+const DEFAULT_HEADERS = { 'Accept': 'application/json' };
 
 /* ============ status actions =================*/
 
@@ -31,7 +30,7 @@ export const requestServerStatus = (full = false) => (dispatch, getState) => {
         type: REQUEST_SERVER_STATUS
     });
 
-    return fetch(addRequestParams(GETSTATUS_URL, full ? { full: 'full' } : null), {headers})
+    return fetch(addRequestParams(GETSTATUS_URL, full ? { full: 'full' } : null), {headers: DEFAULT_HEADERS})
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -61,7 +60,7 @@ export const requestServerSettings = () => (dispatch, getState) => {
         dispatch({
             type: REQUEST_SERVER_SETTINGS
         });
-        return fetch(GETSETTINSG_URL, {headers})
+        return fetch(GETSETTINSG_URL, {headers: DEFAULT_HEADERS})
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -124,6 +123,26 @@ export const requestRescanFiles = () => (dispatch, getState) => {
             console.log('Error response from server:', error);
         });
 };
+
+export const sendSongToSonos = song => {
+    return fetch(SONOS_PLAY_URL, {
+        method: 'POST',
+        headers: Object.assign({'Content-Type': 'application/json'}, DEFAULT_HEADERS),
+        body: JSON.stringify(song)
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error sending song to sonos: ' + response.statusText);
+            }
+        }).then(json => {
+            console.log('Sending song to sonos, response from server:', json);
+        }).catch(error => {
+            console.log('Error response from server:', error);
+        });
+};
+
 
 function startStatusPolling(dispatch, getState) {
 

@@ -6,12 +6,12 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "npm test -- --coverage",
     "test:watch": "npm test -- --watch",
     "build": "NODE_ENV=production node node_modules/.bin/webpack -p && cp index.html dist/index.html",
     "build:all": "npm run build && cd backend && npm run build && cd ..",
     "devserver": "webpack-dev-server --hot --port 9000",
-    "lint": "node_modules/.bin/eslint src",
+    "lint": "node_modules/.bin/eslint src backend/src",
     "deploy": "cd dist && scp -r . tux:public_html/poor-mans-tunes && cd ..",
     "precommit": "npm run lint"
   },

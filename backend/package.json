@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --watch src --exec babel-node -- ./src/server.js",
     "build": "babel src -d dist",
-    "serve": "node dist/server.js"
+    "serve": "NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
   "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
@@ -20,7 +20,8 @@
     "lyric-get": "^1.0.3",
     "musicmetadata": "^2.0.5",
     "node-fetch": "^1.7.0",
-    "promise-limit": "^2.4.0"
+    "promise-limit": "^2.4.0",
+    "sonos": "^0.14.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

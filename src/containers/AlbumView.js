@@ -6,9 +6,8 @@ import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
 import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
-
-
-const ENABLE_LOG = false;
+import {sendSongToSonos} from '../actions/serverActions';
+const ENABLE_LOG = true;
 const log = createLog(ENABLE_LOG, 'AlbumView');
 
 
@@ -16,7 +15,7 @@ function PlusIcon() {
     return <GlyphIcon iconName='share-alt'/>;
 }
 
-function Song({index, title, addAlbumSongToPlaylist}){
+function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
     return (
         <div>
             <SplitButton
@@ -26,7 +25,8 @@ function Song({index, title, addAlbumSongToPlaylist}){
                 defaultOnClick={() => addAlbumSongToPlaylist(index, false)}
                 actions={ [
                     { label: 'add song to top of playlist', onClick: () => addAlbumSongToPlaylist(index, true)},
-                    { label: 'add songs to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)}
+                    { label: 'add song to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)},
+                    { label: 'play song on Sonos', onClick: () => sendAlbumSongToSonos(index, false)}
                 ] }
             />
             &nbsp;&nbsp; {title}
@@ -46,6 +46,12 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
             songs = [{ song: song.title, url: song.src}];
         }
         addSongsToPlaylist(album.artist, album.album, songs, top);
+    }
+
+    function sendAlbumSongToSonos(index) {
+        const song = album.songs[index];
+        log('sendAlbumSongToSonos', 'song=%o', song);
+        sendSongToSonos({title: song.title, src: song.src});
     }
 
     function renderSongs () {
@@ -75,7 +81,9 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
                                   key={i}
                                   track={s.track}
                                   title={s.title}
-                                  addAlbumSongToPlaylist={addAlbumSongToPlaylist}/>
+                                  addAlbumSongToPlaylist={addAlbumSongToPlaylist}
+                                  sendAlbumSongToSonos={sendAlbumSongToSonos}
+                            />
                         ))
                     }
                 </div>
