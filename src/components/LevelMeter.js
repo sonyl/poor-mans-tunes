@@ -7,7 +7,7 @@ const log = createLog(ENABLE_LOG, 'LevelMeter');
 
 
 const DB_MIN_SCALE = -48;
-const PEAK_BUFFER_SIZE = 20;
+const PEAK_BUFFER_SIZE = 40;
 const MIN_LIN = Math.pow(10, DB_MIN_SCALE / 20);
 
 function linToDb(lin) {
