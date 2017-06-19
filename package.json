@@ -13,7 +13,8 @@
     "devserver": "webpack-dev-server --hot --port 9000",
     "lint": "node_modules/.bin/eslint src backend/src",
     "deploy": "cd dist && scp -r . tux:public_html/poor-mans-tunes && cd ..",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "flow": "flow"
   },
   "keywords": [],
   "author": "Gerhard Dickescheid <gerhard@dickescheid.de> (http://dickescheid.de)",
@@ -49,8 +50,10 @@
     "css-loader": "^0.28.0",
     "enzyme": "^2.8.0",
     "eslint": "^3.12.2",
+    "eslint-plugin-flowtype": "^2.34.0",
     "eslint-plugin-react": "^7.0.0",
     "file-loader": "^0.11.0",
+    "flow-bin": "^0.48.0",
     "husky": "^0.13.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^20.0.0",
@@ -75,7 +78,10 @@
       "browser": true,
       "es6": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+      "eslint:recommended",
+      "plugin:flowtype/recommended"
+    ],
     "parserOptions": {
       "ecmaFeatures": {
         "classes": true,
@@ -85,7 +91,8 @@
       "sourceType": "module"
     },
     "plugins": [
-      "react"
+      "react",
+      "flowtype"
     ],
     "rules": {
       "no-unused-vars": [

@@ -1,12 +1,20 @@
+/* @flow */
 import {SELECT_ARTIST, UNSELECT_ARTIST, SELECT_ALBUM, UNSELECT_ALBUM } from '../actions/actionKeys';
+import type { Action } from '../types';
 
 
-const defaultState = {
+export type SelectionState = {
+    artist: {index?: number, name?: string},
+    album: {index?: number, name?: string}
+};
+
+
+const defaultState: SelectionState = {
     artist: {},
     album: {}
 };
 
-const selection = (state = defaultState, action) => {
+const selection = (state: SelectionState = defaultState, action: Action) => {
     switch (action.type) {
         case SELECT_ARTIST:
             if(!state.artist || state.artist.index !== action.index) {
@@ -41,11 +49,11 @@ const selection = (state = defaultState, action) => {
     return state;
 };
 
-export const getArtist = (state) => {
+export const getArtist = (state: SelectionState) => {
     return state && state.artist;
 };
 
-export const getAlbum = (state) => {
+export const getAlbum = (state: SelectionState) => {
     return state && state.album;
 };
 

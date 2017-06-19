@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -12,9 +14,23 @@ function CdIcon() {
     return <GlyphIcon iconName='cd' style={{top: '5px'}}/>;
 }
 
-class Navbar extends Component {
+type Props = {
+    randomSongActive: boolean,
+    randomAlbumActive: boolean,
+    setRandomSong: (boolean)=>void,
+    setRandomAlbum: (boolean)=>void
+};
 
-    onClick = evt => {
+type DefaultProps = {
+    randomSongActive: false,
+    randomAlbumActive: false
+};
+
+type State = void;
+
+class Navbar extends Component<DefaultProps, Props, State> {
+
+    onClick = (evt: Event) => {
         if(evt.target.id=='selectRandomSong') {
             if(this.props.randomAlbumActive && this.props.setRandomAlbum) {
                 this.props.setRandomAlbum(false);

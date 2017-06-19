@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createLog, urlsEqual } from './utils';
@@ -6,6 +8,11 @@ const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AudioPlayer');
 
 export default class AudioPlayer extends Component {
+
+    player: HTMLMediaElement;
+    progressTimeout: number;
+    prevLoaded: number;
+    prevPlayed: number;
 
     static propTypes = {
         url: PropTypes.oneOfType([
@@ -37,7 +44,7 @@ export default class AudioPlayer extends Component {
         onPause: function() {},
         onEnded: function() {},
         onError: function() {},
-        onProgress: function() {},
+        onProgress: function(progres: {played?: number, loaded?: number}): void {},
         onDuration: function() {}
     };
 
@@ -72,7 +79,7 @@ export default class AudioPlayer extends Component {
         clearTimeout(this.progressTimeout);
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps (nextProps: Object) {
         const { url, playing, volume} = this.props;
         // Invoke player methods based on incoming props
         const urlsChanged = !urlsEqual(url, nextProps.url);
@@ -99,7 +106,7 @@ export default class AudioPlayer extends Component {
     }
 
     /* changing props has no effect on the rendering of the component */
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps: Object) {
         return false;
     }
 
@@ -130,7 +137,7 @@ export default class AudioPlayer extends Component {
         this.props.onEnded();
     };
 
-    onError = (e) => {
+    onError = (e: Object) => {
         let reason;
         switch (e.target.error.code) {
             case e.target.error.MEDIA_ERR_ABORTED:
@@ -155,7 +162,7 @@ export default class AudioPlayer extends Component {
         this.props.onError(reason);
     };
 
-    load (urls) {
+    load (urls: string[] | string) {
         log('load', 'url=', urls);
         if(Array.isArray(urls)) {
             urls.find(url => {
@@ -195,7 +202,7 @@ export default class AudioPlayer extends Component {
         this.player.removeAttribute('src');
     }
 
-    setVolume (fraction) {
+    setVolume (fraction: number) {
         this.player.volume = fraction;
     }
 
@@ -213,7 +220,7 @@ export default class AudioPlayer extends Component {
         return this.player.buffered.end(0) / this.getDuration();
     }
 
-    seekTo = fraction => {
+    seekTo = (fraction: number) => {
         if(this.isReady) {
             // When seeking before player is ready, store value and seek later
             const currentTime = this.getDuration() * fraction;
@@ -225,7 +232,7 @@ export default class AudioPlayer extends Component {
         return this.player;
     }
 
-    canPlay(type) {
+    canPlay(type: string) {
         const mimeTypes = {
             mp3: 'audio/mpeg;',
             ogg: 'audio/ogg; codecs="vorbis"'

@@ -1,13 +1,23 @@
+/* @flow */
+
 import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 
 import ScaleModal from 'boron/ScaleModal';
 import { sanitizeHtml } from './utils';
 
+type Props = {
+    title: string,
+    body: string
+};
+type DefaultProps = void;
+type State = void;
 
-class Modal extends Component {
+class Modal extends Component<DefaultProps, Props, State> {
 
-    constructor(props) {
+    modal: ScaleModal;
+
+    constructor(props: Props) {
         super(props);
     }
 

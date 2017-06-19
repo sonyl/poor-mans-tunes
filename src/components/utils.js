@@ -1,7 +1,24 @@
+/* @flow */
 import _sanitizeHtml from 'sanitize-html';
 import getConfig from '../config';
 
+import type { Album, LastFmInfo } from '../types';
+
 const { baseUrl=''} = getConfig();
+
+declare class Notification {
+    constructor(title: string, options: {
+        dir?: 'auto' | 'ltr' | 'rtl',
+        lang?: string,
+        body?: string,
+        tag?: string,
+        icon?: string,
+        data?: mixed
+    }): Notification;
+
+    close(): void;
+    static requestPermission(): Promise<string>;
+}
 
 function sanitize(dirty) {
     return _sanitizeHtml(dirty, {
@@ -11,18 +28,23 @@ function sanitize(dirty) {
     });
 }
 
-export const sanitizeHtml = dirty => ({__html: sanitize(dirty)});
+export const sanitizeHtml = (dirty: string): {__html: string} => ({__html: sanitize(dirty)});
 
-export const createLinkUrl = (artist, album) => {
+export const createLinkUrl = (artist: string, album?: ?string) => {
     return album ? `/app/${artist}/${album}` : `/app/${artist}`;
 };
 
-const notify = (title, body, icon) => {
-    const n = new Notification(title, {body, icon});
+const notify = (title: string, body: string, icon: ?string) => {
+    const options = {};
+    options.body = body;
+    if(icon) {
+        options.icon = icon;
+    }
+    const n = new Notification(title, options);
     setTimeout(n.close.bind(n), 5000);
 };
 
-export const sendDesktopNotification = (title, body, icon) => {
+export const sendDesktopNotification = (title: string, body: string, icon: ?string) => {
     if (!('Notification' in window)) {
         console.log('This browser does not support desktop notifications: ', title, body);
         return;
@@ -45,7 +67,7 @@ export const sendDesktopNotification = (title, body, icon) => {
         notify(title, body, icon);
     } else if (Notification.permission !== 'denied') {
         // Otherwise, we need to ask the user for permission
-        Notification.requestPermission(function(permission) {
+        Notification.requestPermission().then(permission => {
             // If the user accepts, let's create a notification
             if (permission === 'granted') {
                 notify(title, body, icon);
@@ -61,7 +83,7 @@ export const LASTFM_IMG_SIZE_XLARGE = 3;
 export const LASTFM_IMG_SIZE_MEGA = 4;
 export const LASTFM_IMG_SIZE_ULTRA = 5;
 
-export const getLastFmThumbnail = (lastFmInfo, maxSize=LASTFM_IMG_SIZE_ULTRA) => {
+export const getLastFmThumbnail = (lastFmInfo: LastFmInfo, maxSize: number=LASTFM_IMG_SIZE_ULTRA) => {
     const image = lastFmInfo && lastFmInfo.image;
     if(image) {
         let size = maxSize + 1;
@@ -74,26 +96,26 @@ export const getLastFmThumbnail = (lastFmInfo, maxSize=LASTFM_IMG_SIZE_ULTRA) =>
     return null;
 };
 
-export const getCoverUrl = album => {
+export const getCoverUrl = (album: Album) => {
     // const coverUrl = album && album.coverUrl;
     // return coverUrl ? baseUrl + coverUrl : null;
     const audioSrc = album && album.picture && (album.picture.src || album.picture.img);
     return audioSrc ? baseUrl + '/img' + audioSrc : null;
 };
 
-export const createAudioUrls = partUrls => {
+export const createAudioUrls = (partUrls: string | string[]) => {
     const cvrt = partUrl => !partUrl ? partUrl : baseUrl + '/audio' + partUrl;
 
     return !partUrls ? partUrls : Array.isArray(partUrls) ? partUrls.map(cvrt) : cvrt(partUrls);
 };
 
-export function createLog(enabled, component){
-    function log (method, fmt='', ...args) {
+type LogFunction = (method: string, format: string, ...args: any)=>void;
+export function createLog(enabled: boolean, component: string): LogFunction {
+    function log (method: string, fmt: string='', ...args: any) {
         if(!args) args = [];
         console.log(`${component}.${method}() ${fmt}`, ...args);
     }
     return enabled ? log : function () {};
-
 }
 
 /**
@@ -102,7 +124,7 @@ export function createLog(enabled, component){
  * @param newUrl {string or arry}
  * @returns {boolean} if both are equal
  */
-export const urlsEqual = (url, newUrl) => {
+export const urlsEqual = (url: string | string[], newUrl: string | string[]) => {
     // if this one of the array is a falsy value, return true if the other is also falsy, false otherwise
     if (!url || !newUrl) {
         return !!url === !!newUrl;
@@ -122,4 +144,3 @@ export const urlsEqual = (url, newUrl) => {
         return u !== newUrl[i];
     });
 };
-

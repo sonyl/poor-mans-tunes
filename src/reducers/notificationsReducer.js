@@ -1,17 +1,20 @@
+/* @flow */
 import { SEND_NOTIFICATION, DISMISS_NOTIFICATION } from '../actions/actionKeys';
+import type { Action, Alert } from '../types';
 
+export type NotificationsState = Alert[];
 
-const notifications = (state = [], props) => {
-    switch (props.type) {
+const notifications = (state: NotificationsState = [], action: Action) => {
+    switch (action.type) {
         case SEND_NOTIFICATION: {
             return [
                 ...state,
-                props.alert
+                action.alert
             ];
         }
         case DISMISS_NOTIFICATION: {
             // find the index of the alert that was dismissed
-            const idx = state.indexOf(props.alert);
+            const idx = state.indexOf(action.alert);
             if (idx >= 0) {
                 return [
                     ...state.slice(0, idx),

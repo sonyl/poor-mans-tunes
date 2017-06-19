@@ -1,3 +1,4 @@
+/* @flow */
 import React, {Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -5,6 +6,8 @@ import { connect } from 'react-redux';
 import NavLink from '../components/NavLink';
 import { createLinkUrl, createLog } from '../components/utils';
 import { getArtists, getSelectedArtist } from '../reducers';
+
+import type { Collection, Artist } from '../types';
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -71,16 +74,27 @@ function Tab({index, active, onTabChange, children}) {
     );
 }
 
-function TabContent({id, active, children}) {
+function TabContent({id, active, children}: {id: string, active: boolean, children: Object}) {
     const className = 'tab-pane' + (active ? ' active': '');
     return (
         <div role="tabpanel" className={className} id={id}>{children}</div>
     );
 }
 
-class ArtistList extends Component {
+type Props = {
+    artists: Collection,
+    selectedArtist: Artist
+}
+type DefaultProps = void
+type State = { categories: Object[], activeIndex: number }
 
-    constructor(props) {
+class ArtistList extends Component<DefaultProps, Props, State> {
+
+    state: State;
+
+    onTabChange: (any)=> any;
+
+    constructor(props: Props) {
         super(props);
         const categories = categorize(props.artists);
         this.state = {
@@ -130,7 +144,7 @@ class ArtistList extends Component {
     renderTabsContent() {
         const {activeIndex, categories} = this.state;
         return categories.map((c, i) => {
-            return <TabContent key={c.category} active={activeIndex === i}>{this.renderArtistNames(c.artists)}</TabContent>;
+            return <TabContent id={'tab-' + i} key={c.category} active={activeIndex === i}>{this.renderArtistNames(c.artists)}</TabContent>;
         });
     }
 

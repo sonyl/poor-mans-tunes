@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createLog } from './utils';
@@ -19,27 +21,60 @@ function isNumeric(n) {
 }
 
 class RingBuffer {
+    maxSize: number;
+    buffer: number[];
+    ptr: number;
+
+
     constructor(size = 100) {
         this.maxSize = size;
         this.buffer = Array(size).fill(DB_MIN_SCALE);
         this.ptr = 0;
     }
 
-    write(value) {
+    write(value: number) {
         this.buffer[this.ptr] = isNumeric(value)  ? value : DB_MIN_SCALE;
         if (++this.ptr >= this.maxSize) {
             this.ptr = 0;
         }
     }
 
-    getMax() {
+    getMax(): number {
         return this.buffer.reduce((m, v) => Math.max(m, v), DB_MIN_SCALE);
     }
 }
 
+type Props = {
+    audio: HTMLMediaElement,
+    audioContext: Object,
+    backgroundColor: string,
+    okColor: string,
+    warnColor: string,
+    alarmColor: string,
+    textColor: string
+};
+type DefaultProps = {
+    audioContext: Object,
+    backgroundColor: '#555',
+    okColor: 'green',
+    warnColor: 'yellow',
+    alarmColor: 'red',
+};
+type State = void;
 
-export default class LevelMeter extends Component {
-    constructor(props) {
+export default class LevelMeter extends Component<DefaultProps, Props, State> {
+
+    leftPeakBuffer: RingBuffer;
+    rightPeakBuffer: RingBuffer;
+
+    meterNode: Object;
+    sourceNode: Object;
+
+    canvas: HTMLCanvasElement;
+
+    channelPeak: number[];
+
+    constructor(props: Object) {
         super(props);
         this.leftPeakBuffer = new RingBuffer(PEAK_BUFFER_SIZE);
         this.rightPeakBuffer = new RingBuffer(PEAK_BUFFER_SIZE);
@@ -55,7 +90,7 @@ export default class LevelMeter extends Component {
         this.disconnect();
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps (nextProps: Props) {
         if(this.props.audio !== nextProps.audio) {
             log('componentWillReceiveProps', 'nextProps=', nextProps);
             if(this.props.audio) {
@@ -68,11 +103,11 @@ export default class LevelMeter extends Component {
     }
 
         /* this changing props has no effect on the rendering of the component */
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps: Props) {
         return false;
     }
 
-    audioOnPlay = (event) => {
+    audioOnPlay = (event: Event) => {
         log('audioOnPlay', 'meterNode=%o sourceNode=%o', this.meterNode, this.sourceNode);
         this.meterNode && this.meterNode.disconnect();
         this.sourceNode && this.sourceNode.disconnect();
@@ -90,8 +125,8 @@ export default class LevelMeter extends Component {
         this.meterNode.connect(audioContext.destination);
     };
 
-    connect( { audioContext, audio }) {
-        log('connect');
+    connect( { audioContext, audio }: {audioContext: AudioContext, audio: HTMLMediaElement}) {
+        log('connect', 'audio provided: %s', !!audio);
         if(audio) {
             audio.addEventListener('play', this.audioOnPlay);
             this.sourceNode = audioContext.createMediaElementSource(audio);
@@ -103,14 +138,14 @@ export default class LevelMeter extends Component {
     }
 
     disconnect() {
-        log('disconnect');
+        log('disconnect', '');
 
         this.props.audio && this.props.audio.removeEventListener('play', this.audioOnPlay);
         this.meterNode && this.meterNode.disconnect();
         this.sourceNode && this.sourceNode.disconnect();
     }
 
-    updateMeter = audioProcessingEvent => {
+    updateMeter = (audioProcessingEvent: any) => {
         const inputBuffer = audioProcessingEvent.inputBuffer;
         this.channelPeak = [];
 
@@ -130,31 +165,33 @@ export default class LevelMeter extends Component {
 
     draw() {
         const  {canvas, leftPeakBuffer, rightPeakBuffer, channelPeak} = this;
-        if(canvas && canvas.getContext && channelPeak) {
+        if(canvas && channelPeak) {
+            const ctx: ?CanvasRenderingContext2D = canvas.getContext ? canvas.getContext('2d') : undefined;
+            if(ctx) {
 
-            const w = canvas.width  = canvas.offsetWidth;
-            const h = canvas.height = canvas.offsetHeight;
+                const w = canvas.width = canvas.offsetWidth;
+                const h = canvas.height = canvas.offsetHeight;
 
-            const ctx = canvas.getContext('2d');
 
-            const db_left = linToDb(channelPeak[0]);
-            const db_right = linToDb(channelPeak[1]);
+                const db_left = linToDb(channelPeak[0]);
+                const db_right = linToDb(channelPeak[1]);
 
-            leftPeakBuffer.write(db_left);
-            rightPeakBuffer.write(db_right);
+                leftPeakBuffer.write(db_left);
+                rightPeakBuffer.write(db_right);
 
-            const leftPeak = leftPeakBuffer.getMax().toPrecision(2);
-            const rightPeak = rightPeakBuffer.getMax().toPrecision(2);
+                const leftPeak = (leftPeakBuffer.getMax(): number);
+                const rightPeak = (rightPeakBuffer.getMax(): number);
 
-            this.drawBar(ctx, 0, h * 0.05,  w, h * 0.4, 1 - db_left / DB_MIN_SCALE,
-                h * 0.25, 1 - leftPeak / DB_MIN_SCALE, leftPeak);
-            this.drawBar(ctx, 0, h * 0.55,  w, h * 0.4, 1 - db_right / DB_MIN_SCALE,
-                h * 0.75, 1 - rightPeak / DB_MIN_SCALE, rightPeak);
-
+                this.drawBar(ctx, 0, h * 0.05, w, h * 0.4, 1 - db_left / DB_MIN_SCALE,
+                    h * 0.25, 1 - leftPeak / DB_MIN_SCALE, leftPeak);
+                this.drawBar(ctx, 0, h * 0.55, w, h * 0.4, 1 - db_right / DB_MIN_SCALE,
+                    h * 0.75, 1 - rightPeak / DB_MIN_SCALE, rightPeak);
+            }
         }
     }
 
-    drawBar(ctx, x, y, w, h, f, yCenter, xPeak, dbPeak) {
+    drawBar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, f: number, yCenter: number,
+            xPeak: number, dbPeak: number) {
         ctx.fillStyle = this.props.backgroundColor;
         ctx.fillRect(x, y, w, h);
 
@@ -190,7 +227,6 @@ export default class LevelMeter extends Component {
 
     static propTypes = {
         audioContext: PropTypes.object.isRequired,
-        src: PropTypes.object,
         backgroundColor: PropTypes.string.isRequired,
         okColor: PropTypes.string.isRequired,
         warnColor: PropTypes.string.isRequired,

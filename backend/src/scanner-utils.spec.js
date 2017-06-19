@@ -1,4 +1,6 @@
+/* @flow */
 /* eslint-env node, jest */
+
 
 import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent } from './scanner-utils';
 
@@ -74,7 +76,7 @@ describe('scanner-utils', () => {
 
     describe('getCommonParent() ', () => {
         it('should return the common parent, if it exists', () => {
-            expect(getCommonParent({'/foo/bar/abc': 1, '/foo/bar/efg': 2}, '/foo/bar/fup')).toBe('/foo/bar');
+            expect(getCommonParent({'/foo/bar/abc': 1, '/foo/bar/efg': 2, '/foo/bar/fup': 1})).toBe('/foo/bar');
         });
 
         it('should return falsy, if it doesnot exists', () => {

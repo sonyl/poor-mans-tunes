@@ -1,5 +1,19 @@
+/* @flow */
 import { REQUEST_SONG_LYRICS, RECEIVE_SONG_LYRICS } from './actionKeys';
 import { replaceRequestPlaceholders} from './utils';
+
+import type { Dispatch, GetState, Lyrics } from '../types';
+
+export type RequestSongLyrics = { type: 'REQUEST_SONG_LYRICS', artist: string, song: string};
+export type ReceiveSongLyrics = {
+    type: 'RECEIVE_SONG_LYRICS',
+    artist: string,
+    song: string,
+    receivedAt: number,
+    lyrics: ?Lyrics,
+    error: any
+};
+
 
 const GETLYRICS_URL = '/lyrics/${artist}/${song}';
 
@@ -8,13 +22,13 @@ const headers = new Headers({
 });
 
 /* ============ artist actions =================*/
-const requestSongLyrics = (artist, song) => ({
+const requestSongLyrics = (artist, song): RequestSongLyrics => ({
     type: REQUEST_SONG_LYRICS,
     artist,
     song
 });
 
-const receiveSongLyrics = (artist, song, lyrics, error) => ({
+const receiveSongLyrics = (artist, song, lyrics, error): ReceiveSongLyrics => ({
     type: RECEIVE_SONG_LYRICS,
     artist,
     song,
@@ -24,7 +38,7 @@ const receiveSongLyrics = (artist, song, lyrics, error) => ({
 });
 
 
-export const requestSongLyricsIfNotExists = (artist, song) => (dispatch, getState) => {
+export const requestSongLyricsIfNotExists = (artist: string, song: string) => (dispatch: Dispatch, getState: GetState) => {
     if(!artist || !song) {
         return Promise.reject(new Error('required argument \'artist\' or \'song\' missing'));
     }

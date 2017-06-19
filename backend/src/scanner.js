@@ -1,3 +1,5 @@
+/* @flow */
+
 import fs from 'fs';
 import path from 'path';
 import musicmetadata from 'musicmetadata';
@@ -6,6 +8,12 @@ import promiseLimit from 'promise-limit';
 import fsp from './fs-promise';
 import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent} from './scanner-utils';
 
+type Picture = {src: string, format: string, width: number, height: number, area: number};
+type Image = { img: string, width: number, height: number};
+type Song = {src: string, artist: string, album: string, title: string, track: number, year: number,
+    tt?: number, disk?: number, td?: number, picture?: Picture };
+
+export type ScanStatistics = {percentDone: number, filesToScan: number, filesScanned: number};
 
 let scanActive = false;
 let filesToScan = 0;
@@ -13,7 +21,7 @@ let filesScanned = 0;
 
 const fileReadLimit = promiseLimit(10);
 
-export const scanStats = () => {
+export const scanStats = (): ?ScanStatistics => {
     if(scanActive) {
         const percentDone = !filesToScan ? 0 : (100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan));
         return {
@@ -24,7 +32,7 @@ export const scanStats = () => {
     }
 };
 
-export const _scanFile = (path, updateState = true) => {
+export const _scanFile = (path: string, updateState: boolean = true): Promise<any> => {
     const stream = fs.createReadStream(path);
     return new Promise((resolve, reject) => {
         musicmetadata(stream, (err, metadata) => {
@@ -41,9 +49,9 @@ export const _scanFile = (path, updateState = true) => {
     });
 };
 
-export const scanFile = path => _scanFile(path, false);
+export const scanFile = (path: string): Promise<any> => _scanFile(path, false);
 
-export const scanTree = (path, destFilename) => {
+export const scanTree = (path: string, destFilename: string): Promise<any> => {
     if(scanActive === true) {
         throw new Error('Scan already running');
     }
@@ -69,9 +77,9 @@ export const scanTree = (path, destFilename) => {
         });
 };
 
-const file2path = (file, root) => file.startsWith(root) ? file.substring(root.length) : file;
+const file2path = (file: string, root: string): string => file.startsWith(root) ? file.substring(root.length) : file;
 
-const metaToImage = ({type: format, width, height}, file, root) => ({
+const metaToImage = ({type: format, width, height}, file, root): Image => ({
     format,
     width,
     height,
@@ -79,18 +87,18 @@ const metaToImage = ({type: format, width, height}, file, root) => ({
 });
 
 
-const metaToSong = ({artist, albumartist, album, title, track, disk, year, picture}, file, root) => {
+const metaToSong = ({artist, albumartist, album, title, track, disk, year, picture}, file, root): ?Song => {
     const songArtist = albumartist[0] || artist[0];
     if(!songArtist || !album) return;
-    const song = {
+    const song:Song = {
         src: file2path(file, root),
         artist: songArtist,
         album,
         title,
         track: track.no,
         year
-
     };
+
     if(track.of) {
         song.tt = track.of;
     }

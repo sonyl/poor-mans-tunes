@@ -1,7 +1,15 @@
+/* @flow */
 import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from '../actions/actionKeys';
+import type { Action } from '../types';
 
+export type ServerState = {
+    status: { isFetching: boolean, status?: any, error?: any, lastUpdated?: number},
+    settings: {isFetching: boolean, settings?: any, error?: any, lastUpdated?: number}
+}
 
-const server = (state = {status: {isFetching: false}, settings: {isFetching: false}}, action) => {
+const defaultState: ServerState = {status: {isFetching: false}, settings: {isFetching: false}};
+
+const server = (state: ServerState = defaultState, action: Action) => {
     switch (action.type) {
         case REQUEST_SERVER_STATUS:
             return {
@@ -53,19 +61,14 @@ export default server;
 
 // ------------ selectors
 
-export const getStatus = ({status, error, lastUpdated}) => ({
-    status,
-    error,
-    lastUpdated
-});
+export const getStatus = (state: ServerState) => {
+    const {status, error, lastUpdated} = state.status;
+    return {status, error, lastUpdated};
+};
 
-export const getSettings = ({settings, error, lastUpdated}) => {
-    const s = {
-        settings,
-        error,
-        lastUpdated
-    };
-    return s;
+export const getSettings = (state: ServerState) => {
+    const { settings, error, lastUpdated } = state.settings;
+    return { settings, error, lastUpdated };
 };
 
 

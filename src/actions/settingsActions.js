@@ -1,28 +1,40 @@
+/* @flow */
 import { addRandomSongsToPlaylistIfNecessary } from './playlistActions';
 import { SET_PLAY_RANDOM_SONG, SET_PLAY_RANDOM_ALBUM, SET_VOLUME } from './actionKeys';
 
+import type { Dispatch, GetState } from '../types';
 
-const _setPlayRandomSong = playRandom => ({
-    type: SET_PLAY_RANDOM_SONG,
-    playRandom
-});
+export type PlayRandomSong = {
+    type: 'SET_PLAY_RANDOM_SONG',
+    playRandom: boolean
+}
 
-const _setPlayRandomAlbum = playRandom => ({
-    type: SET_PLAY_RANDOM_ALBUM,
-    playRandom
-});
+export type PlayRandomAlbum = {
+    type: 'SET_PLAY_RANDOM_ALBUM',
+    playRandom: boolean
+}
 
-export const setPlayRandomSong = playRandom => (dispatch, getState) => {
-    dispatch(_setPlayRandomSong(playRandom));
+export type SetVolume = {
+    type: 'SET_VOLUME',
+    volume: number
+}
+export const setPlayRandomSong = (playRandom: boolean) => (dispatch: Dispatch, getState: GetState) => {
+    dispatch(({
+        type: SET_PLAY_RANDOM_SONG,
+        playRandom
+    }: PlayRandomSong));
     dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
-export const setPlayRandomAlbum = playRandom => (dispatch, getState) => {
-    dispatch(_setPlayRandomAlbum(playRandom));
+export const setPlayRandomAlbum = (playRandom: boolean) => (dispatch: Dispatch, getState: GetState) => {
+    dispatch(({
+        type: SET_PLAY_RANDOM_ALBUM,
+        playRandom
+    }: PlayRandomAlbum));
     dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
-export const setVolume = volume => ({
+export const setVolume = (volume: number): SetVolume => ({
     type: SET_VOLUME,
     volume
 });

@@ -1,3 +1,4 @@
+/* @flow */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -10,6 +11,7 @@ import {sendSongToSonos} from '../actions/serverActions';
 const ENABLE_LOG = true;
 const log = createLog(ENABLE_LOG, 'AlbumView');
 
+import type { Album, LastFmInfo, PlaylistSong } from '../types';
 
 function PlusIcon() {
     return <GlyphIcon iconName='share-alt'/>;
@@ -26,7 +28,7 @@ function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
                 actions={ [
                     { label: 'add song to top of playlist', onClick: () => addAlbumSongToPlaylist(index, true)},
                     { label: 'add song to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)},
-                    { label: 'play song on Sonos', onClick: () => sendAlbumSongToSonos(index, false)}
+                    { label: 'play song on Sonos', onClick: () => sendAlbumSongToSonos(index)}
                 ] }
             />
             &nbsp;&nbsp; {title}
@@ -34,7 +36,13 @@ function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
     );
 }
 
-const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
+type AlbumViewProps = {
+    album: Album,
+    lastFmInfo: LastFmInfo,
+    addSongsToPlaylist: (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong, top: boolean)=> void
+}
+
+const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}: AlbumViewProps) => {
     log('render', 'album=%o, lastFmInfo=%o', album, lastFmInfo);
 
     function addAlbumSongToPlaylist(index, top=false) {
@@ -48,7 +56,7 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}) => {
         addSongsToPlaylist(album.artist, album.album, songs, top);
     }
 
-    function sendAlbumSongToSonos(index) {
+    function sendAlbumSongToSonos(index: number) {
         const song = album.songs[index];
         log('sendAlbumSongToSonos', 'song=%o', song);
         sendSongToSonos({title: song.title, src: song.src});

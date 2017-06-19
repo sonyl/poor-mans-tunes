@@ -1,3 +1,4 @@
+/* @flow */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -5,10 +6,21 @@ import { AlertList } from 'react-bs-notifier';
 
 import { dismissNotification } from '../actions/notificationsActions';
 
-class Notifications extends Component {
-    constructor(props) {
-        super(props);
-    }
+import type { Alert } from '../types';
+
+type Props = {
+    position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left',
+    timeout: number,
+    alerts: Alert[],
+    dismissAlert: (Alert)=>void;
+}
+type DefaultProps = {
+    position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left',
+    timeout: number,
+}
+type State = void;
+
+class Notifications extends Component<DefaultProps, Props, State> {
 
     onAlertDismiss = alert => {
         this.props.dismissAlert(alert);

@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -13,17 +15,46 @@ function btnClassNames(size) {
 }
 
 
-class SplitButton extends Component {
-    constructor(props) {
+type ClickHandler = (buttonName: string, label: string)=> void;
+
+type Props = {
+    actions: {label: string, onClick: ClickHandler}[],
+    defaultLabel: string,
+    defaultOnClick: ClickHandler,
+    defaultIcon: Object,
+    size: 'extra-small' | 'small' | 'medium' | 'large'
+};
+type DefaultProps = {
+    size: 'extra-small' | 'small' | 'medium' | 'large'
+};
+type State = {
+    open: boolean
+};
+
+export default class SplitButton extends Component<DefaultProps, Props, State> {
+    static propTypes = {
+        actions: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string.isRequired,
+            onClick: PropTypes.func.isRequired
+        })).isRequired,
+        defaultLabel: PropTypes.string.isRequired,
+        defaultOnClick: PropTypes.func,
+        defaultIcon: PropTypes.element,
+        size: PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
+    };
+
+    static defaultProps = {
+        size: 'medium'
+    };
+
+    state: State;
+
+    constructor(props: Props) {
         super(props);
 
         this.state = {
             open: false
         };
-
-        this.toggleState = this.toggleState.bind(this);
-        this.onClick = this.onClick.bind(this);
-        this.onBlur = this.onBlur.bind(this);
     }
 
 
@@ -31,7 +62,7 @@ class SplitButton extends Component {
         this.setState({open: !this.state.open});
     }
 
-    onClick(e) {
+    onClick(e: Event & { currentTarget: HTMLButtonElement }) {
         const name = e.currentTarget.name;
 
         if(this.state.open) {
@@ -43,7 +74,7 @@ class SplitButton extends Component {
             if(name === 'default' && defaultOnClick){
                 defaultOnClick('default', defaultLabel);
             } else {
-                const action = actions[name];
+                const action = actions[parseInt(name)];
                 if(action && action.onClick) {
                     action.onClick(name, action.label);
                 }
@@ -74,17 +105,17 @@ class SplitButton extends Component {
 
         return(
             <div className={divClassName}>
-                <button type="button" className={btnClassNames(size)} onClick={this.onClick} name="default">
+                <button type="button" className={btnClassNames(size)} onClick={e=>this.onClick(e)} name="default">
                     { getDefaulLabel() }
                 </button>
-                <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={this.toggleState}
-                        onBlur={this.onBlur}>
+                <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={e=>this.toggleState()}
+                        onBlur={e=>this.onBlur()}>
                     <span className="caret"/>
                 </button>
                 <ul className="dropdown-menu">
                     {
                         actions && actions.map((a, i) => (
-                            <li key={i}><a href="#" onClick={this.onClick} name={i}>{a.label}</a></li>
+                            <li key={i}><a href="#" onClick={e=>this.onClick(e)} name={i}>{a.label}</a></li>
                         ))
                     }
                 </ul>
@@ -93,20 +124,3 @@ class SplitButton extends Component {
     }
 }
 
-
-SplitButton.propTypes = {
-    actions: PropTypes.arrayOf(PropTypes.shape({
-        label: PropTypes.string.isRequired,
-        onClick: PropTypes.func.isRequired
-    })).isRequired,
-    defaultLabel: PropTypes.string.isRequired,
-    defaultOnClick: PropTypes.func,
-    defaultIcon: PropTypes.element,
-    size: PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
-};
-
-SplitButton.defaultProps = {
-    size: 'medium'
-};
-
-export default SplitButton;

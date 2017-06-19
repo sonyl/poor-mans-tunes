@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint-env node */
 import fs from 'fs';
 import express from 'express';
@@ -9,19 +10,24 @@ import {scanTree, scanFile, scanStats} from './scanner';
 import fsp from './fs-promise';
 import * as Sonos from './sonos-support';
 import {hasExtension} from './scanner-utils';
+import type { Collection, Artist, CollectionInfo, ServerStatus } from './types.js';
+type Settings = {audioPath: string, distPath: string, port: number, publicBaseUrl: string}
+
 const COLLECTION = './collection.json';
 const NEW_COLLECTION = './collection.new.json';
 const SETTINGS = './settings.json';
 const DEFAULT_PORT = 9000;
 let scanning = false;
-const DEFAULT_SETTINGS = {
+
+
+const DEFAULT_SETTINGS : Settings = {
     audioPath: '../mp3',
     distPath: '../dist',
     port: DEFAULT_PORT,
     publicBaseUrl: 'http://localhost:' + DEFAULT_PORT
 };
 
-const settings = function readSettings() {
+const settings = function readSettings(): Settings {
     try {
         const settings = JSON.parse(fs.readFileSync(SETTINGS, 'utf8'));
         return settings && settings.audioPath ? settings : DEFAULT_SETTINGS;
@@ -35,7 +41,7 @@ function updateSettings() {
     try {
         fs.writeFileSync(SETTINGS, JSON.stringify(settings, null, 4), 'utf8');
         return true;
-    }catch(error) {
+    } catch(error) {
         console.log('Error writings settings: %j', error);
         return false;
     }
@@ -57,7 +63,7 @@ app.use(history({
     }]
 }));
 
-app.get('/api/status', (req, res) => {
+app.get('/api/status', (req: express$Request, res: express$Response) => {
     const full = 'full' === req.query.full || 'true' === req.query.full;
     console.log('status requested. full=', full);
     getStatus(full).then(status => {
@@ -68,7 +74,7 @@ app.get('/api/status', (req, res) => {
 });
 
 
-app.put('/api/status/rescan', (req, res) => {
+app.put('/api/status/rescan', (req: express$Request, res: express$Response) => {
     console.log('rescan requested');
 
     if(!settings.audioPath) {
@@ -92,7 +98,6 @@ app.put('/api/status/rescan', (req, res) => {
     scanTree(settings.audioPath, NEW_COLLECTION).then(() => {
         const currPath = path.resolve('.');
         fs.renameSync(path.normalize(currPath + '/' + NEW_COLLECTION), path.normalize(currPath + '/' + COLLECTION));
-        express.staticFiles = express.static(settings.audioPath);
         scanning = false;
     }).catch(err => {
         scanning = false;
@@ -105,12 +110,12 @@ app.put('/api/status/rescan', (req, res) => {
     });
 });
 
-app.get('/api/settings', (req, res) => {
+app.get('/api/settings', (req: express$Request, res: express$Response) => {
     console.log('settings parameter requested');
     res.json(settings);
 });
 
-app.delete('/api/settings/:key', (req, res) => {
+app.delete('/api/settings/:key', (req: express$Request, res: express$Response) => {
     delete settings[req.params.key];
     console.log('Deleted parameter %j from settings =>%j:', req.params, settings);
     if(updateSettings()) {
@@ -123,7 +128,7 @@ app.delete('/api/settings/:key', (req, res) => {
     }
 });
 
-app.put('/api/settings/:key', (req, res) => {
+app.put('/api/settings/:key', (req: express$Request, res: express$Response) => {
     console.log('Updated settings with %j, =>%j:', req.params, req.body.value);
     const key = req.params.key;
     let value = req.body.value;
@@ -150,11 +155,11 @@ app.put('/api/settings/:key', (req, res) => {
     }
 });
 
-app.post('/api/sonos/play', (req, res) => {
+app.post('/api/sonos/play', (req: express$Request, res: express$Response) => {
     console.log('Api sonos play =>%j:', req.body);
-    const src = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
+    const src:string = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
     if(src) {
-        Sonos.playSong(Sonos.createAudioUrls(settings.publicBaseUrl, src)).then(
+        Sonos.playSong(Sonos.createAudioUrl(settings.publicBaseUrl, src)).then(
             () => {
                 console.log('Successfully started song on sonos:', src);
                 res.json({
@@ -174,23 +179,12 @@ app.post('/api/sonos/play', (req, res) => {
     }
 });
 
-app.get('/api/collection', (req, res) => {
+app.get('/api/collection', (req: express$Request, res: express$Response) => {
     console.log('collection requested!');
     res.sendFile(COLLECTION, {root: __dirname + '/..'});
 });
 
-function getContentType(type) {
-    type = type || '';
-    if(['jpg', 'jpeg'].indexOf(type.toLowerCase()) >= 0) {
-        return 'image/jpeg';
-    }
-    if(['png'].indexOf(type.toLowerCase()) >= 0) {
-        return 'image/png';
-    }
-    throw new Error('unknown media format');
-}
-
-app.get('/img/*', (req, res) => {
+app.get('/img/*', (req: express$Request, res: express$Response) => {
     const imgPath = decodeURI(req.url.substr(4));
     console.log('image request', imgPath);
 
@@ -215,13 +209,13 @@ app.get('/img/*', (req, res) => {
 
 });
 
-app.get('/audio/*', (req, res) => {
+app.get('/audio/*', (req: express$Request, res: express$Response) => {
     const path = decodeURI(req.url.substr(6));
     console.log('song requested!', path);
     res.sendFile(path, {root: settings.audioPath});
 });
 
-app.get('/lyrics/:artist/:song', (req, res) => {
+app.get('/lyrics/:artist/:song', (req: express$Request, res: express$Response) => {
     const { artist, song } = req.params;
     console.log('lyrics requested: %s --- %s', artist, song);
     getLyrics(req.params.artist, req.params.song)
@@ -240,7 +234,7 @@ app.get('/lyrics/:artist/:song', (req, res) => {
 });
 
 
-app.use((req, res) => {
+app.use((req: express$Request, res: express$Response) => {
     console.log('resource requested: %s', req.url);
     res.sendFile(req.url, {root: settings.distPath}, error => {
         if(error) {
@@ -256,18 +250,28 @@ app.use((req, res) => {
 
 app.listen(settings.port, () => console.log('server is running on localhost:', settings.port));
 
+function getContentType(type: string): string {
+    type = type || '';
+    if(['jpg', 'jpeg'].indexOf(type.toLowerCase()) >= 0) {
+        return 'image/jpeg';
+    }
+    if(['png'].indexOf(type.toLowerCase()) >= 0) {
+        return 'image/png';
+    }
+    throw new Error('unknown media format');
+}
 
-function getStatus(full) {
+function getStatus(full: boolean): Promise<ServerStatus> {
     let promise;
     if(full) {
         promise = fsp.readFile(COLLECTION, 'utf8').
             then(data => {
-                let collInfo = {};
+                let collInfo:CollectionInfo;
                 try {
-                    const collection = JSON.parse(data);
+                    const collection:Collection = JSON.parse(data);
                     collInfo = {
                         artists: collection.length,
-                        albums: collection.reduce((acc, val) => acc + val.albums.length, 0)
+                        albums: collection.reduce((acc: number, artist: Artist) => acc + artist.albums.length, 0)
                     };
                 } catch (error) {
                     collInfo = {
@@ -290,7 +294,7 @@ function getStatus(full) {
                   err => ({ status: 'collection missing' }));
     }
 
-    return promise.then(status => {
+    return promise.then((status: ServerStatus): ServerStatus => {
         status.scanning = scanning;
         status.scanStatistics = scanStats();
         return status;

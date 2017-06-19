@@ -1,5 +1,12 @@
+/* @flow */
 import getConfig from '../config.js';
 import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from './actionKeys';
+import type { Dispatch, GetState, Collection } from '../types';
+
+export type RequestCollection = { type: 'REQUEST_COLLECTION' };
+export type ReceiveCollection = { type: 'RECEIVE_COLLECTION', artists: Collection, receivedAt: number, error: any };
+export type InvalidateCollection =  { type: 'INVALIDATE_COLLECTION'};
+
 const { collectionUrl } = getConfig({
     collectionUrl: 'http://localhost:9001/api/collection'
 });
@@ -7,11 +14,11 @@ const headers = new Headers({
     accept: 'application/json'
 });
 
-const requestCollection = () => ({
+const requestCollection = (): RequestCollection => ({
     type: REQUEST_COLLECTION
 });
 
-const receiveCollection = (artists, error) => ({
+const receiveCollection = (artists, error): ReceiveCollection => ({
     type: RECEIVE_COLLECTION,
     artists,
     error: error && (error.message || error),
@@ -23,7 +30,7 @@ const shouldFetchCollection = state => {
     return !collection || collection.didInvalidate != false;
 };
 
-export const getCollection = () => (dispatch, getState) => {
+export const getCollection = () => (dispatch: Dispatch, getState: GetState) => {
     if(shouldFetchCollection(getState())) {
 
         dispatch(requestCollection());
@@ -41,8 +48,9 @@ export const getCollection = () => (dispatch, getState) => {
                 dispatch(receiveCollection([], e));
             });
     }
+    return Promise.resolve();
 };
 
-export const invalidateCollection = () => ({
+export const invalidateCollection = (): InvalidateCollection => ({
     type: INVALIDATE_COLLECTION
 });

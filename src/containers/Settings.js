@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getLastCollectionUpdate, getServerStatus, getServerSettings } from '../reducers';
@@ -13,6 +15,10 @@ function formatDate(date) {
 }
 
 class Settings extends Component {
+
+    state: {
+        audioPath: string
+    };
 
     constructor(props) {
         super(props);

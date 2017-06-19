@@ -1,26 +1,35 @@
+/* @flow */
 import {fetchLastFm} from './utils';
 import { REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM } from './actionKeys';
 import getConfig from '../config';
+
+import type { Dispatch, GetState, LastFmInfo } from '../types';
+
+export type RequestArtist = { type: 'REQUEST_ARTIST', artist: string };
+export type ReceiveArtist = { type: 'RECEIVE_ARTIST', artist: string, lastFmInfo: ?LastFmInfo, receivedAt: number, error: any };
+export type RequestAlbum = { type: 'REQUEST_ALBUM', artist: string, album: string };
+export type ReceiveAlbum = { type: 'RECEIVE_ALBUM', artist: string, album: string, lastFmInfo: ?LastFmInfo,
+    receivedAt: number, error: any };
 
 const { skipLastFmArtist, skipLastFmAlbum  } = getConfig({skipLastFmArtist: false, skipLastFmAlbum: false});
 
 
 /* ============ artist actions =================*/
-const requestArtist = (artist) => ({
+const requestArtist = (artist: string): RequestArtist => ({
     type: REQUEST_ARTIST,
     artist
 });
 
-const receiveArtist = (artist, lastFmInfo, error) => ({
+const receiveArtist = (artist: string, lastFmInfo: ?LastFmInfo, error: any): ReceiveArtist => ({
     type: RECEIVE_ARTIST,
     artist,
-    lastFmInfo,
+    lastFmInfo: lastFmInfo,
     error: error && (error.message || error),
     receivedAt: Date.now()
 });
 
 
-export const requestArtistIfNotExists = artist => (dispatch, getState) => {
+export const requestArtistIfNotExists = (artist: string) => (dispatch: Dispatch, getState: GetState) => {
     if(!artist) {
         return Promise.reject(new Error('required argument \'artist\' missing'));
     }
@@ -32,7 +41,7 @@ export const requestArtistIfNotExists = artist => (dispatch, getState) => {
 
     dispatch(requestArtist(artist));
     if(skipLastFmArtist) {
-        dispatch(receiveArtist(artist, {}, 'switched off'));
+        dispatch(receiveArtist(artist, null, 'switched off'));
         return Promise.resolve();
     }
 
@@ -64,19 +73,19 @@ export const requestArtistIfNotExists = artist => (dispatch, getState) => {
         })
         .catch(e => {
             //console.log('Error occured', e);
-            dispatch(receiveArtist(artist, {}, e));
+            dispatch(receiveArtist(artist, null, e));
         });
 };
 
 
 /* ============ album actions =================*/
-const requestAlbum = (artist, album) => ({
+export const requestAlbum = (artist: string, album: string): RequestAlbum => ({
     type: REQUEST_ALBUM,
     artist,
     album
 });
 
-const receiveAlbum = (artist, album, lastFmInfo, error) => ({
+const receiveAlbum = (artist: string, album: string, lastFmInfo: ?LastFmInfo, error): ReceiveAlbum => ({
     type: RECEIVE_ALBUM,
     artist,
     album,
@@ -85,8 +94,7 @@ const receiveAlbum = (artist, album, lastFmInfo, error) => ({
     receivedAt: Date.now()
 });
 
-
-export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) => {
+export const requestAlbumIfNotExists = (artist: string, album: string) => (dispatch: Dispatch, getState: GetState) => {
     if(!artist || !album) {
         return Promise.reject(new Error('required argument \'artist\' or \'album\' missing'));
     }
@@ -100,7 +108,7 @@ export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) =
     dispatch(requestAlbum(artist, album));
 
     if(skipLastFmAlbum) {
-        dispatch(receiveAlbum(artist, album, {}, 'switched off'));
+        dispatch(receiveAlbum(artist, album, null, 'switched off'));
         return Promise.resolve();
     }
 
@@ -117,6 +125,6 @@ export const requestAlbumIfNotExists = (artist, album) => (dispatch, getState) =
         })
         .catch(e => {
             //console.log('Error during "album.getinfo":', e);
-            dispatch(receiveAlbum(artist, album, {}, e));
+            dispatch(receiveAlbum(artist, album, null, e));
         });
 };

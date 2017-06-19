@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint-env node */
 import { Sonos } from 'sonos';
 
@@ -13,17 +14,16 @@ const promisify = f => {
         });
     };
 };
-
-export const createAudioUrls = (publicBaseUrl, partUrls) => {
-    const cvrt = partUrl => partUrl ? (publicBaseUrl + '/audio' + partUrl) : partUrl;
-
-    return !partUrls ? partUrls : Array.isArray(partUrls) ? partUrls.map(cvrt) : cvrt(partUrls);
-};
-
 Sonos.prototype.play = promisify(Sonos.prototype.play);
 Sonos.prototype.queueNext = promisify(Sonos.prototype.queueNext);
 
-export const playSong = song => {
+
+export const createAudioUrl = (publicBaseUrl: string, partUrl: string): string => {
+    const cvrt = (partUrl: string): string => publicBaseUrl + '/audio' + partUrl;
+    return cvrt(partUrl);
+};
+
+export const playSong = (song: string): Promise<any>  => {
     const sonos = new Sonos(process.env.SONOS_HOST || '192.168.0.104');
 
     return sonos.queueNext(encodeURI(song)).then(() => sonos.play());

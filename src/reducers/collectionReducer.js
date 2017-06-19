@@ -1,18 +1,25 @@
+/* @flow */
 import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from '../actions/actionKeys';
+import type { Action, Collection } from '../types';
+
+export type CollectionState = {
+    isFetching: boolean,
+    artists: Collection,
+    didInvalidate?: boolean,
+    lastUpdated?: number
+}
+
+const defaultState: CollectionState = { isFetching: false, artists: []};
 
 // -----------------reducer (default export)
-const collection = (
-    state = {
-        isFetching: false,
-        artists: []
-    }, action) => {
+const collection = ( state: CollectionState = defaultState, action: Action) => {
 
     switch (action.type) {
         case INVALIDATE_COLLECTION:
             return {
                 ...state,
                 didInvalidate: true,
-                lastUpdated: null
+                lastUpdated: undefined
             };
         case REQUEST_COLLECTION:
             return {
@@ -36,16 +43,16 @@ export default collection;
 
 // ------------ selectors
 
-export const getLastUpdate = (state) => {
+export const getLastUpdate = (state: CollectionState) => {
     return state && state.lastUpdated;
 };
 
-export const getArtists = (state) => {
+export const getArtists = (state: CollectionState) => {
     return state && state.artists || [];
 };
 
-export const getArtist = (state, artistIndex) => {
-    if(artistIndex >= 0) {
+export const getArtist = (state: CollectionState, artistIndex?: number) => {
+    if(artistIndex && artistIndex >= 0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         return artist || null;
@@ -53,8 +60,8 @@ export const getArtist = (state, artistIndex) => {
     return null;
 };
 
-export const getAlbum = (state, artistIndex, albumIndex) => {
-    if(artistIndex >= 0 && albumIndex >=0) {
+export const getAlbum = (state: CollectionState, artistIndex?: number, albumIndex?: number) => {
+    if(artistIndex && artistIndex >= 0 && albumIndex && albumIndex >=0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         const album = artist && artist.albums[albumIndex];
@@ -63,7 +70,7 @@ export const getAlbum = (state, artistIndex, albumIndex) => {
     return null;
 };
 
-export const getAlbumByName = (state, artist, album) => {
+export const getAlbumByName = (state: CollectionState, artist: string, album: string) => {
     const artistIndex = (state.artists || []).findIndex(a => a.artist === artist);
     const selArtist = getArtist(state, artistIndex);
     if(selArtist) {
@@ -75,7 +82,7 @@ export const getAlbumByName = (state, artist, album) => {
     return null;
 };
 
-const getRandomAlbum = state => {
+const getRandomAlbum = (state: CollectionState) => {
     const maxArtists = state.artists && state.artists.length;
     if(maxArtists) {
         const randArtist = state.artists[Math.floor((Math.random() * maxArtists))];
@@ -95,7 +102,7 @@ const getRandomAlbum = state => {
     return null;
 };
 
-export const getRandomAlbumSongs = state => {
+export const getRandomAlbumSongs = (state: CollectionState) => {
     const randAlbum = getRandomAlbum(state);
     if(randAlbum) {
         return {
@@ -110,7 +117,7 @@ export const getRandomAlbumSongs = state => {
     return null;
 };
 
-export const getRandomSong = state => {
+export const getRandomSong = (state: CollectionState) => {
     const randAlbum = getRandomAlbum(state);
     if(randAlbum) {
         const randSong = randAlbum.songs[Math.floor((Math.random() * randAlbum.songs.length))];

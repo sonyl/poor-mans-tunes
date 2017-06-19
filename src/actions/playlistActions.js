@@ -1,29 +1,51 @@
+/* @flow */
 import { getRandomSong, getRandomAlbumSongs, isPlaylistEmpty, isSetInSettings } from '../reducers';
 import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from './actionKeys';
 
+import type { Dispatch, GetState, PlaylistSong } from '../types';
 
-export const addSongsToPlaylist = (artist, album, songs, top=false) => ({
-    type: ADD_SONG_TO_PLAYLIST,
-    artist,
-    album,
-    songs: Array.isArray(songs) ? songs : [songs],
-    top
-});
+export type AddSongsToPlaylist = {
+    type: 'ADD_SONG_TO_PLAYLIST',
+    artist: string,
+    album: string,
+    songs: PlaylistSong[],
+    top: boolean
+}
 
-export const removeSongAtIndexFromPlaylist = index => dispatch => {
-    dispatch({
+export type RemoveSongFromPlaylist = {
+    type: 'REMOVE_SONG_FROM_PLAYLIST',
+    index: number
+}
+
+export type ClearPlaylist = {
+    type: 'CLEAR_PLAYLIST'
+}
+
+export const addSongsToPlaylist = (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong,
+           top: boolean=false): AddSongsToPlaylist => (
+    {
+        type: ADD_SONG_TO_PLAYLIST,
+        artist,
+        album,
+        songs: Array.isArray(songs) ? songs : [songs],
+        top
+    }
+);
+
+export const removeSongAtIndexFromPlaylist = (index: number) => (dispatch: Dispatch) => {
+    dispatch(({
         type: REMOVE_SONG_FROM_PLAYLIST,
         index
-    });
+    }: RemoveSongFromPlaylist));
     dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
-export const clearPlaylist = () => (dispatch) => {
-    dispatch({type: CLEAR_PLAYLIST});
+export const clearPlaylist = () => (dispatch: Dispatch) => {
+    dispatch(({type: CLEAR_PLAYLIST}: ClearPlaylist));
     dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
-export const addRandomSongsToPlaylistIfNecessary = () => (dispatch, getState) => {
+export const addRandomSongsToPlaylistIfNecessary = () => (dispatch: Dispatch, getState: GetState) => {
     const state = getState();
     if(isPlaylistEmpty(state)) {
         if (isSetInSettings(state, 'playRandomSong')) {
@@ -40,7 +62,7 @@ export const addRandomSongsToPlaylistIfNecessary = () => (dispatch, getState) =>
     }
 };
 
-export const moveSongToPositionInPlaylist = (index, newIndex) => ({
+export const moveSongToPositionInPlaylist = (index: number, newIndex: number) => ({
     type: MOVE_SONG_TO_POSITION,
     index,
     newIndex

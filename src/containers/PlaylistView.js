@@ -1,9 +1,13 @@
+/* @flow */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { clearPlaylist, removeSongAtIndexFromPlaylist, moveSongToPositionInPlaylist } from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
 import { createLog } from '../components/utils';
+
+import type {PlaylistEntry} from '../types';
 
 const ENABLE_LOG = false;
 const entryLog = createLog(ENABLE_LOG, 'Entry');
@@ -51,8 +55,15 @@ const Entry = ({artist, album, song, index, removeEntry, moveSongToPositionInPla
     );
 };
 
+type PlaylistViewProps = {
+    playlist: PlaylistEntry[],
+    removeSongAtIndexFromPlaylist: (index: number)=>void,
+    moveSongToPositionInPlaylist: (index: number, newIndex: number)=>void,
+    clearPlaylist: ()=>void
+}
+
 // export for testing purpose only
-export const PlaylistView = ({playlist, removeSongAtIndexFromPlaylist, clearPlaylist, moveSongToPositionInPlaylist}) => {
+export const PlaylistView = ({playlist, removeSongAtIndexFromPlaylist, clearPlaylist, moveSongToPositionInPlaylist}: PlaylistViewProps) => {
 
     log('render', 'playlist=%o', playlist);
 

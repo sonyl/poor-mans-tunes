@@ -1,8 +1,10 @@
+/* @flow */
+
 import React from 'react';
 
+type FooterProps = { message: React.Element<*> | string, artistCnt: number, albumCnt: number, songCnt: number};
 
-function Footer({message, artistCnt, albumCnt, songCnt}) {
-    return (
+const Footer = ({message, artistCnt, albumCnt, songCnt}: FooterProps) => (
         <div className='footer well well-sm' style={{marginTop: '15px'}}>
             <div className='row'>
                 <div className='col-xs-6'>{message}</div>
@@ -19,9 +21,7 @@ function Footer({message, artistCnt, albumCnt, songCnt}) {
                 </div>
             </div>
         </div>
-    );
-}
-
+);
 
 export default Footer;
 

@@ -1,0 +1,10 @@
+[ignore]
+.*/backend/.*
+.*/node_modules/jss/.*
+
+[include]
+
+[libs]
+./src/types/libDefs.js
+
+[options]

@@ -1,3 +1,4 @@
+/* @flow */
 /* global process:false */
 /*
 develop: {
@@ -33,7 +34,8 @@ const config = {
     }
 };
 
+type Config={abc: string};
 
-export default function getConfig(defaults = {}) {
+export default function getConfig(defaults: any = {}) {
     return Object.assign(defaults, config[process.env.NODE_ENV || 'develop']);
 }

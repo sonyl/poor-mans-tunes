@@ -1,12 +1,34 @@
+/* @flow */
+
 import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 
-export default class Slider extends Component {
+type Props = {
+    id: string,
+    className?: string,
+    defaultValue?: number,
+    disabled?: boolean,
+    min: number,
+    max: number,
+    name?: string,
+    onChange?: (event: {value: number})=>void,
+    step: number,
+    value: string | number
+};
+type DefaultProps = void;
+type State = {
+    value: string | number
+};
+
+export default class Slider extends Component<DefaultProps, Props, State> {
+
+    state: State;
 
     static propTypes = {
+        id: PropTypes.string.isRequired,
+        className: PropTypes.string,
         defaultValue: PropTypes.number,
         disabled: PropTypes.bool,
-        id: PropTypes.string,
         max: PropTypes.number,
         min: PropTypes.number,
         name: PropTypes.string,
@@ -15,22 +37,21 @@ export default class Slider extends Component {
         value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     };
 
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
             value: props.value
         };
-
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(e) {
-        this.setState({value: e.target.value});
-        this.props.onChange && this.props.onChange(e);
+    handleChange(e: Event & { currentTarget: HTMLInputElement}) {
+        this.setState({value: e.currentTarget.value});
+        const value = parseFloat(e.currentTarget.value);
+        this.props.onChange && this.props.onChange({value});
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         // You don't have to do this check first, but it can help prevent an unneeded render
         if (nextProps.value !== this.state.value) {
             this.setState({ value: nextProps.value });
@@ -40,15 +61,13 @@ export default class Slider extends Component {
     render() {
         const { className, disabled, ...props } = this.props;
 
-        const handleChange = (! disabled ? this.handleChange : undefined);
-
         return (
             <span className={className}>
                 <input
                     type='range'
                     {...props}
                     disabled={disabled}
-                    onChange={ handleChange }
+                    onChange={ (e) => !disabled && this.handleChange && this.handleChange(e) }
                     value={ this.state.value }
                 />
             </span>

@@ -1,3 +1,4 @@
+/* @flow */
 import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,6 +17,8 @@ import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
 import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudioUrls, createLog,
         LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
+
+import type {Dispatch} from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Player');
@@ -41,7 +44,7 @@ function Button({children, onClick}) {
     return <button className="btn btn-lg" onClick={onClick}>{children}</button>;
 }
 
-function format (seconds) {
+function format (seconds: number) {
 
     function pad (string) {
         return ('0' + string).slice(-2);
@@ -57,13 +60,16 @@ function format (seconds) {
     return `${mm}:${ss}`;
 }
 
-function Duration ({ className, seconds }) {
+function Duration ({ seconds }) {
     return (
-        <time dateTime={`P${Math.round(seconds)}S`} className={className}>
+        <time dateTime={`P${Math.round(seconds)}S`}>
             {format(seconds)}
         </time>
     );
 }
+Duration.propTypes = {
+    seconds: PropTypes.number.isRequired
+};
 
 function AlbumLink({artist, album, children, activate}) {
     if(artist && album) {
@@ -77,6 +83,16 @@ function AlbumLink({artist, album, children, activate}) {
 }
 
 class Player extends Component {
+
+    state: {
+        playing: boolean,
+        played: number,
+        duration: number,
+        style?: Object,
+        seeking?: boolean
+    };
+
+    player: AudioPlayer;
 
     constructor(props) {
         log('constructor', props);
@@ -99,7 +115,7 @@ class Player extends Component {
     // read style from css variables lazily,
     // in prod mode the css variables are not yet set when componentDidMount is called (webpack specific)
     updateStyle() {
-        log('updateStyle');
+        log('updateStyle', 'style already set: %s', !!this.state.style);
         if(!this.state.style) {
             const bodyStyle = window.getComputedStyle(document.body);
             const backgroundColor = bodyStyle.getPropertyValue('--main-heading-bg') || undefined;
@@ -120,7 +136,8 @@ class Player extends Component {
         log('componentWillReceiveProps', nextProps, this.props);
         this.updateStyle();
         if(this.props.title !== nextProps.title) {
-            const newState = {playing: !!nextProps.url};
+            const newState = {};
+            newState.playing = !!nextProps.url;
             if(!!nextProps.url && nextProps.title) {
                 sendDesktopNotification('Now playing:', nextProps.title);
                 this.props.sendNotification('Now playing:', nextProps.title);
@@ -152,9 +169,10 @@ class Player extends Component {
         this.player.seekTo(0.0);
     };
 
-    setVolume = e => {
-        log('setVolume', e.target.value);
-        this.props.setVolume(e.target.value);
+    setVolume = (e: {value: number}) => {
+
+        log('setVolume', 'new volume: %d', e.value);
+        this.props.setVolume(e.value);
     };
 
     onSeekMouseDown = e => {
@@ -163,9 +181,9 @@ class Player extends Component {
         }
     };
 
-    onSeekChange = e => {
+    onSeekChange = (e: {value: number}) => {
         if(this.props.url) {
-            this.setState({ played: parseFloat(e.target.value) });
+            this.setState({ played: e.value });
         }
     };
 
@@ -241,7 +259,7 @@ class Player extends Component {
     }
 
     render () {
-        log('render', this.state, this.props);
+        log('render', 'state: %o, props: %o', this.state, this.props);
         const {
             playing, played, duration, style
         } = this.state;
@@ -266,7 +284,7 @@ class Player extends Component {
                         />
                     </div>
                     <AudioPlayer
-                        ref={player => { this.player = player; }}
+                        ref={player => this.player = player}
                         hidden={true}
                         url={url}
                         playing={playing}
@@ -346,7 +364,7 @@ class Player extends Component {
                         </div>
                         <div className="col-xs-12">
                             <div className="form-group">
-                                <ProgressBar maxValue={1} value={played} text={format(duration * played)}/>
+                                <ProgressBar id="play-progress-bar" maxValue={1} value={played} text={format(duration * played)}/>
                                 <label htmlFor="player-played">Played</label>
                             </div>
                         </div>
@@ -397,11 +415,11 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
-    requestAlbum: (artist, album) => dispatch(requestAlbumIfNotExists(artist, album)),
-    sendNotification: (head, msg) => dispatch(sendNotification(head, msg)),
+    requestAlbum: (artist: string, album: string) => dispatch(requestAlbumIfNotExists(artist, album)),
+    sendNotification: (head: string, msg: string) => dispatch(sendNotification(head, msg)),
     requestSongLyricsIfNotExists: (artist, song) => dispatch(requestSongLyricsIfNotExists(artist, song))
 });
 

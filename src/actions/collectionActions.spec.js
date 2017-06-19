@@ -1,12 +1,14 @@
 /* eslint-env node, jest */
+
 import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 import * as actions from './collectionActions';
+import {invalidateCollection} from './collectionActions';
 import nock from 'nock';
-//eslint-disable-next-line
 
+//import type { Action, Dispatch } from '../types';
 
 const createStore = (initialState = {}) => {
     return _createStore(
@@ -24,7 +26,7 @@ describe('invalidateCollection', () => {
     });
 
     it('should invalidate the collection', () => {
-        store.dispatch(actions.invalidateCollection());
+        store.dispatch(invalidateCollection());
         expect(store.getState().collection.didInvalidate).toBe(true);
     });
 });
@@ -32,8 +34,10 @@ describe('invalidateCollection', () => {
 describe('getCollection', () => {
 
     const orgDateNow = Date.now;
+//    (Date: any).now =  jest.fn(() => 123456);
     Date.now =  jest.fn(() => 123456);
     afterAll(() => {
+//        (Date: any).now = orgDateNow;
         Date.now = orgDateNow;
     });
 
@@ -62,7 +66,7 @@ describe('getCollection', () => {
             .get('/files.json')
             .reply(200, testArtists);
 
-        return store.dispatch(actions.getCollection()).then(() => {
+        return (store.dispatch)(actions.getCollection()).then(() => {
             const expectedState = {
                 artists: testArtists,
                 lastUpdated: 123456,

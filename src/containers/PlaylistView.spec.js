@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint-env node, jest */
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -55,7 +56,7 @@ describe('PlaylistView', () => {
     it('should render playlist', () => {
         const { enzymeWrapper } = setup([
             { artist: 'Artist1', album: 'Album1', song: 'Song1', url: 'a url 1' },
-            { artist: 'Artist2', album: 'Album2', song: 'Song2', url: 'a url 2' }
+            { artist: 'Artist2', album: 'Album2', song: 'Song2', url: ['a url 2', 'a url 3'] }
         ]);
         expect(enzymeWrapper.find('Entry')).toHaveLength(2);
         expect(enzymeWrapper.find('Entry').at(0).prop('artist')).toEqual('Artist1');

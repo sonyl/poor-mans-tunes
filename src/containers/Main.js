@@ -1,3 +1,4 @@
+/* @flow */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -75,6 +76,12 @@ function getAlbumAndSongCnt(artists) {
 
 
 class Main extends Component {
+
+    state: {
+        activeTab: string
+    };
+
+    modal: Object;
 
     constructor(props) {
         super(props);

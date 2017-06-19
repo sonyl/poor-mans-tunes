@@ -1,3 +1,4 @@
+/* @flow */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -6,6 +7,8 @@ import Autosuggest from 'react-autosuggest';
 import { createLinkUrl, createLog } from '../components/utils';
 import { getArtists } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
+
+import type { Collection } from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'ArtistSearch');
@@ -71,8 +74,19 @@ const renderInputComponent = inputProps => (
     </div>
 );
 
+type Props = {
+    artists: Collection,
+    history: History
+}
+type DefaulProps = void
+type State = {
+    db: any,
+    suggestions: string[],
+    value: string
+}
 
-class ArtistSearch extends Component {
+
+class ArtistSearch extends Component<DefaulProps, Props, State> {
     static propTypes = {
         artists: PropTypes.arrayOf(
             PropTypes.shape({
@@ -81,7 +95,9 @@ class ArtistSearch extends Component {
         ).isRequired
     };
 
-    constructor(props) {
+    state: State;
+
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -91,13 +107,12 @@ class ArtistSearch extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         this.setState({db: reorganize(nextProps.artists)});
     }
 
     getSuggestions = value => {
-        const {_value, db} = this.state;
-        value = value || _value;
+        const { db} = this.state;
         if( !value ) {
             return [];
         }
@@ -108,6 +123,7 @@ class ArtistSearch extends Component {
             const entry = db[i];
             if(entry.album) {
                 if(regExp.test(entry.album)) {
+
                     suggestions.push(entry);
                 }
             } else {

@@ -1,14 +1,15 @@
+/* @flow */
 import path from 'path';
 
-export const hasExtension = (filename, ...exts) => {
+export const hasExtension = (filename: string, ...exts: Array<string>): boolean => {
     const fLower = filename.toLowerCase();
     return !!exts.find(ext => fLower.endsWith(ext));
 };
 
 
-export const hasExtensionOf = (newFilename, ...filenames) => {
+export const hasExtensionOf = (newFilename: string, ...filenames: Array<string>): boolean => {
     const newExt = path.extname(newFilename.toLowerCase());
-    return filenames.find(p => {
+    return !!filenames.find(p => {
         const pLow = p.toLowerCase();
         return newExt === (pLow[0] === '.' ? pLow : path.extname(pLow));
     });
@@ -30,7 +31,7 @@ export const hasExtensionOf = (newFilename, ...filenames) => {
  *      '/foo/vorbis': 1
  * }
  */
-export const getAlbumDirectories = songArray => {
+export const getAlbumDirectories = (songArray: Array<{title: string, src: Array<string> | string}>): {[string]: number} => {
     const albumDirs = songArray.reduce((acc, song) => {
         const {src} = song;
         if (Array.isArray(src)) {
@@ -61,10 +62,12 @@ export const getAlbumDirectories = songArray => {
  * @param albumDirs
  * @returns the most used (main) directory of all songs, '/foo/bar' in the example
  */
-export const getAlbumMainDirectory = albumDirs => {
+export const getAlbumMainDirectory = (albumDirs: {[string]: number}): ?string => {
     // select most used directory
-    return Object.keys(albumDirs).reduce((acc, dir) =>
-        albumDirs[dir] > acc.max ? {dir, max: albumDirs[dir]} : acc, {max: -Infinity}).dir;
+    const keys:Array<string> = Object.keys(albumDirs);
+    const reducer = (acc: {max: number, dir: string}, dir: string): {max: number, dir: string} =>
+        albumDirs[dir] > acc.max ? {dir, max: albumDirs[dir]} : acc;
+    return keys.reduce(reducer, {max: -Infinity, dir: ''}).dir || undefined;
 };
 
 /**
@@ -77,12 +80,12 @@ export const getAlbumMainDirectory = albumDirs => {
  * @param albumDirs
  * @returns the common parent directory of the different path or undefined if it does not exists
  */
-export const getCommonParent = albumDirs => {
+export const getCommonParent = (albumDirs: {[string]: number}): ?string => {
     const dirs = Object.keys(albumDirs);
     if(dirs.length < 2) {
         return;
     }
-    return dirs.reduce((acc, dir) => {
+    return dirs.reduce((acc: ?string, dir: string): ?string => {
         if(acc === undefined) {
             return path.resolve(dir, '..');
         } else if(acc) {

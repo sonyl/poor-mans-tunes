@@ -9,3 +9,5 @@ mp3
 
 /backend/collection.json
 /coverage/
+/flow-typed/
+/backend/flow-typed/

@@ -1,25 +1,24 @@
+/* @flow */
 import fetch from 'node-fetch';
 import lyrics from 'lyric-get';
 
 const LYRICS_API = 'http://lyrics.wikia.com/api.php';
+import type { Lyrics } from './types';
 
-function addRequestParams(baseUrl, params) {
+function addRequestParams(baseUrl: string, params: { [string]: string }): string {
 
-    if(params !== null && typeof params === 'object') {
-        const keys = Object.keys(params);
-        if(keys.length) {
-            const esc = encodeURIComponent;
-            const query = Object.keys(params)
-                .map(k => esc(k) + '=' + esc(params[k]))
-                .join('&');
+    const keys = Object.keys(params);
+    if(keys.length) {
+        const query = keys
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
 
-            return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
-        }
+        return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
     }
     return baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 }
 
-function getLyrics(artist, song) {
+export default function getLyrics(artist: string, song: string): Promise<Lyrics> {
     return fetch(addRequestParams(LYRICS_API, {action: 'lyrics', artist, song, fmt:'json', func:'getSong'}))
         .then(response => {
             if(!response.ok) {
@@ -60,6 +59,3 @@ function fixJson(text) {
         return JSON.parse(fixed);
     }
 }
-
-
-export default getLyrics;

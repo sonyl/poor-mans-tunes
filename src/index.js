@@ -1,3 +1,4 @@
+/* @flow */
 /* global process:false module:false, require:false */
 import React from 'react';
 import { render } from 'react-dom';
@@ -12,11 +13,13 @@ import reducer from './reducers';
 import Main from './containers/Main';
 import getConfig from './config.js';
 
+import type { Store } from './types';
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const history = createHistory();
 const routerMw = routerMiddleware(history);
 
-const store = createStore(
+const store: Store = createStore(
     reducer,
     composeEnhancers(applyMiddleware(thunk, routerMw, createLogger()))
 );
