@@ -46,7 +46,8 @@ class Modal extends Component<DefaultProps, Props, State> {
             <ScaleModal ref={ modal => this.modal = modal } modalStyle={modalStyle} contentStyle={contentStyle}>
                 <div className="modal-content">
                     <div className="modal-header">
-                        <button type="button" className="close" onClick={this.hide}>&times;</button>
+                        <button type="button" className="close" style={{fontSize: '36px'}}
+                                onClick={this.hide}>&times;</button>
                         <h4 className="modal-title" id="myModalLabel">{title}</h4>
                     </div>
                     {
