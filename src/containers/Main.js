@@ -21,7 +21,7 @@ import Settings from './Settings';
 import Notifications from './Notifications';
 import Modal from '../components/Modal';
 
-import { sanitizeHtml, createLog } from '../components/utils';
+import { createLog } from '../components/utils';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Main');
@@ -152,16 +152,6 @@ class Main extends Component {
     render() {
         log('render', 'props=', this.props);
 
-        const modalStyle = {
-            height: '90vh',
-            overflowY: 'auto',
-            fontSize: '18px'
-        };
-
-        const contentStyle = {
-            paddingLeft: '10px'
-        };
-
         const {artists, isPlayRandomSong, isPlayRandomAlbum, lyrics} = this.props;
         const {activeTab} = this.state;
 
@@ -184,6 +174,7 @@ class Main extends Component {
                     </ul>
                 </div>
                 <div className="tab-content">
+                    <div style={{minHeight: '7px'}}></div>
                     <div role="tabpanel" className={'tab-pane' +  (activeTab === 'playing' ? ' active' : '')}>
                         <div className="row">
                             <div className="col-md-4">
