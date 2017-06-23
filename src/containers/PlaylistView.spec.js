@@ -13,6 +13,7 @@ function setup(playlist = []) {
     const props = {
         removeSongAtIndexFromPlaylist: () => {},
         moveSongToPositionInPlaylist: () => {},
+        addRandomSongToPlaylist: () => {},
         clearPlaylist: () => {},
         playlist
     };

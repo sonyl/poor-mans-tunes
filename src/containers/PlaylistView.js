@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { clearPlaylist, removeSongAtIndexFromPlaylist, moveSongToPositionInPlaylist } from '../actions/playlistActions';
+import * as actions from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
 import { createLog } from '../components/utils';
 
@@ -59,38 +59,37 @@ type PlaylistViewProps = {
     playlist: PlaylistEntry[],
     removeSongAtIndexFromPlaylist: (index: number)=>void,
     moveSongToPositionInPlaylist: (index: number, newIndex: number)=>void,
+    addRandomSongToPlaylist: ()=>void,
     clearPlaylist: ()=>void
 }
 
 // export for testing purpose only
-export const PlaylistView = ({playlist, removeSongAtIndexFromPlaylist, clearPlaylist, moveSongToPositionInPlaylist}: PlaylistViewProps) => {
+export const PlaylistView = (props: PlaylistViewProps) => {
+    const {
+        playlist, removeSongAtIndexFromPlaylist, clearPlaylist, moveSongToPositionInPlaylist,
+        addRandomSongToPlaylist
+    } = props;
 
-    log('render', 'playlist=%o', playlist);
+    log('render', 'playlist=%o, props=%o', playlist, props);
 
     function renderPlaylist() {
         return playlist.map((entry, i) => {
             return <Entry key={i} index={i} {...entry} removeEntry={removeSongAtIndexFromPlaylist}
-                          moveSongToPositionInPlaylist={moveSongToPositionInPlaylist} ></Entry>;
+                          moveSongToPositionInPlaylist={moveSongToPositionInPlaylist}></Entry>;
         });
-    }
-
-    function renderDeleteButton() {
-        if(playlist[0]) {
-            return (
-                <button type="button" className="btn btn-default pull-right"
-                   onClick={clearPlaylist}
-                >
-                    Clear Playlist
-                </button>
-            );
-        }
     }
 
     return (
         <div className="panel panel-default">
             <div className="panel-heading">
                 <h3 className="panel-title pull-left">Playlist</h3>
-                {renderDeleteButton()}
+                <button type="button" className="btn btn-default pull-right"
+                        onClick={clearPlaylist} disabled={!playlist[0]}>
+                    Clear Playlist
+                </button>
+                <button type="button" className="btn btn-default pull-right" onClick={addRandomSongToPlaylist}>
+                    Add random song
+                </button>
                 <div className="clearfix"/>
             </div>
             <div className="panel-body">
@@ -114,6 +113,7 @@ PlaylistView.propTypes = {
     })).isRequired,
     removeSongAtIndexFromPlaylist: PropTypes.func.isRequired,
     moveSongToPositionInPlaylist: PropTypes.func.isRequired,
+    addRandomSongToPlaylist: PropTypes.func.isRequired,
     clearPlaylist: PropTypes.func.isRequired
 };
 
@@ -122,9 +122,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clearPlaylist,
-    removeSongAtIndexFromPlaylist,
-    moveSongToPositionInPlaylist
+    clearPlaylist: actions.clearPlaylist,
+    removeSongAtIndexFromPlaylist: actions.removeSongAtIndexFromPlaylist,
+    moveSongToPositionInPlaylist: actions.moveSongToPositionInPlaylist,
+    addRandomSongToPlaylist: actions.addRandomSongToPlaylist
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistView);

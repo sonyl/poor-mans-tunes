@@ -45,6 +45,14 @@ export const clearPlaylist = () => (dispatch: Dispatch) => {
     dispatch(addRandomSongsToPlaylistIfNecessary());
 };
 
+export const addRandomSongToPlaylist = () => (dispatch: Dispatch, getState: GetState) => {
+    const randomSong = getRandomSong(getState());
+    if (randomSong) {
+        dispatch(addSongsToPlaylist(randomSong.artist, randomSong.album, randomSong.songs));
+    }
+};
+
+
 export const addRandomSongsToPlaylistIfNecessary = () => (dispatch: Dispatch, getState: GetState) => {
     const state = getState();
     if(isPlaylistEmpty(state)) {
