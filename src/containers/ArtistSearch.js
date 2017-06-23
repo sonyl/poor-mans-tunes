@@ -38,7 +38,7 @@ const theme = {
         cursor: 'pointer',
         padding: '5px 10px'
     },
-    suggestionFocused: {
+    suggestionHighlighted: {
         backgroundColor: '#ddd'
     }
 };
@@ -60,7 +60,6 @@ function reorganize(artists = []) {
 // input value for every given suggestion.
 const getSuggestionValue = suggestion => suggestion.label;
 
-// Use your imagination to render suggestions.
 const renderSuggestion = suggestion => (
     <div>
         {suggestion.label}
