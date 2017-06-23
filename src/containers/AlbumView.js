@@ -8,7 +8,7 @@ import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
 import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
 import {sendSongToSonos} from '../actions/serverActions';
-const ENABLE_LOG = true;
+const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AlbumView');
 
 import type { Album, LastFmInfo, PlaylistSong } from '../types';
