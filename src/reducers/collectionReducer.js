@@ -52,7 +52,7 @@ export const getArtists = (state: CollectionState) => {
 };
 
 export const getArtist = (state: CollectionState, artistIndex?: number) => {
-    if(artistIndex && artistIndex >= 0) {
+    if(artistIndex != null && artistIndex >= 0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         return artist || null;
@@ -61,7 +61,7 @@ export const getArtist = (state: CollectionState, artistIndex?: number) => {
 };
 
 export const getAlbum = (state: CollectionState, artistIndex?: number, albumIndex?: number) => {
-    if(artistIndex && artistIndex >= 0 && albumIndex && albumIndex >=0) {
+    if(artistIndex != null && artistIndex >= 0 && albumIndex != null && albumIndex >=0) {
         const artists = state.artists;
         const artist = artists && artists[artistIndex];
         const album = artist && artist.albums[albumIndex];
