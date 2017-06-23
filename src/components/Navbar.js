@@ -69,19 +69,20 @@ class Navbar extends Component<DefaultProps, Props, State> {
                                 id="selectRandomAlbum"
                                 className={'navbar-right btn btn-default navbar-btn' + (this.props.randomAlbumActive ? ' active' : '')}
                                 onClick={this.onClick}
-
                             >
-                                <OkIcon checked={this.props.randomAlbumActive}/> Play random album
+                                <OkIcon checked={this.props.randomAlbumActive}/>
+                                Album
                             </button>
                             <button type="button"
                                 id="selectRandomSong"
                                 className={'navbar-right btn btn-default navbar-btn' + (this.props.randomSongActive ? ' active' : '')}
                                 onClick={this.onClick}
                             >
-                                <OkIcon checked={this.props.randomSongActive}/> Play random song
+                                <OkIcon checked={this.props.randomSongActive}/>
+                                Song
                             </button>
                             <label htmlFor="selectRandomSong" className="navbar-text navbar-right" style={{marginRight: '5px'}}>
-                                If playlist is empty:
+                                If playlist is empty, play random:
                             </label>
                         </form>
                     </div>
