@@ -214,7 +214,7 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
             const  {textColor, warnColor } = this.props;
             ctx.fillStyle = textColor || warnColor;
             ctx.font = '10px sans-serif';
-            ctx.fillText(' ' + dbPeak + 'db', 0, yCenter);
+            ctx.fillText(' ' + dbPeak.toPrecision(2) + 'db', 0, yCenter);
         }
     }
 
