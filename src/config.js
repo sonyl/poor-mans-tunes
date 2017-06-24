@@ -12,7 +12,7 @@ const config = {
     develop: {
         contextRoot: '',
         baseUrl:  'http://localhost:9000',
-//        collectionUrl: '/public/files2.json',
+        //        collectionUrl: '/public/files2.json',
         collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/',
         skipLastFmArtist: false,
@@ -28,7 +28,7 @@ const config = {
 
     production: {
         contextRoot: '',
- //       baseUrl: 'http://localhost:9001',
+        //       baseUrl: 'http://localhost:9001',
         collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
     }

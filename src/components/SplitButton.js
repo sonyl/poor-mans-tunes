@@ -109,14 +109,14 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
                     { getDefaulLabel() }
                 </button>
                 <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={e=>this.toggleState()}
-                        onBlur={e=>this.onBlur()}>
+                    onBlur={e=>this.onBlur()}>
                     <span className="caret"/>
                 </button>
                 <ul className="dropdown-menu">
                     {
                         actions && actions.map((a, i) => (
-                            <li key={i}><a href="#" onClick={e=>this.onClick(e)} name={i}>{a.label}</a></li>
-                        ))
+                        <li key={i}><a href="#" onClick={e=>this.onClick(e)} name={i}>{a.label}</a></li>
+                    ))
                     }
                 </ul>
             </div>

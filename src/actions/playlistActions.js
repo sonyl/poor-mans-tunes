@@ -22,7 +22,7 @@ export type ClearPlaylist = {
 }
 
 export const addSongsToPlaylist = (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong,
-           top: boolean=false): AddSongsToPlaylist => (
+    top: boolean=false): AddSongsToPlaylist => (
     {
         type: ADD_SONG_TO_PLAYLIST,
         artist,

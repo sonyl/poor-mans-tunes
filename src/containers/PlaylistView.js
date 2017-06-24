@@ -75,7 +75,7 @@ export const PlaylistView = (props: PlaylistViewProps) => {
     function renderPlaylist() {
         return playlist.map((entry, i) => {
             return <Entry key={i} index={i} {...entry} removeEntry={removeSongAtIndexFromPlaylist}
-                          moveSongToPositionInPlaylist={moveSongToPositionInPlaylist}></Entry>;
+                moveSongToPositionInPlaylist={moveSongToPositionInPlaylist}></Entry>;
         });
     }
 
@@ -84,7 +84,7 @@ export const PlaylistView = (props: PlaylistViewProps) => {
             <div className="panel-heading">
                 <h3 className="panel-title pull-left">Playlist</h3>
                 <button type="button" className="btn btn-default pull-right"
-                        onClick={clearPlaylist} disabled={!playlist[0]}>
+                    onClick={clearPlaylist} disabled={!playlist[0]}>
                     Clear Playlist
                 </button>
                 <button type="button" className="btn btn-default pull-right" onClick={addRandomSongToPlaylist}>

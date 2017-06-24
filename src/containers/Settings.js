@@ -62,7 +62,7 @@ class Settings extends Component {
         if (status && status.scanning && status.scanStatistics) {
             return (
                 <ProgressBar id='scan-progress' maxValue={100} value={status.scanStatistics.percentDone}
-                                text={status.scanStatistics.percentDone + '%'} />
+                    text={status.scanStatistics.percentDone + '%'} />
             );
         }
     }
@@ -85,18 +85,18 @@ class Settings extends Component {
                         <div className="col-xs-5">
                             <div className="input-group">
                                 <input id="audioPath" type="text" className="form-control"
-                                       placeholder="path to scan for audio files"
-                                       onChange = { this.onChange }
-                                       ref={(input) => {
-                                           audioPathInput = input;
-                                       }}
-                                       value={ this.state.audioPath }
+                                    placeholder="path to scan for audio files"
+                                    onChange = { this.onChange }
+                                    ref={(input) => {
+                                        audioPathInput = input;
+                                    }}
+                                    value={ this.state.audioPath }
                                 />
                                 <span className="input-group-btn">
-                                            <button className="btn btn-primary" id="updateSettingsBtn"
-                                                    onClick={this.buttonClicked}>update settings
-                                            </button>
-                                        </span>
+                                    <button className="btn btn-primary" id="updateSettingsBtn"
+                                        onClick={this.buttonClicked}>update settings
+                                    </button>
+                                </span>
                             </div>
                         </div>
                         <div className="col-xs-5">
@@ -106,7 +106,7 @@ class Settings extends Component {
                     <div className="form-group">
                         <div className="col-xs-3">
                             <button className="btn btn-default btn-lg btn-block" id="updateStatusBtn"
-                                    onClick={this.buttonClicked}>update status
+                                onClick={this.buttonClicked}>update status
                             </button>
                         </div>
                         <div className="col-xs-9">
@@ -116,7 +116,7 @@ class Settings extends Component {
                     <div className="form-group">
                         <div className="col-xs-3">
                             <button className="btn btn-default btn-lg btn-block" id="rescanBtn"
-                                    disabled={scanning} onClick={this.buttonClicked}>
+                                disabled={scanning} onClick={this.buttonClicked}>
                                 rescan files
                             </button>
                         </div>
@@ -128,7 +128,7 @@ class Settings extends Component {
                     <div className="form-group">
                         <div className="col-xs-3">
                             <button className="btn btn-default btn-lg btn-block" id="reloadCollectionBtn"
-                                    disabled={!ready} onClick={this.buttonClicked}>
+                                disabled={!ready} onClick={this.buttonClicked}>
                                 reload collection
                             </button>
                         </div>

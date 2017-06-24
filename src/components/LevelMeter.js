@@ -102,7 +102,7 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
         }
     }
 
-        /* this changing props has no effect on the rendering of the component */
+    /* this changing props has no effect on the rendering of the component */
     shouldComponentUpdate(nextProps: Props) {
         return false;
     }
@@ -191,7 +191,7 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
     }
 
     drawBar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, f: number, yCenter: number,
-            xPeak: number, dbPeak: number) {
+        xPeak: number, dbPeak: number) {
         ctx.fillStyle = this.props.backgroundColor;
         ctx.fillRect(x, y, w, h);
 

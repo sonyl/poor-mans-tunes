@@ -58,6 +58,6 @@ export const getSelectedAlbum = (state: State) => fromCollection.getAlbum(
     || NO_SELECTION;
 
 export const getSelectedArtistInfo = (state: State) => fromLastFm.getArtistInfo(state.lastFm,
-        fromSelection.getArtist(state.selection).name);
+    fromSelection.getArtist(state.selection).name);
 export const getSelectedAlbumInfo = (state: State) =>  fromLastFm.getAlbumInfo(state.lastFm,
-        fromSelection.getArtist(state.selection).name, fromSelection.getAlbum(state.selection).name);
+    fromSelection.getArtist(state.selection).name, fromSelection.getAlbum(state.selection).name);

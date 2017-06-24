@@ -99,7 +99,7 @@ class Main extends Component {
     componentWillReceiveProps(nextProps) {
         const {artists, selectedArtist, selectedAlbum, location} = nextProps;
         const params = parseUrl(location.pathname);
-//        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
+        //        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
         log('componentWillReceiveProps', 'nextProps:', nextProps, params);
 
         if(params.artist !== selectedArtist.artist) {
@@ -161,7 +161,7 @@ class Main extends Component {
             <div className="container-fluid">
                 <Notifications />
                 <Navbar randomSongActive={isPlayRandomSong} setRandomSong={this.setRandomSong}
-                        randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
+                    randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
                 />
                 <div>
                     <ul className="nav nav-tabs" role="tablist">
@@ -198,8 +198,8 @@ class Main extends Component {
                 </div>
 
                 <Modal ref={ modal => this.modal = modal }
-                       title={(lyrics && lyrics.artist && lyrics.song) ? (lyrics.artist + ': ' + lyrics.song) : 'Could not fetch lyrics: ' }
-                       body={lyrics && (lyrics.lyrics || lyrics.error)} />
+                    title={(lyrics && lyrics.artist && lyrics.song) ? (lyrics.artist + ': ' + lyrics.song) : 'Could not fetch lyrics: ' }
+                    body={lyrics && (lyrics.lyrics || lyrics.error)} />
 
                 <Footer
                     message={'Poor Man\'s Tunes: \xA9 2017 Build: ' + version.buildDate + ' (env: ' + version.env + ')'}

@@ -11,8 +11,8 @@ function ProgressBar({id, maxValue=100, value, text}: {id: string, maxValue?: nu
     return (
         <div id={id} className="progress" style={{'marginBottom': '0px'}}>
             <div className="progress-bar"
-                 role="progressbar"
-                 style={style}
+                role="progressbar"
+                style={style}
             >
                 {text}
             </div>

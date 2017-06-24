@@ -86,11 +86,11 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}: AlbumViewProps) => {
                     {
                         album.songs.map((s, i) => (
                             <Song index={i}
-                                  key={i}
-                                  track={s.track}
-                                  title={s.title}
-                                  addAlbumSongToPlaylist={addAlbumSongToPlaylist}
-                                  sendAlbumSongToSonos={sendAlbumSongToSonos}
+                                key={i}
+                                track={s.track}
+                                title={s.title}
+                                addAlbumSongToPlaylist={addAlbumSongToPlaylist}
+                                sendAlbumSongToSonos={sendAlbumSongToSonos}
                             />
                         ))
                     }

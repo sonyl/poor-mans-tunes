@@ -16,7 +16,7 @@ import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
 import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudioUrls, createLog,
-        LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
+    LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
 
 import type {Dispatch} from '../types';
 
@@ -234,7 +234,7 @@ class Player extends Component {
                 <AlbumLink artist={artist} album={album} activate={false}>
                     { url ?
                         <img src={url} className="img-responsiv img-rounded"
-                             style={{width: '100px', height: 'auto', float: 'left', marginRight: '10px'}}
+                            style={{width: '100px', height: 'auto', float: 'left', marginRight: '10px'}}
                         />
                         :
                         <CdIcon />
@@ -242,7 +242,7 @@ class Player extends Component {
                     <h3>{title}</h3>
                 </AlbumLink>
                 <button className="btn btn-default"
-                        onClick={this.showLyrics} disabled={lyricsNotAvail}>show lyrics</button>
+                    onClick={this.showLyrics} disabled={lyricsNotAvail}>show lyrics</button>
             </div>
         );
     }
@@ -276,11 +276,11 @@ class Player extends Component {
                 <div className="panel-body">
                     <div style={{height: '50px', marginBottom: '5px'}}>
                         <LevelMeter audio={this.player && this.player.getAudio()}
-                                    backgroundColor={style && style.backgroundColor}
-                                    okColor={style && style.successColor}
-                                    alarmColor={style && style.dangerColor}
-                                    warnColor={style && style.warningColor}
-                                    textColor={style && style.defaultColor}
+                            backgroundColor={style && style.backgroundColor}
+                            okColor={style && style.successColor}
+                            alarmColor={style && style.dangerColor}
+                            warnColor={style && style.warningColor}
+                            textColor={style && style.defaultColor}
                         />
                     </div>
                     <AudioPlayer
@@ -352,12 +352,12 @@ class Player extends Component {
                         <div className="col-xs-12">
                             <div className="form-group">
                                 <Slider id="player-seek"
-                                        min={0} max={1} step={0.01}
-                                        value={played}
-                                        disabled={ !url }
-                                        onMouseDown={this.onSeekMouseDown}
-                                        onChange={this.onSeekChange}
-                                        onMouseUp={this.onSeekMouseUp}
+                                    min={0} max={1} step={0.01}
+                                    value={played}
+                                    disabled={ !url }
+                                    onMouseDown={this.onSeekMouseDown}
+                                    onChange={this.onSeekChange}
+                                    onMouseUp={this.onSeekMouseUp}
                                 />
                                 <label htmlFor="player-seek">Seek</label>
                             </div>

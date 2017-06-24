@@ -190,19 +190,19 @@ app.get('/img/*', (req: express$Request, res: express$Response) => {
 
     if(hasExtension(imgPath, '.mp3', '.ogg')){
         scanFile(settings.audioPath + imgPath)
-        .then(meta => {
-            if(meta && meta.picture[0]) {
-                const pic = meta.picture[0];
-                res.set('Content-Type', getContentType(pic.format));
-                res.send(pic.data);
-            } else {
-                throw new Error('no artwork found');
-            }
-        }).catch(error => {
-            res.status(500).json({
-                error: error.message
+            .then(meta => {
+                if(meta && meta.picture[0]) {
+                    const pic = meta.picture[0];
+                    res.set('Content-Type', getContentType(pic.format));
+                    res.send(pic.data);
+                } else {
+                    throw new Error('no artwork found');
+                }
+            }).catch(error => {
+                res.status(500).json({
+                    error: error.message
+                });
             });
-        });
     } else {
         res.sendFile(imgPath, {root: settings.audioPath});
     }
@@ -291,7 +291,7 @@ function getStatus(full: boolean): Promise<ServerStatus> {
     } else {
         promise = fsp.stat(COLLECTION)
             .then(stats => ({ status: 'ready' }),
-                  err => ({ status: 'collection missing' }));
+                err => ({ status: 'collection missing' }));
     }
 
     return promise.then((status: ServerStatus): ServerStatus => {

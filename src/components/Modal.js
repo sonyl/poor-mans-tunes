@@ -47,7 +47,7 @@ class Modal extends Component<DefaultProps, Props, State> {
                 <div className="modal-content">
                     <div className="modal-header">
                         <button type="button" className="close" style={{fontSize: '36px'}}
-                                onClick={this.hide}>&times;</button>
+                            onClick={this.hide}>&times;</button>
                         <h4 className="modal-title" id="myModalLabel">{title}</h4>
                     </div>
                     {

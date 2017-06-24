@@ -61,7 +61,7 @@ class Navbar extends Component<DefaultProps, Props, State> {
                     </div>
                     <div className="form-group">
                         <form className="navbar-form navbar-right" role="search" onSubmit={(e) => e.preventDefault()}
-                        style={{marginTop: '20px'}}>
+                            style={{marginTop: '20px'}}>
                             <ArtistSearch/>
                         </form>
                         <form className="navbar-form navbar-right">

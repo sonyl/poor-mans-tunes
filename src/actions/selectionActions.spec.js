@@ -75,18 +75,18 @@ describe('selectionActions', () => {
                 .reply(200, {artist: {name: 'Alias', info: 'Info'}});
 
             return store.dispatch(selectArtist(33, 'The other Artist'))
-            .then(() => {
+                .then(() => {
 
-                expect(store.getState().selection.artist).toEqual({index: 33, name: 'The other Artist'});
+                    expect(store.getState().selection.artist).toEqual({index: 33, name: 'The other Artist'});
 
-                const fmInfo = store.getState().lastFm['The other Artist'].__ARTIST_INFO;
+                    const fmInfo = store.getState().lastFm['The other Artist'].__ARTIST_INFO;
 
-                expect(fmInfo.isFetching).toBe(false);
-                expect(fmInfo.error).toBeUndefined();
-                expect(fmInfo.info).toEqual({info: 'Info', name: 'Alias'});
-            }, (error) => {
-                expect(error).toBeUndefined();
-            });
+                    expect(fmInfo.isFetching).toBe(false);
+                    expect(fmInfo.error).toBeUndefined();
+                    expect(fmInfo.info).toEqual({info: 'Info', name: 'Alias'});
+                }, (error) => {
+                    expect(error).toBeUndefined();
+                });
         });
     });
 
