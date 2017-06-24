@@ -3,8 +3,8 @@ import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_SERVER_SETTINGS, 
 import type { Action } from '../types';
 
 export type ServerState = {
-    status: { isFetching: boolean, status?: any, error?: any, lastUpdated?: number},
-    settings: {isFetching: boolean, settings?: any, error?: any, lastUpdated?: number}
+    +status: { +isFetching: boolean, +status?: any, +error?: any, +lastUpdated?: number},
+    +settings: { +isFetching: boolean, +settings?: any, +error?: any, +lastUpdated?: number}
 }
 
 const defaultState: ServerState = {status: {isFetching: false}, settings: {isFetching: false}};

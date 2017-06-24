@@ -1,22 +1,20 @@
+/* @flow */
 /* eslint-env node, jest */
+
+import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 import nock from 'nock';
-import * as actions from './lastFmActions';
+import { requestArtistIfNotExists, requestAlbumIfNotExists} from './lastFmActions';
 
-//eslint-disable-next-line
-import fetch from 'isomorphic-fetch';
-
-
-const createStore = (initialState = {}) => {
+const createStore: Store = (initialState = {}) => {
     return _createStore(
         reducer,
         initialState,
         applyMiddleware(thunk)
     );
 };
-
 
 describe('lastFm actions', () => {
 
@@ -43,7 +41,7 @@ describe('lastFm actions', () => {
                 .reply(200, {artist: {name: 'Alias', info: 'Info'}});
 
 
-            return store.dispatch(actions.requestArtistIfNotExists('The Artist'))
+            return store.dispatch(requestArtistIfNotExists('The Artist'))
                 .then(() => {
                     const fmInfo = store.getState().lastFm['The Artist'].__ARTIST_INFO;
 
@@ -62,7 +60,7 @@ describe('lastFm actions', () => {
                 }
             });
 
-            return store.dispatch(actions.requestArtistIfNotExists('The Artist'))
+            return store.dispatch(requestArtistIfNotExists('The Artist'))
                 .then(() => {
                     expect(store.getState().lastFm['The Artist'].__ARTIST_INFO).toBeDefined();
                 });
@@ -78,7 +76,7 @@ describe('lastFm actions', () => {
                 .reply(200, {album: albumInfo});
 
 
-            return store.dispatch(actions.requestAlbumIfNotExists('The Artist', 'The Album'))
+            return store.dispatch(requestAlbumIfNotExists('The Artist', 'The Album'))
                 .then(() => {
 
                     const fmInfo = store.getState().lastFm['The Artist']['The Album'];
@@ -93,7 +91,7 @@ describe('lastFm actions', () => {
                 }
             });
 
-            return store.dispatch(actions.requestAlbumIfNotExists('The Artist', 'The Album'))
+            return store.dispatch(requestAlbumIfNotExists('The Artist', 'The Album'))
                 .then(() => {
                     expect(store.getState().lastFm['The Artist']['The Album']).toBeDefined();
                 });

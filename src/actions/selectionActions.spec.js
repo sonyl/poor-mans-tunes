@@ -1,15 +1,14 @@
+/* @flow */
 /* eslint-env node, jest */
 
+import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
-import * as actions from './selectionActions';
+import { unselectArtist, unselectAlbum, selectArtist, selectAlbum } from './selectionActions';
 import nock from 'nock';
-//eslint-disable-next-line
-import fetch from 'isomorphic-fetch';
 
-
-const createStore = (initialState = {}) => {
+const createStore: Store = (initialState = {}) => {
     return _createStore(
         reducer,
         initialState,
@@ -39,7 +38,7 @@ describe('selectionActions', () => {
     describe('unselectArtist', () => {
 
         it('should unselect the seleted artist and album', () => {
-            store.dispatch(actions.unselectArtist());
+            store.dispatch(unselectArtist());
             expect(store.getState().selection.artist).toEqual({});
             expect(store.getState().selection.album).toEqual({});
         });
@@ -48,7 +47,7 @@ describe('selectionActions', () => {
     describe('unselectAlbum', () => {
 
         it('should unselect the seleted album, but not artist', () => {
-            store.dispatch(actions.unselectAlbum());
+            store.dispatch(unselectAlbum());
             expect(store.getState().selection.artist).toEqual(initialState.selection.artist);
             expect(store.getState().selection.album).toEqual({});
         });
@@ -58,7 +57,7 @@ describe('selectionActions', () => {
     describe('selectArtist', () => {
 
         it('should reject if a argument is missing', () => {
-            return store.dispatch(actions.selectArtist(33))
+            return store.dispatch(selectArtist(33, (undefined: any)))
                 .then((data) => {
                     expect('expected a rejection').toBeUndefined();
                 }).catch(error => {
@@ -75,7 +74,7 @@ describe('selectionActions', () => {
                 .get(/.*method=artist\.getInfo.*/)
                 .reply(200, {artist: {name: 'Alias', info: 'Info'}});
 
-            return store.dispatch(actions.selectArtist(33, 'The other Artist'))
+            return store.dispatch(selectArtist(33, 'The other Artist'))
             .then(() => {
 
                 expect(store.getState().selection.artist).toEqual({index: 33, name: 'The other Artist'});
@@ -94,7 +93,7 @@ describe('selectionActions', () => {
     describe('selectAlbum', () => {
 
         it('should reject if a argument is missing', () => {
-            return store.dispatch(actions.selectAlbum(33, {album: 'The Album'}))
+            return store.dispatch(selectAlbum(33, ({album: 'The Album'}: Object)))
                 .then((data) => {
                     expect('expected a rejection').toBeUndefined();
                 }).catch(error => {
@@ -109,7 +108,7 @@ describe('selectionActions', () => {
                 .get(/.*method=album\.getinfo.*/)
                 .reply(200, {album: albumInfo});
 
-            return store.dispatch(actions.selectAlbum(66, {artist: 'The other Artist', album: 'The other Album'}))
+            return store.dispatch(selectAlbum(66, ({artist: 'The other Artist', album: 'The other Album'}: Object)))
                 .then(() => {
 
                     expect(store.getState().selection.album).toEqual({index: 66, name: 'The other Album'});

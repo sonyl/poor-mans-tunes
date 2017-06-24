@@ -5,7 +5,7 @@ import type { Action, LastFmInfoContainer } from '../types';
 
 const ARTIST_INFO_ATTR = '__ARTIST_INFO';
 
-export type LastFmState = { [string]: { [string]: LastFmInfoContainer } }
+export type LastFmState = { +[string]: { +[string]: LastFmInfoContainer } }
 const defaultState: LastFmState = {};
 
 const lastFm = (state: LastFmState = defaultState, action: Action) => {

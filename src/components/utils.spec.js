@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint-env node, jest */
 import { urlsEqual, createAudioUrls } from './utils';
 
@@ -9,13 +10,13 @@ describe('urlsEqual', () => {
         expect(urlsEqual('abc', 'abe')).toBe(false);
     });
     it('should return true, if both args are falsy', () => {
-        expect(urlsEqual(null, undefined)).toBe(true);
-        expect(urlsEqual(null, '')).toBe(true);
-        expect(urlsEqual(undefined, '')).toBe(true);
-        expect(urlsEqual(undefined, false)).toBe(true);
+        expect(urlsEqual((null: any), (undefined: any))).toBe(true);
+        expect(urlsEqual((null: any), '')).toBe(true);
+        expect(urlsEqual((undefined: any), '')).toBe(true);
+        expect(urlsEqual((undefined: any), (false: any))).toBe(true);
     });
     it('should return false, if one arg is undefined, the other a string', () => {
-        expect(urlsEqual(undefined, 'yes')).toBe(false);
+        expect(urlsEqual((undefined: any), 'yes')).toBe(false);
     });
     it('should return false, if one arg is string, the other a array', () => {
         expect(urlsEqual('yes', ['abc'])).toBe(false);
@@ -34,13 +35,13 @@ describe('urlsEqual', () => {
 
 describe('createAudioUrls', () => {
     it('should return undefined, if no parameter provided', () => {
-        expect(createAudioUrls()).toBeUndefined();
+        expect(createAudioUrls((undefined: any))).toBeUndefined();
     });
     it('should return converted url, if parameter is single partial url', () => {
         expect(createAudioUrls('/foo/bar.txt')).toEqual('http://localhost:9000/audio/foo/bar.txt');
     });
     it('should return converted urls in array, if parameter is array with partial urls', () => {
-        expect(createAudioUrls(['/foo/bar.txt', null, '/foo/baz.txt']))
+        expect(createAudioUrls(['/foo/bar.txt', (null: any), '/foo/baz.txt']))
             .toEqual(['http://localhost:9000/audio/foo/bar.txt', null, 'http://localhost:9000/audio/foo/baz.txt']);
     });
 });

@@ -1,16 +1,17 @@
+/* @flow */
 /* eslint-env node, jest */
 import { replaceRequestPlaceholders, addRequestParams } from './utils';
 
 expect.extend({
-    toEqualOneOf(received, ...args) {
+    toEqualOneOf(received: any, ...args: Array<any>) {
         if(!Array.isArray(args)) {
             throw new Error('array as second parameter expected');
         }
-        const pass = args.reduce((acc, val) => acc |= val === received, false);
+        const pass = args.reduce((acc, val) => acc = acc || (val === received), false);
         if (pass) {
             return {
                 message: () => (
-                    `expected value to equal none of "${args.join('", "')}"\nreceived: "${received}"`
+                    `expected value to equal none of "${args.join('", "')}"\nreceived: "${received})}"`
                 ),
                 pass: true
             };
@@ -64,6 +65,7 @@ describe('utils', () => {
         });
         it('should add two parameters', () => {
             const replaced = addRequestParams('http://server/', {p1: 'abc', p2: 'xyz'});
+            // $FlowFixMe
             expect(replaced).toEqualOneOf('http://server/?p1=abc&p2=xyz', 'http://server/?p2=xyz&p1=abc');
         });
     });

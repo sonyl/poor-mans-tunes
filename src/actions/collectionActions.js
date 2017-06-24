@@ -30,7 +30,7 @@ const shouldFetchCollection = state => {
     return !collection || collection.didInvalidate != false;
 };
 
-export const getCollection = () => (dispatch: Dispatch, getState: GetState) => {
+export const getCollection = () => (dispatch: Dispatch, getState: GetState): Promise<mixed> => {
     if(shouldFetchCollection(getState())) {
 
         dispatch(requestCollection());

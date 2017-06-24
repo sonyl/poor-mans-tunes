@@ -1,16 +1,14 @@
+/* @flow */
 /* eslint-env node, jest */
 
 import fetch from 'isomorphic-fetch';
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
-import * as actions from './collectionActions';
-import {invalidateCollection} from './collectionActions';
+import { getCollection, invalidateCollection } from './collectionActions';
 import nock from 'nock';
 
-//import type { Action, Dispatch } from '../types';
-
-const createStore = (initialState = {}) => {
+const createStore: Store = (initialState = {}) => {
     return _createStore(
         reducer,
         initialState,
@@ -34,11 +32,9 @@ describe('invalidateCollection', () => {
 describe('getCollection', () => {
 
     const orgDateNow = Date.now;
-//    (Date: any).now =  jest.fn(() => 123456);
-    Date.now =  jest.fn(() => 123456);
+    (Date: any).now =  jest.fn(() => 123456);
     afterAll(() => {
-//        (Date: any).now = orgDateNow;
-        Date.now = orgDateNow;
+        (Date: any).now = orgDateNow;
     });
 
     let store;
@@ -66,7 +62,7 @@ describe('getCollection', () => {
             .get('/files.json')
             .reply(200, testArtists);
 
-        return (store.dispatch)(actions.getCollection()).then(() => {
+        return store.dispatch(getCollection()).then(() => {
             const expectedState = {
                 artists: testArtists,
                 lastUpdated: 123456,
@@ -83,6 +79,6 @@ describe('getCollection', () => {
 
         store = createStore({collection: { artists: ['some artist'], didInvalidate: false}});
 
-        expect(store.dispatch(actions.getCollection())).toBeUndefined;
+        expect(store.dispatch(getCollection())).toBeUndefined;
     });
 });

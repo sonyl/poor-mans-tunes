@@ -4,14 +4,14 @@ import type { Action, PlaylistEntry } from '../types';
 
 
 export type LyricsState = {
-    [string]: {
-        [string]: {
-            isFetching: boolean,
-            lyrics?: any,
-            artist?: string,
-            song?: string,
-            error?: any,
-            receivedAt?: number
+    +[string]: {
+        +[string]: {
+            +isFetching: boolean,
+            +lyrics?: any,
+            +artist?: string,
+            +song?: string,
+            +error?: any,
+            +receivedAt?: number
         }
     }
 }

@@ -22,11 +22,11 @@ const sendNotify = (type: AlertType = 'info', headline: string, message?: string
     }
 });
 
-export const sendNotification = (headline: string, message: string) => sendNotify('info', headline, message);
-export const sendInfoNotification = (headline: string, message: string) => sendNotify('info', headline, message);
-export const sendWarningNotification = (headline: string, message: string) => sendNotify('warning', headline, message);
-export const sendDangerNotification = (headline: string, message: string) => sendNotify('danger', headline, message);
-export const sendSuccessNotification = (headline: string, message: string) => sendNotify('success', headline, message);
+export const sendNotification = (headline: string, message?: string) => sendNotify('info', headline, message);
+export const sendInfoNotification = (headline: string, message?: string) => sendNotify('info', headline, message);
+export const sendWarningNotification = (headline: string, message?: string) => sendNotify('warning', headline, message);
+export const sendDangerNotification = (headline: string, message?: string) => sendNotify('danger', headline, message);
+export const sendSuccessNotification = (headline: string, message?: string) => sendNotify('success', headline, message);
 
 export const dismissNotification = (alert: Alert): DismissNotification => ({
     type: DISMISS_NOTIFICATION,

@@ -1,19 +1,23 @@
+/* @flow */
 /* eslint-env node, jest */
 
-import { getLyrics } from './index.js';
+import { getLyrics } from './index';
+import type { LyricsState } from './lyricsReducer';
+import type { PlaylistState } from './playlistReducer';
 
 describe('lyricsReducer', () => {
     describe('getLyrics', () => {
 
 
-        const playlist = [{artist: 'artist1', song: 'song1'}];
-        const lyrics = {artist1: {song1: {lyrics: 'another silly lovesong'}}};
+        const playlist = [{artist: 'artist1', album: 'album', song: 'song1', url: '/test'}];
+        const lyrics = {artist1: {song1: {lyrics: 'another silly lovesong', isFetching: false}}};
 
-        const createState = (lyrics, playlist) => ({lyrics, playlist});
+        const createState = (lyrics: LyricsState, playlist: ?PlaylistState) => ({lyrics, playlist }: Object);
+
 
         it('should return undefined if no lyrics available', () => {
-            expect(getLyrics(createState({}, playlist))).not.toBeDefined();
-            expect(getLyrics(createState({ artist2: {song2: { lyrics: 'lyrics'}}}))).not.toBeDefined();
+            expect(getLyrics(createState({ abc: {haha: {isFetching: false}}}, playlist))).not.toBeDefined();
+            expect(getLyrics(createState({ artist2: {song2: { lyrics: 'lyrics', isFetching:false }}}))).not.toBeDefined();
         });
 
         it('should return undefined if playlist is empty', () => {

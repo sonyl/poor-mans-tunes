@@ -4,8 +4,8 @@ import type { Action } from '../types';
 
 
 export type SelectionState = {
-    artist: {index?: number, name?: string},
-    album: {index?: number, name?: string}
+    +artist: {+index?: number, +name?: string},
+    +album: {+index?: number, +name?: string}
 };
 
 

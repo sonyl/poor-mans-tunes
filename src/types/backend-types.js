@@ -20,7 +20,7 @@ export type Song = {
     src: Url,
     title: string,
     track: number,
-    year: number,
+    year?: number,
     tt?: number,
     disk?: number,
     td?: number

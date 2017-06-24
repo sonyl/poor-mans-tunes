@@ -3,10 +3,10 @@ import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from '.
 import type { Action, Collection } from '../types';
 
 export type CollectionState = {
-    isFetching: boolean,
-    artists: Collection,
-    didInvalidate?: boolean,
-    lastUpdated?: number
+    +isFetching: boolean,
+    +artists: Collection,
+    +didInvalidate?: boolean,
+    +lastUpdated?: number
 }
 
 const defaultState: CollectionState = { isFetching: false, artists: []};

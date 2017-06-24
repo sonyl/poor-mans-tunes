@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint-env node, jest */
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
@@ -6,7 +7,7 @@ import * as actions from './playlistActions';
 import { setPlayRandomSong, setPlayRandomAlbum } from './settingsActions';
 
 
-const createStore = (initialState = {}) => {
+const createStore: Store = (initialState = {}) => {
     return _createStore(
         reducer,
         initialState,

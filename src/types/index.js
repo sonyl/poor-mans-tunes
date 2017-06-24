@@ -21,10 +21,30 @@ export type Action =
     | RequestServerStatus | ReceiveServerStatus | RequestServerSettings | ReceiveServerSettings
     | PlayRandomSong | PlayRandomAlbum | SetVolume;
 
-import type { Reducers } from '../reducers';
-type $ExtractFunctionReturn = <V>(v: (...args: any) => V) => V;
+//import type { Reducers } from '../reducers';
+//type $ExtractFunctionReturn = <V>(v: (...args: any) => V) => V;
 //export type State = $ObjMap<Reducers, $ExtractFunctionReturn>;
-export type State = Object;
+
+import type { CollectionState } from '../reducers/collectionReducer';
+import type { LastFmState } from '../reducers/lastFmReducer';
+import type { LyricsState } from '../reducers/lyricsReducer';
+import type { NotificationsState } from '../reducers/notificationsReducer';
+import type { PlaylistState } from '../reducers/playlistReducer';
+import type { SelectionState } from '../reducers/selectionReducer';
+import type { ServerState } from '../reducers/serverReducer';
+import type { SettingsState } from '../reducers/settingsReducer';
+
+export type State = {
+    +collection: CollectionState,
+    +lastFm: LastFmState,
+    +lyrics: LyricsState,
+    +notifications: NotificationsState,
+    +playlist: PlaylistState,
+    +selection: SelectionState,
+    +server: ServerState,
+    +settings: SettingsState,
+    +router: Object
+};
 
 
 export type PlaylistEntry = {
@@ -73,12 +93,14 @@ export type LastFmInfoContainer = {
 
 export type Store = ReduxStore<State, Action>;
 
-
-export type Thunk<A> = ((Dispatch, GetState) => Promise<mixed> | void) => A;
-
-
-export type GetState = () => State;
-export type Dispatch = ReduxDispatch<Action> & Thunk<Action>
-
 export type AlertType = 'info' | 'success' | 'warning' | 'danger';
 export type Alert = { id: number, type: AlertType, headline?: string, message: string};
+
+//export type Thunk<A> = ((Dispatch, GetState) => Promise<mixed> | void) => A;
+//export type Dispatch = ReduxDispatch<Action> & Thunk<Action>
+//export type GetState = () => State;
+
+export type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
+export type PromiseAction = Promise<Action>;
+export type Dispatch = (action: Action | ThunkAction | PromiseAction) => any;
+export type GetState = () => State;

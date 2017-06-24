@@ -1,12 +1,13 @@
+/* @flow */
 /* eslint-env node, jest */
 
 import {createStore as _createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
-import * as actions from './settingsActions';
+import { setVolume, setPlayRandomSong } from './settingsActions';
 import { getValueFromSettings, isSetInSettings} from '../reducers';
 
-const createStore = (initialState = {}) => {
+const createStore: Store = (initialState = {}) => {
     return _createStore(
         reducer,
         initialState,
@@ -26,12 +27,12 @@ describe('playlistActions', () => {
     describe('setVolume', () => {
 
         it('should set the volume in the store', () => {
-            store.dispatch(actions.setVolume(0.5));
+            store.dispatch(setVolume(0.5));
             expect(getValueFromSettings(store.getState(), 'volume')).toEqual(0.5);
         });
 
         it('should reset the volume in the store', () => {
-            store.dispatch(actions.setVolume(0));
+            store.dispatch(setVolume(0));
             expect(getValueFromSettings(store.getState(), 'volume')).toEqual(0.0);
         });
     });
@@ -39,12 +40,12 @@ describe('playlistActions', () => {
     describe('setPlayRandomSong', () => {
 
         it('should set the playRandomSong-Flag in the store', () => {
-            store.dispatch(actions.setPlayRandomSong(true));
+            store.dispatch(setPlayRandomSong(true));
             expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
         });
 
         it('should reset the playRandomSong-Flag in the store', () => {
-            store.dispatch(actions.setPlayRandomSong(false));
+            store.dispatch(setPlayRandomSong(false));
             expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(false);
         });
 
@@ -69,7 +70,7 @@ describe('playlistActions', () => {
                 }
             });
             expect(store.getState().playlist.length).toEqual(0);
-            store.dispatch(actions.setPlayRandomSong(true));
+            store.dispatch(setPlayRandomSong(true));
             expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
             expect(store.getState().playlist.length).toEqual(1);
         });
@@ -96,7 +97,7 @@ describe('playlistActions', () => {
                 playlist: [{}]
             });
             expect(store.getState().playlist.length).toEqual(1);
-            store.dispatch(actions.setPlayRandomSong(true));
+            store.dispatch(setPlayRandomSong(true));
             expect(isSetInSettings(store.getState(), 'playRandomSong')).toEqual(true);
             expect(store.getState().playlist.length).toEqual(1);
         });

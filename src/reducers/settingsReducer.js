@@ -1,7 +1,17 @@
+/* @flow */
 import { SET_PLAY_RANDOM_SONG, SET_PLAY_RANDOM_ALBUM, SET_VOLUME } from '../actions/actionKeys';
+import type { Action } from '../types';
 
 
-const settings = (state = {}, action) => {
+export type SettingsState = {
+    +playRandomSong: boolean,
+    +playRandomAlbum: boolean,
+    +volume: number
+};
+
+const defaultState: SettingsState = {playRandomSong: false, playRandomAlbum: false, volume: 80};
+
+const settings = (state: SettingsState = defaultState, action: Action) => {
     switch (action.type) {
         case SET_PLAY_RANDOM_SONG:
             if(state.playRandomSong !== !!action.playRandom) {
@@ -25,11 +35,11 @@ const settings = (state = {}, action) => {
 export default settings;
 
 
-export const getValue = (state, key) => {
+export const getValue = (state: SettingsState, key: string) => {
     return state && state[key];
 };
 
 
-export const isSet = (state, key) => {
+export const isSet = (state: SettingsState, key: string) => {
     return !!getValue(state, key);
 };

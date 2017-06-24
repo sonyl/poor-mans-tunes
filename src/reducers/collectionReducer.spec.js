@@ -1,39 +1,43 @@
+/* @flow */
 /* eslint-env node, jest */
 
 import { getArtists, getArtist, getAlbum, getAlbumByName, getRandomSong, getRandomAlbumSongs } from './collectionReducer';
+import type { CollectionState } from './collectionReducer';
 
 describe('collectionReducer', () => {
 
-    const state = { artists: [
-        {
-            artist: 'Artist1',
-            albums: [
-                {
-                    album: 'Album1', artist: 'Artist1', songs: [
-                        {title: 'Song1', src: 'url1'}
-                    ]
-                }
-            ]
-        }, {
-            artist: 'Artist2',
-            albums: [
-                {
-                    album: 'Album2', artist: 'Artist2', songs: [
-                        {title: 'Song2', src: 'url2'}
-                    ]
-                }, {
-                    album: 'Album3', artist: 'Artist2', songs: [
-                        {title: 'Song3', src: 'url3'},
-                        {title: 'Song4', src: 'url4'}
-                    ]
-                }
-            ]
-        }
-    ]};
+    const state:CollectionState  = {
+        artists: [
+            {
+                artist: 'Artist1',
+                albums: [
+                    {
+                        album: 'Album1', artist: 'Artist1', songs: [
+                            {title: 'Song1', src: 'url1', track: 1}
+                        ]
+                    }
+                ]
+            }, {
+                artist: 'Artist2',
+                albums: [
+                    {
+                        album: 'Album2', artist: 'Artist2', songs: [
+                            {title: 'Song2', src: 'url2', track: 2}
+                        ]
+                    }, {
+                        album: 'Album3', artist: 'Artist2', songs: [
+                            {title: 'Song3', src: 'url3', track: 3},
+                            {title: 'Song4', src: 'url4', track: 4}
+                        ]
+                    }
+                ]
+            }
+        ],
+        isFetching: false};
 
     describe('getArtists', () => {
         it('should return empty array if collection unavailable',  () => {
-            expect(getArtists({})).toEqual([]);
+            expect(getArtists({ artists: [], isFetching: false})).toEqual([]);
         });
 
         it('should return the artists array if collection available',  () => {
@@ -44,7 +48,7 @@ describe('collectionReducer', () => {
     describe('getArtist', () => {
 
         it('should return null if index is invalid', () => {
-            expect(getArtist(state, 'abc')).toBeNull();
+            expect(getArtist(state)).toBeNull();
         });
 
         it('should return null if index not found', () => {
@@ -53,7 +57,8 @@ describe('collectionReducer', () => {
 
 
         it('should return the artist object if available', () => {
-            expect(getArtist(state, 1).artist).toBe('Artist2');
+            const artist = getArtist(state, 1);
+            expect(artist && artist.artist).toBe('Artist2');
         });
 
     });
@@ -68,7 +73,8 @@ describe('collectionReducer', () => {
         });
 
         it('should return the album object if available', () => {
-            expect(getAlbum(state, 1, 1).album).toBe('Album3');
+            const album = getAlbum(state, 1, 1);
+            expect(album && album.album).toBe('Album3');
         });
     });
 
@@ -79,26 +85,28 @@ describe('collectionReducer', () => {
         });
 
         it('should return the album object if available', () => {
-            expect(getAlbumByName(state, 'Artist2', 'Album3').album).toBe('Album3');
+            const album = getAlbumByName(state, 'Artist2', 'Album3');
+
+            expect(album && album.album).toBe('Album3');
         });
     });
 
     describe('getRandomSong', () => {
         it('should return null if collection is empty', () => {
-            expect(getRandomSong({})).toBeNull();
+            expect(getRandomSong({ artists: [], isFetching: false})).toBeNull();
         });
 
         it('should return the song object selected by random', () => {
-            const randomSong = getRandomSong(state);
-            expect(['Artist1', 'Artist2']).toContainEqual(randomSong.artist);
-            expect(['Album1', 'Album2', 'Album3']).toContainEqual(randomSong.album);
-            expect(['Song1', 'Song2', 'Song3', 'Song4']).toContainEqual(randomSong.songs[0].song);
+            const  {artist, album, songs } = getRandomSong(state) || {};
+            expect(['Artist1', 'Artist2']).toContainEqual(artist);
+            expect(['Album1', 'Album2', 'Album3']).toContainEqual(album);
+            expect(['Song1', 'Song2', 'Song3', 'Song4']).toContainEqual(songs[0].song);
         });
     });
 
     describe('getRandomAlbum', () => {
         it('should return null if collection is empty', () => {
-            expect(getRandomAlbumSongs({})).toBeNull();
+            expect(getRandomAlbumSongs({ artists: [], isFetching: false})).toBeNull();
         });
 
         it('should return the song object selected by random', () => {
@@ -108,8 +116,8 @@ describe('collectionReducer', () => {
                 randomAlbum = getRandomAlbumSongs(state);       // try until random selects 'Album3'
             }
 
-            expect(randomAlbum.artist).toBe('Artist2');
-            expect(randomAlbum.songs).toEqual([{song: 'Song3', url: 'url3'}, {song: 'Song4', url: 'url4'}]);
+            expect(randomAlbum && randomAlbum.artist).toBe('Artist2');
+            expect(randomAlbum && randomAlbum.songs).toEqual([{song: 'Song3', url: 'url3'}, {song: 'Song4', url: 'url4'}]);
         });
     });
 });
