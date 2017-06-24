@@ -9,7 +9,7 @@ export type SettingsState = {
     +volume: number
 };
 
-const defaultState: SettingsState = {playRandomSong: false, playRandomAlbum: false, volume: 80};
+const defaultState: SettingsState = {playRandomSong: false, playRandomAlbum: false, volume: 0.8};
 
 const settings = (state: SettingsState = defaultState, action: Action) => {
     switch (action.type) {
