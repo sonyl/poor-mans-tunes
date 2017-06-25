@@ -1,5 +1,7 @@
 /* @flow */
-import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from '../actions/actionKeys';
+import { ADD_SONG_TO_PLAYLIST, SET_PLAYLISTENTRY_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST,
+    MOVE_SONG_TO_POSITION } from '../actions/actionKeys';
+
 import type { PlaylistEntry, Action } from '../types';
 
 
@@ -20,6 +22,9 @@ const playlist = (state: PlaylistState = [], action: Action) => {
                 }
             }
             break;
+        }
+        case SET_PLAYLISTENTRY_TO_PLAYLIST:{
+            return [...action.entries];
         }
         case REMOVE_SONG_FROM_PLAYLIST: {
             const {index} = action;

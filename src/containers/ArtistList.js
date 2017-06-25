@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import NavLink from '../components/NavLink';
-import { createLinkUrl, createLog } from '../components/utils';
+import { createLinkUrl, createLog } from '../utils';
 import { getArtists, getSelectedArtist } from '../reducers';
 
 import type { Collection, Artist } from '../types';

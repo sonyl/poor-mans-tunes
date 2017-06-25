@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
-import { createLinkUrl, createLog } from '../components/utils';
+import { createLinkUrl, createLog } from '../utils';
 import { getArtists } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 

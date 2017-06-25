@@ -3,7 +3,7 @@ import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_RESCAN_FILES,
     REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from './actionKeys';
 
 import { sendNotification, sendSuccessNotification, sendDangerNotification, dismissNotification } from './notificationsActions';
-import { replaceRequestPlaceholders, addRequestParams } from './utils';
+import { replaceRequestPlaceholders, addRequestParams } from './actionUtils';
 
 import type { Dispatch, GetState, ServerStatus, ServerSettings, Url } from '../types';
 

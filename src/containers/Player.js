@@ -16,9 +16,9 @@ import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
 import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudioUrls, createLog,
-    LASTFM_IMG_SIZ_MEDIUM } from '../components/utils';
+    LASTFM_IMG_SIZ_MEDIUM } from '../utils';
 
-import type {Dispatch} from '../types';
+import type {Dispatch, Url} from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Player');
@@ -82,33 +82,57 @@ function AlbumLink({artist, album, children, activate}) {
     return null;
 }
 
-class Player extends Component {
+type DefaultPlayerProps = void;
+type PlayerProps = {
+    modal: Object,
+    url: ?Url,
+    artist: ?string,
+    album: ?string,
+    song: ?string,
+    title: ?string,
+    volume: number,
+    albumInfo: Object,
+    colAlbum: Object,
+    lyricsAvail: boolean,
 
-    state: {
-        playing: boolean,
-        played: number,
-        duration: number,
-        style?: Object,
-        seeking?: boolean
-    };
+    setVolume: (number)=>void,
+    nextSong: ()=>void,
+    requestAlbum: (string, string)=> void,
+    sendNotification: (string, ?string)=> void,
+    requestSongLyricsIfNotExists: (artist: ?string, song: ?string)=> Promise<any>
+};
+type PlayerState = {
+    playing: boolean,
+    played: number,
+    duration: number,
+    style?: Object,
+    seeking?: boolean
+};
 
+
+class Player extends Component<DefaultPlayerProps, PlayerProps, PlayerState> {
+
+    state: PlayerState;
     player: AudioPlayer;
 
-    constructor(props) {
-        log('constructor', props);
+    constructor(props: PlayerProps) {
         super(props);
         this.state = {
             playing: !!this.props.url,
             played: 0,
             duration: 0
         };
+        log('constructor', 'props: %o', props);
 
-        if(this.state.playing && props.title) {
-            if(props.artist && props.album) {
-                this.props.requestAlbum(props.artist, props.album);
+        const { playing } = this.state;
+        const { artist, album, title, requestAlbum, sendNotification } = props;
+
+        if(playing && title) {
+            if(artist && album) {
+                requestAlbum(artist, album);
             }
-            sendDesktopNotification('Now playing:', props.title);
-            props.sendNotification('Now playing:', props.title);
+            sendDesktopNotification('Now playing:', title);
+            sendNotification('Now playing:', title);
         }
     }
 
@@ -133,7 +157,7 @@ class Player extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        log('componentWillReceiveProps', nextProps, this.props);
+        log('componentWillReceiveProps', 'nextProps:%o, props:%o', nextProps, this.props);
         this.updateStyle();
         if(this.props.title !== nextProps.title) {
             const newState = {};
@@ -227,7 +251,7 @@ class Player extends Component {
     };
 
     renderAlbumLinkHeader() {
-        const {artist, album, albumInfo, colAlbum, title, lyricsNotAvail} = this.props;
+        const {artist, album, albumInfo, colAlbum, title, lyricsAvail} = this.props;
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
             <div style={{float: 'left', width: '100%'}}>
@@ -242,14 +266,12 @@ class Player extends Component {
                     <h3>{title}</h3>
                 </AlbumLink>
                 <button className="btn btn-default"
-                    onClick={this.showLyrics} disabled={lyricsNotAvail}>show lyrics</button>
+                    onClick={this.showLyrics} disabled={!lyricsAvail}>show lyrics</button>
             </div>
         );
     }
 
     renderDummyHeader() {
-        const {artist, album, albumInfo, colAlbum, title} = this.props;
-        const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
             <div style={{float: 'left', width: '100%'}}>
                 <CdIcon />
@@ -260,11 +282,9 @@ class Player extends Component {
 
     render () {
         log('render', 'state: %o, props: %o', this.state, this.props);
-        const {
-            playing, played, duration, style
-        } = this.state;
-
+        const { playing, played, duration, style } = this.state;
         const { url, volume, title } = this.props;
+
         let adjustedVol = volume===undefined ? 0.8 : volume;
         adjustedVol = Math.max(Math.min(adjustedVol , 1.0), 0.0);
         log('render', 'volume=', volume, 'adjustedVol', adjustedVol, Number.isNaN(volume), Number.isNaN(volume) ? 0.8 : volume);
@@ -375,28 +395,6 @@ class Player extends Component {
     }
 }
 
-
-Player.propTypes = {
-    url: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string)
-    ]),
-    artist: PropTypes.string,
-    album: PropTypes.string,
-    song: PropTypes.string,
-    title: PropTypes.string,
-    volume: PropTypes.string,
-    albumInfo: PropTypes.object,
-    colAlbum: PropTypes.object,
-    lyricsNotAvail: PropTypes.bool,
-
-    setVolume: PropTypes.func,
-    nextSong: PropTypes.func,
-    requestAlbum: PropTypes.func,
-    sendNotification: PropTypes.func,
-    requestSongLyricsIfNotExists: PropTypes.func
-};
-
 const mapStateToProps = state => {
     const { playlist } = state;
     const {artist, album, song, url} = playlist[0] || {};
@@ -411,7 +409,7 @@ const mapStateToProps = state => {
         volume: getValueFromSettings(state, 'volume'),
         albumInfo: getAlbumInfo(state, artist, album),
         colAlbum: getAlbumByName(state, artist, album),
-        lyricsNotAvail: !!(lyrics && lyrics.error)
+        lyricsAvail: !(lyrics && lyrics.error)
     };
 };
 
@@ -419,7 +417,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     setVolume: volume => dispatch(setVolume(volume)),
     nextSong: () => dispatch(removeSongAtIndexFromPlaylist(0)),
     requestAlbum: (artist: string, album: string) => dispatch(requestAlbumIfNotExists(artist, album)),
-    sendNotification: (head: string, msg: string) => dispatch(sendNotification(head, msg)),
+    sendNotification: (head: string, msg?: string) => dispatch(sendNotification(head, msg)),
     requestSongLyricsIfNotExists: (artist, song) => dispatch(requestSongLyricsIfNotExists(artist, song))
 });
 

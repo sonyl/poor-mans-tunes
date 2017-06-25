@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createLog, urlsEqual } from './utils';
+import { createLog, urlsEqual } from '../utils';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AudioPlayer');

@@ -36,6 +36,7 @@ export const getLastCollectionUpdate = (state: State) => fromCollection.getLastU
 export const getAlbumByName = (state: State, ...args: any) => fromCollection.getAlbumByName(state.collection, ...args);
 export const getRandomSong = (state: State, ...args: any) => fromCollection.getRandomSong(state.collection, ...args);
 export const getRandomAlbumSongs = (state: State, ...args: any) => fromCollection.getRandomAlbumSongs(state.collection, ...args);
+export const findSongByUrl = (state: State, url?: ?string) => fromCollection.findSongByUrl(state.collection, url);
 export const getArtistInfo = (state: State, ...args: any) => fromLastFm.getArtistInfo(state.lastFm, ...args);
 export const getAlbumInfo = (state: State, ...args: any) => fromLastFm.getAlbumInfo(state.lastFm, ...args);
 export const isPlaylistEmpty = (state: State) => fromPlaylist.isPlaylistEmpty(state.playlist);

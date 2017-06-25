@@ -35,7 +35,7 @@ const settings = (state: SettingsState = defaultState, action: Action) => {
 export default settings;
 
 
-export const getValue = (state: SettingsState, key: string) => {
+export const getValue = (state: SettingsState, key: string): mixed => {
     return state && state[key];
 };
 

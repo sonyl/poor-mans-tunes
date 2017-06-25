@@ -4,7 +4,7 @@ import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 
 import ScaleModal from 'boron/ScaleModal';
-import { sanitizeHtml } from './utils';
+import { sanitizeHtml } from '../utils';
 
 type Props = {
     title: string,

@@ -1,6 +1,6 @@
 /* @flow */
 /* eslint-env node, jest */
-import { replaceRequestPlaceholders, addRequestParams } from './utils';
+import { replaceRequestPlaceholders, addRequestParams } from './actionUtils';
 
 expect.extend({
     toEqualOneOf(received: any, ...args: Array<any>) {

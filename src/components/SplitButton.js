@@ -18,10 +18,8 @@ function btnClassNames(size) {
 type ClickHandler = (buttonName: string, label: string)=> void;
 
 type Props = {
-    actions: {label: string, onClick: ClickHandler}[],
-    defaultLabel: string,
-    defaultOnClick: ClickHandler,
-    defaultIcon: Object,
+    className?: string,
+    actions: {label: string, onClick: ClickHandler, disabled?: boolean}[],
     size: 'extra-small' | 'small' | 'medium' | 'large'
 };
 type DefaultProps = {
@@ -33,13 +31,13 @@ type State = {
 
 export default class SplitButton extends Component<DefaultProps, Props, State> {
     static propTypes = {
+        className: PropTypes.string,
         actions: PropTypes.arrayOf(PropTypes.shape({
             label: PropTypes.string.isRequired,
-            onClick: PropTypes.func.isRequired
+            onClick: PropTypes.func.isRequired,
+            icon: PropTypes.element,
+            disabled: PropTypes.bool
         })).isRequired,
-        defaultLabel: PropTypes.string.isRequired,
-        defaultOnClick: PropTypes.func,
-        defaultIcon: PropTypes.element,
         size: PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
     };
 
@@ -63,6 +61,7 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
     }
 
     onClick(e: Event & { currentTarget: HTMLButtonElement }) {
+        e.preventDefault();
         const name = e.currentTarget.name;
 
         if(this.state.open) {
@@ -70,14 +69,10 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
         }
 
         if(name) {
-            const {defaultOnClick, defaultLabel, actions} = this.props;
-            if(name === 'default' && defaultOnClick){
-                defaultOnClick('default', defaultLabel);
-            } else {
-                const action = actions[parseInt(name)];
-                if(action && action.onClick) {
-                    action.onClick(name, action.label);
-                }
+            const {actions} = this.props;
+            const action = actions[parseInt(name)];
+            if(action && action.onClick) {
+                action.onClick(name, action.label);
             }
         }
     }
@@ -90,23 +85,39 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
         }, 200);
     }
 
-    render() {
+    render(){
 
-        const { defaultLabel, defaultIcon, actions, size } = this.props;
-        const divClassName = 'btn-group' + (this.state.open ? ' open' : '');
+        const { actions, size, className='' } = this.props;
+        const divClassName = 'btn-group' + (this.state.open ? ' open' : '') + (className ? ' ' + className : '');
 
-        function getDefaulLabel() {
-            if(defaultIcon && defaultLabel) {
-                return (<span>{defaultIcon} &nbsp; {defaultLabel}</span>);
-            } else {
-                return (<span>{defaultIcon}{defaultLabel}</span>);
+        function getLabel(index) {
+            if(actions[index]) {
+                if(actions[index].icon && actions[index].label) {
+                    return (<span>{actions[index].icon} &nbsp; {actions[index].label}</span>);
+                }
+                if(actions[index].label) {
+                    return (<span>{actions[index].label}</span>);
+                }
+                if(actions[index].icon) {
+                    return (<span>{actions[index].icon}</span>);
+                }
             }
+        }
+
+        function getDisabled(index): boolean {
+            return actions[index] ? !!actions[index].disabled : true;
+        }
+
+        function getClassName(index): ?string {
+            return getDisabled(index) ? 'disabled': null;
         }
 
         return(
             <div className={divClassName}>
-                <button type="button" className={btnClassNames(size)} onClick={e=>this.onClick(e)} name="default">
-                    { getDefaulLabel() }
+                <button type="button" className={btnClassNames(size)} onClick={e=>this.onClick(e)} name="0"
+                    disabled={getDisabled(0)}
+                >
+                    { getLabel(0) }
                 </button>
                 <button type="button" className={btnClassNames(size) + ' dropdown-toggle'} onClick={e=>this.toggleState()}
                     onBlur={e=>this.onBlur()}>
@@ -114,9 +125,13 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
                 </button>
                 <ul className="dropdown-menu">
                     {
-                        actions && actions.map((a, i) => (
-                        <li key={i}><a href="#" onClick={e=>this.onClick(e)} name={i}>{a.label}</a></li>
-                    ))
+                        actions.slice(1).map((a, i) => (
+                            <li key={i+1} className={getClassName(i+1)}>
+                                <a href="#" onClick={e=>this.onClick(e)} name={i+1}>
+                                    {getLabel(i+1)}
+                                </a>
+                            </li>
+                        ))
                     }
                 </ul>
             </div>

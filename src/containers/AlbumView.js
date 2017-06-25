@@ -6,7 +6,7 @@ import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 import SplitButton from '../components/SplitButton';
-import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../components/utils';
+import { sanitizeHtml, getLastFmThumbnail, getCoverUrl, createLog, LASTFM_IMG_SIZE_XLARGE } from '../utils';
 import {sendSongToSonos} from '../actions/serverActions';
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AlbumView');
@@ -22,10 +22,8 @@ function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
         <div>
             <SplitButton
                 size="extra-small"
-                defaultLabel=""
-                defaultIcon={<PlusIcon/>}
-                defaultOnClick={() => addAlbumSongToPlaylist(index, false)}
                 actions={ [
+                    { label: '', onClick: () => addAlbumSongToPlaylist(index, false), icon: PlusIcon()},
                     { label: 'add song to top of playlist', onClick: () => addAlbumSongToPlaylist(index, true)},
                     { label: 'add song to end of playlist', onClick: () => addAlbumSongToPlaylist(index, false)},
                     { label: 'play song on Sonos', onClick: () => sendAlbumSongToSonos(index)}
@@ -67,12 +65,10 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}: AlbumViewProps) => {
 
             const splitButtonProps = {
                 actions: [
+                    {label: 'Add album to playlist', onClick: () => addAlbumSongToPlaylist(null, false), icon: PlusIcon()},
                     {label: 'add all songs to top of playlist', onClick: () => addAlbumSongToPlaylist(null, true)},
                     {label: 'add all songs to end of playlist', onClick: () => addAlbumSongToPlaylist(null, false)}
-                ],
-                defaultLabel: 'Add album to playlist',
-                defaultIcon: <PlusIcon/>,
-                defaultOnClick: () => addAlbumSongToPlaylist(null, false)
+                ]
             };
 
             return (

@@ -1,8 +1,11 @@
 /* @flow */
-import { getRandomSong, getRandomAlbumSongs, isPlaylistEmpty, isSetInSettings } from '../reducers';
-import { ADD_SONG_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST, MOVE_SONG_TO_POSITION } from './actionKeys';
+import { getRandomSong, getRandomAlbumSongs, isPlaylistEmpty, isSetInSettings, findSongByUrl } from '../reducers';
+import { ADD_SONG_TO_PLAYLIST, SET_PLAYLISTENTRY_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST,
+    MOVE_SONG_TO_POSITION } from './actionKeys';
+import { splitAudioUrl } from '../utils';
 
-import type { Dispatch, GetState, PlaylistSong } from '../types';
+
+import type { Dispatch, GetState, PlaylistSong, PlaylistEntry } from '../types';
 
 export type AddSongsToPlaylist = {
     type: 'ADD_SONG_TO_PLAYLIST',
@@ -10,6 +13,11 @@ export type AddSongsToPlaylist = {
     album: string,
     songs: PlaylistSong[],
     top: boolean
+}
+
+export type SetPlaylistEntriesToPlaylist = {
+    type: 'SET_PLAYLISTENTRY_TO_PLAYLIST',
+    entries: Array<PlaylistEntry>
 }
 
 export type RemoveSongFromPlaylist = {
@@ -29,6 +37,13 @@ export const addSongsToPlaylist = (artist: string, album: string, songs: Playlis
         album,
         songs: Array.isArray(songs) ? songs : [songs],
         top
+    }
+);
+
+const setPlaylistEntriesToPlaylist = (entries: Array<PlaylistEntry>): SetPlaylistEntriesToPlaylist => (
+    {
+        type: SET_PLAYLISTENTRY_TO_PLAYLIST,
+        entries
     }
 );
 
@@ -75,3 +90,10 @@ export const moveSongToPositionInPlaylist = (index: number, newIndex: number) =>
     index,
     newIndex
 });
+
+export const replacePlaylist = (urls: Array<string>) => (dispatch: Dispatch, getState: GetState) =>{
+    const state = getState();
+    const found = urls.map(u => findSongByUrl(state, splitAudioUrl(u)));
+    const purged = (found.filter(e => !!e): any);
+    dispatch(setPlaylistEntriesToPlaylist(purged));
+};

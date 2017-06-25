@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
-import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../components/utils';
+import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../utils';
 import NavLink from '../components/NavLink';
 
 const ENABLE_LOG = false;

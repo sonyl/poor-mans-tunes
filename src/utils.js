@@ -1,10 +1,11 @@
 /* @flow */
 import _sanitizeHtml from 'sanitize-html';
-import getConfig from '../config';
+import getConfig from './config';
 
-import type { Album, LastFmInfo } from '../types';
+import type { Album, LastFmInfo, Url } from './types/index';
 
 const { baseUrl=''} = getConfig();
+const audioUrl = baseUrl + '/audio';
 
 declare class Notification {
     constructor(title: string, options: {
@@ -103,8 +104,27 @@ export const getCoverUrl = (album: Album) => {
     return audioSrc ? baseUrl + '/img' + audioSrc : null;
 };
 
-export const createAudioUrls = (partUrls: string | string[]) => {
-    const cvrt = partUrl => !partUrl ? partUrl : baseUrl + '/audio' + partUrl;
+const hasExtension = (filename: string, ...exts: Array<string>): boolean => {
+    const fLower = filename.toLowerCase();
+    return !!exts.find(ext => fLower.endsWith(ext));
+};
+
+export const createAudioUrl = (partUrls: Url, preferredFormat: string): ?string => {
+    const findFormat = (urls: Array<string>, format: string) => urls.find(f => f && hasExtension(f, preferredFormat));
+    const findFirst = (urls: Array<string>) => urls.find(f => f);
+
+    let url: ?string;
+    if(Array.isArray(partUrls)) {
+        const found = findFormat(partUrls, preferredFormat);
+        url = found ? found : findFirst(partUrls);      // not found, use first
+    } else {
+        url = partUrls;
+    }
+    return url ? createAudioUrls(url) : undefined;
+};
+
+export const createAudioUrls = <T: Array<string> | string>(partUrls: T): T => {
+    const cvrt = partUrl => !partUrl ? partUrl : audioUrl + partUrl;
 
     return !partUrls ? partUrls : Array.isArray(partUrls) ? partUrls.map(cvrt) : cvrt(partUrls);
 };
@@ -116,6 +136,12 @@ export function createLog(enabled: boolean, component: string): LogFunction {
         console.log(`${component}.${method}() ${fmt}`, ...args);
     }
     return enabled ? log : function () {};
+}
+
+export function splitAudioUrl(url?: ?string): ?string {
+    if(url && url.startsWith(audioUrl)) {
+        return url.substr(audioUrl.length);
+    }
 }
 
 /**

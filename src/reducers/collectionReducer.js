@@ -1,6 +1,6 @@
 /* @flow */
 import { REQUEST_COLLECTION, RECEIVE_COLLECTION, INVALIDATE_COLLECTION } from '../actions/actionKeys';
-import type { Action, Collection } from '../types';
+import type { Action, Collection, PlaylistEntry } from '../types';
 
 export type CollectionState = {
     +isFetching: boolean,
@@ -137,3 +137,21 @@ export const getRandomSong = (state: CollectionState) => {
     return null;
 };
 
+export const findSongByUrl = (state: CollectionState, url?: ?string): ?PlaylistEntry => {
+    let found;
+    if(url) {
+        state.artists.find(at => at.albums.find(am => am.songs.find(song => {
+            const match = Array.isArray(song.src) ? song.src.find(u => u === url) : song.src === url;
+            if(match) {
+                found = {
+                    artist: am.artist,
+                    album: am.album,
+                    song: song.title,
+                    url: song.src
+                };
+            }
+            return match;
+        })));
+    }
+    return found;
+};

@@ -1,5 +1,5 @@
 /* @flow */
-import {fetchLastFm} from './utils';
+import {fetchLastFm} from './actionUtils';
 import { REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM } from './actionKeys';
 import getConfig from '../config';
 

@@ -1,6 +1,6 @@
 /* @flow */
 import { REQUEST_SONG_LYRICS, RECEIVE_SONG_LYRICS } from './actionKeys';
-import { replaceRequestPlaceholders} from './utils';
+import { replaceRequestPlaceholders} from './actionUtils';
 
 import type { Dispatch, GetState, Lyrics } from '../types';
 
@@ -38,7 +38,7 @@ const receiveSongLyrics = (artist, song, lyrics, error): ReceiveSongLyrics => ({
 });
 
 
-export const requestSongLyricsIfNotExists = (artist: string, song: string) => (dispatch: Dispatch, getState: GetState) => {
+export const requestSongLyricsIfNotExists = (artist: string, song: string) => (dispatch: Dispatch, getState: GetState): Promise<any> => {
     if(!artist || !song) {
         return Promise.reject(new Error('required argument \'artist\' or \'song\' missing'));
     }

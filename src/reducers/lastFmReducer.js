@@ -1,6 +1,6 @@
 /* @flow */
 import {REQUEST_ARTIST, RECEIVE_ARTIST, REQUEST_ALBUM, RECEIVE_ALBUM} from '../actions/actionKeys';
-import type { Action, LastFmInfoContainer } from '../types';
+import type { Action, LastFmInfoContainer, LastFmInfo } from '../types';
 
 
 const ARTIST_INFO_ATTR = '__ARTIST_INFO';
@@ -69,10 +69,11 @@ const lastFm = (state: LastFmState = defaultState, action: Action) => {
 export default lastFm;
 
 /* ============ selectors =================*/
-export const getArtistInfo = (state: LastFmState = defaultState, artist?: string) => {
-    return artist && state[artist] && state[artist][ARTIST_INFO_ATTR] && state[artist][ARTIST_INFO_ATTR].info;
-
+export const getArtistInfo = (state: LastFmState = defaultState, artist: ?string): ?LastFmInfo => {
+    const container = artist && state[artist] && state[artist][ARTIST_INFO_ATTR] && state[artist][ARTIST_INFO_ATTR];
+    return container ? container.info : undefined;
 };
-export const getAlbumInfo = (state: LastFmState = defaultState, artist?: string, album?: string) => {
-    return artist && album && state[artist] && state[artist][album] && state[artist][album].info;
+export const getAlbumInfo = (state: LastFmState = defaultState, artist: ?string, album: ?string): ?LastFmInfo => {
+    const container = artist && album && state[artist] && state[artist][album] && state[artist][album];
+    return container ? container.info : undefined;
 };

@@ -1,6 +1,6 @@
 /* @flow */
 /* eslint-env node, jest */
-import { urlsEqual, createAudioUrls } from './utils';
+import { urlsEqual, createAudioUrls, createAudioUrl } from './utils';
 
 describe('urlsEqual', () => {
     it('should return true, if both args are equal strings', () => {
@@ -45,3 +45,25 @@ describe('createAudioUrls', () => {
             .toEqual(['http://localhost:9000/audio/foo/bar.txt', null, 'http://localhost:9000/audio/foo/baz.txt']);
     });
 });
+
+describe('createAudioUrl', () => {
+    it('should return undefined, if no parameter provided', () => {
+        expect(createAudioUrl((undefined: any), '.mp3')).toBeUndefined();
+    });
+    it('should return converted url, if parameter is single partial url', () => {
+        expect(createAudioUrl('/foo/bar.mp3', 'mp3')).toEqual('http://localhost:9000/audio/foo/bar.mp3');
+    });
+    it('should return converted url, if parameter is single partial url and format does not match', () => {
+        expect(createAudioUrl('/foo/bar.mp3', '.txt')).toEqual('http://localhost:9000/audio/foo/bar.mp3');
+    });
+    it('should return converted url, if parameter is array and format not does not match', () => {
+        expect(createAudioUrl([(null: any), '/foo/bar.mp3'], '.txt')).toEqual('http://localhost:9000/audio/foo/bar.mp3');
+    });
+    it('should return converted url, if parameter is array and format not does match', () => {
+        expect(createAudioUrl([(null: any), '/foo/bar.ogg', '/foo/bar.MP3'], '.mp3')).toEqual('http://localhost:9000/audio/foo/bar.MP3');
+    });
+    it('should return converted url, if parameter is array and format not does match', () => {
+        expect(createAudioUrl([(null: any)], '.mp3')).toBeFalsy();
+    });
+});
+

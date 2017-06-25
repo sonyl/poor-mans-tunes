@@ -15,6 +15,7 @@ function setup(playlist = []) {
         moveSongToPositionInPlaylist: () => {},
         addRandomSongToPlaylist: () => {},
         clearPlaylist: () => {},
+        replacePlaylist: () => {},
         playlist
     };
 

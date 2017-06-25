@@ -21,7 +21,7 @@ import Settings from './Settings';
 import Notifications from './Notifications';
 import Modal from '../components/Modal';
 
-import { createLog } from '../components/utils';
+import { createLog } from '../utils';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Main');
