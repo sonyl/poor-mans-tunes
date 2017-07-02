@@ -7,7 +7,7 @@ import type { RequestSongLyrics, ReceiveSongLyrics } from '../actions/lyricsActi
 import type { AddSongsToPlaylist, SetPlaylistEntriesToPlaylist, RemoveSongFromPlaylist, ClearPlaylist } from '../actions/playlistActions';
 import type { SelectAlbum, UnselectAlbum, SelectArtist, UnselectArtist } from '../actions/selectionActions';
 import type { RequestServerStatus, ReceiveServerStatus, RequestServerSettings, ReceiveServerSettings } from '../actions/serverActions';
-import type { PlayRandomSong, PlayRandomAlbum, SetVolume } from '../actions/settingsActions';
+import type { PlayRandomSong, PlayRandomAlbum, SetVolume, PersistValue } from '../actions/settingsActions';
 import type { Url } from './backend-types';
 export type { Artist, Album, Song, Lyrics, ServerStatus, ServerSettings, Url, Collection } from './backend-types';
 
@@ -19,7 +19,7 @@ export type Action =
     | AddSongsToPlaylist | SetPlaylistEntriesToPlaylist | RemoveSongFromPlaylist | ClearPlaylist
     | SelectArtist | UnselectArtist | SelectAlbum | UnselectAlbum
     | RequestServerStatus | ReceiveServerStatus | RequestServerSettings | ReceiveServerSettings
-    | PlayRandomSong | PlayRandomAlbum | SetVolume;
+    | PlayRandomSong | PlayRandomAlbum | SetVolume | PersistValue;
 
 //import type { Reducers } from '../reducers';
 //type $ExtractFunctionReturn = <V>(v: (...args: any) => V) => V;

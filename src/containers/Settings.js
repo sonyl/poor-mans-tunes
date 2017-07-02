@@ -7,8 +7,10 @@ import dateFormat from 'dateformat';
 
 import { getCollection, invalidateCollection } from '../actions/collectionActions';
 import { requestServerStatus, requestRescanFiles, updateServerSettings } from '../actions/serverActions';
+import { setPersistedValue } from '../actions/settingsActions';
 
 import ProgressBar from '../components/ProgressBar';
+import Select from '../components/Select';
 
 function formatDate(date) {
     return dateFormat(date, 'dd.mm.yy HH:MM:ss');
@@ -67,6 +69,11 @@ class Settings extends Component {
         }
     }
 
+    selectChanged(newValue: string) {
+        console.log('selectChanged %s', newValue);
+        this.props.setPersistedValue('selectedFont', newValue);
+    }
+
     render = () => {
 
         const {lastUpdate, serverStatus, serverSettings} = this.props;
@@ -77,6 +84,7 @@ class Settings extends Component {
         return (
             <div>
                 <h3>Settings:</h3>
+                <h4>Server:</h4>
                 <div className="form-horizontal">
                     <div className="form-group ">
                         <label className="col-xs-2 control-label" htmlFor="exampleInputEmail1">
@@ -137,7 +145,17 @@ class Settings extends Component {
                         </div>
                     </div>
                 </div>
+                <h4>Client:</h4>
+                <div className="form-group">
+                    <div className="row">
+                        <Select className="col-xs-3" id="selectFont" label="Select a font:"
+                            options={['Roboto', 'Rationale']} selected="Roboto"
+                            onChange={this.selectChanged.bind(this)}
+                        />
+                    </div>
+                </div>
             </div>
+
         );
     }
 }
@@ -153,6 +171,7 @@ const mapDispatchToProps = {
     invalidateCollection,
     requestServerStatus,
     requestRescanFiles,
-    updateServerSettings
+    updateServerSettings,
+    setPersistedValue
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);

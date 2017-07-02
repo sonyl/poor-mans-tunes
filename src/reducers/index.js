@@ -43,6 +43,7 @@ export const isPlaylistEmpty = (state: State) => fromPlaylist.isPlaylistEmpty(st
 export const getCurrentSong = (state: State) =>  fromPlaylist.getCurrentSong(state.playlist);
 export const getValueFromSettings = (state: State, ...args: any) => fromSettings.getValue(state.settings, ...args);
 export const isSetInSettings = (state: State, ...args: any) => fromSettings.isSet(state.settings, ...args);
+export const getPersistedValue = (state: State, value: string) => fromSettings.getPersistedValue(state.settings, value);
 export const getServerStatus = (state: State) => fromServer.getStatus(state.server);
 export const getServerSettings = (state: State) => fromServer.getSettings(state.server);
 export const getLyrics = (state: State) => fromLyrics.getLyrics(state.lyrics, getCurrentSong(state));

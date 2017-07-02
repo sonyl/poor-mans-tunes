@@ -8,7 +8,7 @@ import { getCollection } from '../actions/collectionActions';
 import { requestServerSettings } from '../actions/serverActions';
 import { selectArtist, unselectArtist, selectAlbum, unselectAlbum } from '../actions/selectionActions';
 import { setPlayRandomSong, setPlayRandomAlbum } from '../actions/settingsActions';
-import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings, getLyrics } from '../reducers';
+import { getArtists, getSelectedArtist, getSelectedAlbum, isSetInSettings, getLyrics, getPersistedValue } from '../reducers';
 
 import PlaylistView from './PlaylistView';
 import Navbar from '../components/Navbar';
@@ -149,6 +149,15 @@ class Main extends Component {
         }
     };
 
+    getContainerStyle = () => {
+        const { selectedFont} = this.props;
+        if(selectedFont) {
+            return {
+                fontFamily: selectedFont
+            };
+        }
+    };
+
     render() {
         log('render', 'props=', this.props);
 
@@ -158,7 +167,7 @@ class Main extends Component {
         const {albumCnt, songCnt} = getAlbumAndSongCnt(artists);
 
         return (
-            <div className="container-fluid">
+            <div className="container-fluid" style={this.getContainerStyle()}>
                 <Notifications />
                 <Navbar randomSongActive={isPlayRandomSong} setRandomSong={this.setRandomSong}
                     randomAlbumActive={isPlayRandomAlbum} setRandomAlbum={this.setRandomAlbum}
@@ -235,7 +244,8 @@ const mapStateToProps = state => ({
     selectedAlbum: getSelectedAlbum(state),
     isPlayRandomSong: isSetInSettings(state, 'playRandomSong'),
     isPlayRandomAlbum: isSetInSettings(state, 'playRandomAlbum'),
-    lyrics: getLyrics( state)
+    lyrics: getLyrics( state),
+    selectedFont: getPersistedValue(state, 'selectedFont')
 });
 
 const mapDispatchToProps = {
