@@ -1,6 +1,21 @@
+.web-font(@path) {
+  @import url("@{path}");
+}
+@web-font-path-roboto: "https://fonts.googleapis.com/css?family=Roboto:300";
+@web-font-path-rationale: "https://fonts.googleapis.com/css?family=Rationale";
+.web-font(@web-font-path-roboto);
+.web-font(@web-font-path-rationale);
+
+
+@import "bootswatch/solar/variables.less";
+@import "bootswatch/solar/bootswatch.less";
+
+
+
 @font-size-base:          14px;
 
-@font-family-sans-serif:  'Rationale', sans-serif;
+@font-family-sans-serif:  'Rationale', 'Roboto', sans-serif;
+
 
 
 //@btn-default-color: #e44515;
