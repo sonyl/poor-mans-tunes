@@ -1,15 +1,13 @@
 /* @flow */
 
 import React from 'react';
-import PropTypes from 'prop-types';
+
+type GlyphIconProps = { iconName: string, props?: mixed[]};
 
 
-const GlyphIcon = ({iconName, ...props}: {iconName: string}) => (
+const GlyphIcon = ({iconName, ...props}: GlyphIconProps) => (
     <span className={`glyphicon glyphicon-${iconName}`} {...props}/>
 );
 
-GlyphIcon.propTypes = {
-    iconName: PropTypes.string.isRequired
-};
 
 export default GlyphIcon;

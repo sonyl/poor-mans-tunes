@@ -1,6 +1,5 @@
 /* @flow */
 import React, { Component }  from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
 import { sendNotification } from '../actions/notificationsActions';
@@ -60,18 +59,26 @@ function format (seconds: number) {
     return `${mm}:${ss}`;
 }
 
-function Duration ({ seconds }) {
+type DurationProps = {
+    seconds: number
+};
+
+function Duration ({ seconds }: DurationProps) {
     return (
         <time dateTime={`P${Math.round(seconds)}S`}>
             {format(seconds)}
         </time>
     );
 }
-Duration.propTypes = {
-    seconds: PropTypes.number.isRequired
+
+type AlbumLinkProps = {
+    artist: ?string,
+    album: ?string,
+    children?: Object,
+    activate: boolean
 };
 
-function AlbumLink({artist, album, children, activate}) {
+function AlbumLink({artist, album, children, activate}: AlbumLinkProps) {
     if(artist && album) {
         return (
             <NavLink activate={activate} to={createLinkUrl(artist, album)} style={{}}>

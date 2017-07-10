@@ -1,6 +1,5 @@
 /* @flow */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getSelectedAlbum, getSelectedAlbumInfo } from '../reducers';
@@ -17,7 +16,13 @@ function PlusIcon() {
     return <GlyphIcon iconName='share-alt'/>;
 }
 
-function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
+type SongProps = {
+    index: number,
+    title: string,
+    addAlbumSongToPlaylist: (number, boolean)=>void,
+    sendAlbumSongToSonos: (number)=>void
+};
+const Song = ({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}: SongProps) => {
     return (
         <div>
             <SplitButton
@@ -32,7 +37,7 @@ function Song({index, title, addAlbumSongToPlaylist, sendAlbumSongToSonos}){
             &nbsp;&nbsp; {title}
         </div>
     );
-}
+};
 
 type AlbumViewProps = {
     album: Album,
@@ -126,21 +131,6 @@ const AlbumView = ({album, lastFmInfo, addSongsToPlaylist}: AlbumViewProps) => {
             </div>
         </div>
     );
-};
-
-
-AlbumView.propTypes = {
-    album: PropTypes.shape({
-        artist: PropTypes.string,
-        album: PropTypes.string,
-        songs: PropTypes.arrayOf(PropTypes.object)
-    }),
-    lastFmInfo: PropTypes.shape({
-        name: PropTypes.string,
-        artist: PropTypes.string,
-        wiki: PropTypes.object
-    }),
-    addSongsToPlaylist: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

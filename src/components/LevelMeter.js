@@ -1,7 +1,6 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { createLog } from '../utils';
 
 const ENABLE_LOG = false;
@@ -21,6 +20,7 @@ function isNumeric(n) {
 }
 
 class RingBuffer {
+
     maxSize: number;
     buffer: number[];
     ptr: number;
@@ -46,35 +46,45 @@ class RingBuffer {
 
 type Props = {
     audio: HTMLMediaElement,
-    audioContext: Object,
+    audioContext: AudioContext,
     backgroundColor: string,
     okColor: string,
     warnColor: string,
     alarmColor: string,
     textColor: string
 };
+
 type DefaultProps = {
-    audioContext: Object,
-    backgroundColor: '#555',
-    okColor: 'green',
-    warnColor: 'yellow',
-    alarmColor: 'red',
+    audioContext: AudioContext,
+    backgroundColor: string,
+    okColor: string,
+    warnColor: string,
+    alarmColor: string
 };
+
 type State = void;
 
 export default class LevelMeter extends Component<DefaultProps, Props, State> {
 
+    static defaultProps: DefaultProps = {
+        audioContext: new (window.AudioContext || window.webkitAudioContext)(),
+        backgroundColor: '#555',
+        okColor: 'green',
+        warnColor: 'yellow',
+        alarmColor: 'red'
+    };
+
     leftPeakBuffer: RingBuffer;
     rightPeakBuffer: RingBuffer;
 
-    meterNode: Object;
-    sourceNode: Object;
+    meterNode: ScriptProcessorNode;
+    sourceNode: MediaElementAudioSourceNode;
 
     canvas: HTMLCanvasElement;
 
     channelPeak: number[];
 
-    constructor(props: Object) {
+    constructor(props: Props) {
         super(props);
         this.leftPeakBuffer = new RingBuffer(PEAK_BUFFER_SIZE);
         this.rightPeakBuffer = new RingBuffer(PEAK_BUFFER_SIZE);
@@ -224,21 +234,4 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
             <canvas ref={canvas => this.canvas = canvas} style={{ width: '100%', height: '100%' }} />
         );
     }
-
-    static propTypes = {
-        audioContext: PropTypes.object.isRequired,
-        backgroundColor: PropTypes.string.isRequired,
-        okColor: PropTypes.string.isRequired,
-        warnColor: PropTypes.string.isRequired,
-        alarmColor: PropTypes.string.isRequired,
-        textColor: PropTypes.string                 // defaults to warnColor
-    };
-
-    static defaultProps = {
-        audioContext: new (window.AudioContext || window.webkitAudioContext)(),
-        backgroundColor: '#555',
-        okColor: 'green',
-        warnColor: 'yellow',
-        alarmColor: 'red'
-    };
 }

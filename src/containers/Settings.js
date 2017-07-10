@@ -12,26 +12,46 @@ import { setPersistedValue } from '../actions/settingsActions';
 import ProgressBar from '../components/ProgressBar';
 import Select from '../components/Select';
 
+import type { ServerStatus, ServerSettings } from '../types';
+
 function formatDate(date) {
     return dateFormat(date, 'dd.mm.yy HH:MM:ss');
 }
 
-class Settings extends Component {
+function getSettingsString(settings: ServerSettings, key: string): string {
+    return settings && typeof settings[key] === 'string'  && settings[key]  || '';
+}
 
-    state: {
-        audioPath: string
-    };
+type Props = {
+    lastUpdate: string,
+    serverSettings: { settings: ServerSettings, error?: string, lastUpdated?: string},
+    serverStatus: {status: ServerStatus, error?: string, lastUpdated?: string},
+    invalidateCollection: ()=> void,
+    getCollection: ()=> void,
+    requestServerStatus: (boolean)=> void,
+    requestRescanFiles: ()=> void,
+    updateServerSettings: (string, string)=> void,
+    setPersistedValue: (string, string | {})=> void
+};
+type DefaultProps = void;
+type State = {
+    audioPath: string
+};
 
-    constructor(props) {
+class Settings extends Component<DefaultProps, Props, State> {
+
+    state: State;
+
+    constructor(props: Props) {
         super(props);
         const { serverSettings } = props;
         this.state = {
-            audioPath: serverSettings.settings && serverSettings.settings.audioPath || ''
+            audioPath: getSettingsString(serverSettings.settings, 'audioPath')
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        const audioPath = nextProps.serverSettings.settings && nextProps.serverSettings.settings.audioPath || '';
+    componentWillReceiveProps(nextProps: Props) {
+        const audioPath = getSettingsString(nextProps.serverSettings.settings, 'audioPath');
         if (audioPath !== this.state.audioPath) {
             this.setState({ audioPath });
         }

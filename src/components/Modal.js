@@ -1,8 +1,6 @@
 /* @flow */
 
 import React, { Component }  from 'react';
-import PropTypes from 'prop-types';
-
 import ScaleModal from 'boron/ScaleModal';
 import { sanitizeHtml } from '../utils';
 
@@ -64,13 +62,6 @@ class Modal extends Component<DefaultProps, Props, State> {
 
         );
     }
-
-    static propTypes = {
-        title: PropTypes.string,
-        body: PropTypes.string
-    };
 }
 
 export default Modal;
-
-

@@ -45,5 +45,6 @@ export type Collection = Artist[];
 export type Lyrics = {
     artist: string,
     song: string,
-    lyrics: string
+    lyrics: string,
+    error?: string
 }

@@ -1,39 +1,53 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { createLog, urlsEqual } from '../utils';
+
+import type { Url } from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'AudioPlayer');
 
-export default class AudioPlayer extends Component {
+type Progress = {played?: number, loaded?: number};
 
-    player: HTMLMediaElement;
-    progressTimeout: number;
-    prevLoaded: number;
-    prevPlayed: number;
+type Props = {
+    url: ?Url,
+    playing: boolean,
+    volume: number,
+    hidden: boolean,
+    className: string,
+    attributes: Object,
+    progressFrequency: number,
+    onPlay: ()=>void,
+    onPause: ()=>void,
+    onEnded: ()=>void,
+    onError: (string)=>void,
+    onProgress: (Progress)=>void,
+    onDuration: (number)=>void
+};
 
-    static propTypes = {
-        url: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.arrayOf(PropTypes.string)
-        ]),
-        playing: PropTypes.bool,
-        volume: PropTypes.number,
-        hidden: PropTypes.bool,
-        className: PropTypes.string,
-        attributes: PropTypes.object,
-        progressFrequency: PropTypes.number,
-        onPlay: PropTypes.func,
-        onPause: PropTypes.func,
-        onEnded: PropTypes.func,
-        onError: PropTypes.func,
-        onProgress: PropTypes.func,
-        onDuration: PropTypes.func
-    };
+type DefaultProps = {
+    playing: boolean,
+    volume: number,
+    hidden: boolean,
+    className: string,
+    attributes: Object,
+    progressFrequency: number,
+    onPlay: () => void,
+    onPause: () => void,
+    onEnded: () => void,
+    onError: (string) => void,
+    onProgress: (Progress) => void,
+    onDuration: (number) => void
+}
 
-    static defaultProps = {
+type State = void;
+
+export default class AudioPlayer extends Component<DefaultProps, Props, State> {
+
+    /* to prevent annoying warnings, make sure that the checkbox property 'checked' is never undefined */
+
+    static defaultProps: DefaultProps = {
         playing: false,
         volume: 0.8,
         hidden: false,
@@ -44,9 +58,16 @@ export default class AudioPlayer extends Component {
         onPause: function() {},
         onEnded: function() {},
         onError: function() {},
-        onProgress: function(progres: {played?: number, loaded?: number}): void {},
+        onProgress: function(Progress): void {},
         onDuration: function() {}
     };
+
+    state: State;
+
+    player: HTMLMediaElement;
+    progressTimeout: number;
+    prevLoaded: number;
+    prevPlayed: number;
 
     /* this instance variables have no effect on the rendering of the component ( no state needed )*/
     isReady = false;
@@ -106,7 +127,7 @@ export default class AudioPlayer extends Component {
     }
 
     /* changing props has no effect on the rendering of the component */
-    shouldComponentUpdate(nextProps: Object) {
+    shouldComponentUpdate(nextProps: Props) {
         return false;
     }
 
@@ -223,8 +244,7 @@ export default class AudioPlayer extends Component {
     seekTo = (fraction: number) => {
         if(this.isReady) {
             // When seeking before player is ready, store value and seek later
-            const currentTime = this.getDuration() * fraction;
-            this.player.currentTime = currentTime;
+            this.player.currentTime = this.getDuration() * fraction;
         }
     };
 
@@ -245,7 +265,7 @@ export default class AudioPlayer extends Component {
         if (this.props.url && this.player) {
             const loaded = this.getFractionLoaded() || 0;
             const played = this.getFractionPlayed() || 0;
-            const progress = {};
+            const progress: Progress = {};
             if (loaded !== this.prevLoaded) {
                 progress.loaded = loaded;
             }

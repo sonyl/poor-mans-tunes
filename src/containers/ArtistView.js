@@ -1,16 +1,22 @@
 /* @flow */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
 import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../utils';
 import NavLink from '../components/NavLink';
 
+import type { Artist, LastFmInfo} from '../types';
+
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'ArtistView');
 
-const ArtistView = ({artist, lastFmInfo}) => {
+type Props = {
+    artist: Artist,
+    lastFmInfo: LastFmInfo
+};
+
+const ArtistView = ({artist, lastFmInfo}: Props) => {
     function renderAlbums() {
         if(artist.albums && artist.albums.length) {
             return (
@@ -66,10 +72,6 @@ const ArtistView = ({artist, lastFmInfo}) => {
     );
 };
 
-ArtistView.propTypes = {
-    artist: PropTypes.object.isRequired,
-    lastFmInfo: PropTypes.object
-};
 
 const mapStateToProps = state => ({
     artist: getSelectedArtist(state),

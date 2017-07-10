@@ -1,6 +1,5 @@
 /* @flow */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { version } from '../version';
 
@@ -22,6 +21,8 @@ import Notifications from './Notifications';
 import Modal from '../components/Modal';
 
 import { createLog } from '../utils';
+
+import type { Collection, Artist, Album, Lyrics } from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Main');
@@ -74,16 +75,37 @@ function getAlbumAndSongCnt(artists) {
     return result;
 }
 
+type Props = {
+    artists: Collection,
+    selectedArtist: Artist,
+    selectedAlbum: Album,
+    isPlayRandomSong: boolean,
+    isPlayRandomAlbum: boolean,
+    lyrics: Lyrics,
+    selectedFont: string,
+    location: { pathname: string },
+    getCollection: ()=> void,
+    requestServerSettings: ()=> void,
+    selectArtist: (number, string)=> void,
+    unselectArtist: ()=> void,
+    selectAlbum: (number, Album)=> void,
+    unselectAlbum: ()=> void,
+    setPlayRandomSong: (boolean)=> void,
+    setPlayRandomAlbum: (boolean)=> void,
+}
 
-class Main extends Component {
+type DefaultProps = void;
+type State = {
+    activeTab: string
+};
 
-    state: {
-        activeTab: string
-    };
+class Main extends Component<DefaultProps, Props, State> {
+
+    state: State;
 
     modal: Object;
 
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             activeTab: 'playing'
@@ -96,7 +118,7 @@ class Main extends Component {
     }
 
     /* new route selected */
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         const {artists, selectedArtist, selectedAlbum, location} = nextProps;
         const params = parseUrl(location.pathname);
         //        const {params, artists, selectedArtist, selectedAlbum} = nextProps;
@@ -217,24 +239,6 @@ class Main extends Component {
                     songCnt={songCnt} />
             </div>
         );
-    }
-
-    static propTypes = {
-        artists: PropTypes.arrayOf(PropTypes.object).isRequired,
-        selectedArtist: PropTypes.object.isRequired,
-        selectedAlbum: PropTypes.object.isRequired,
-        isPlayRandomSong: PropTypes.bool.isRequired,
-        isPlayRandomAlbum: PropTypes.bool.isRequired,
-        lyrics: PropTypes.object,
-
-        getCollection: PropTypes.func.isRequired,
-        requestServerSettings: PropTypes.func.isRequired,
-        selectArtist: PropTypes.func.isRequired,
-        unselectArtist: PropTypes.func.isRequired,
-        selectAlbum: PropTypes.func.isRequired,
-        unselectAlbum: PropTypes.func.isRequired,
-        setPlayRandomSong: PropTypes.func.isRequired,
-        setPlayRandomAlbum: PropTypes.func.isRequired
     }
 }
 

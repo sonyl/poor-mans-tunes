@@ -150,13 +150,13 @@ export function splitAudioUrl(url?: ?string): ?string {
  * @param newUrl {string or arry}
  * @returns {boolean} if both are equal
  */
-export const urlsEqual = (url: string | string[], newUrl: string | string[]) => {
+export const urlsEqual = (url: ?Url, newUrl: ?Url): boolean => {
     // if this one of the array is a falsy value, return true if the other is also falsy, false otherwise
     if (!url || !newUrl) {
         return !!url === !!newUrl;
     }
 
-    // at least one of the arguments isn't an array compare
+    // at least one of the arguments isn't an array: compare
     if (!Array.isArray(url) || ! Array.isArray(newUrl)) {
         return url === newUrl;
     }
@@ -167,6 +167,6 @@ export const urlsEqual = (url: string | string[], newUrl: string | string[]) => 
     }
 
     return !url.find((u, i) => {
-        return u !== newUrl[i];
+        return newUrl && u !== newUrl[i];
     });
 };

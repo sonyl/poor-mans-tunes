@@ -1,7 +1,6 @@
 /* @flow */
 
 import React, { Component }  from 'react';
-import PropTypes from 'prop-types';
 
 type Props = {
     id: string,
@@ -23,19 +22,6 @@ type State = {
 export default class Slider extends Component<DefaultProps, Props, State> {
 
     state: State;
-
-    static propTypes = {
-        id: PropTypes.string.isRequired,
-        className: PropTypes.string,
-        defaultValue: PropTypes.number,
-        disabled: PropTypes.bool,
-        max: PropTypes.number,
-        min: PropTypes.number,
-        name: PropTypes.string,
-        onChange: PropTypes.func,
-        step: PropTypes.number,
-        value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    };
 
     constructor(props: Props) {
         super(props);

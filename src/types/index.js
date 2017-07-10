@@ -82,6 +82,9 @@ export type LastFmInfo = {
         published: string,
         summary: string,
         content: string
+    },
+    bio?: {
+        summary: string,
     }
 }
 export type LastFmInfoContainer = {

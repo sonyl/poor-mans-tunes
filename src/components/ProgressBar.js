@@ -1,10 +1,10 @@
 /* @flow */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
+type Props = { id: string, maxValue?: number, value: number, text: string };
 
-function ProgressBar({id, maxValue=100, value, text}: {id: string, maxValue?: number, value: number, text: string}) {
+function ProgressBar({id, maxValue=100, value, text}: Props) {
     const percent = value * 100 / maxValue;
     const style = {width: `${percent}%`};
 
@@ -19,12 +19,5 @@ function ProgressBar({id, maxValue=100, value, text}: {id: string, maxValue?: nu
         </div>
     );
 }
-
-ProgressBar.propTypes = {
-    id: PropTypes.string,
-    text: PropTypes.string,
-    maxValue: PropTypes.number,
-    value: PropTypes.number.isRequired
-};
 
 export default ProgressBar;

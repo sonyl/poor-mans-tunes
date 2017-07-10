@@ -1,8 +1,6 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
 
 function btnClassNames(size) {
     let classNames = 'btn btn-default';
@@ -30,18 +28,7 @@ type State = {
 };
 
 export default class SplitButton extends Component<DefaultProps, Props, State> {
-    static propTypes = {
-        className: PropTypes.string,
-        actions: PropTypes.arrayOf(PropTypes.shape({
-            label: PropTypes.string.isRequired,
-            onClick: PropTypes.func.isRequired,
-            icon: PropTypes.element,
-            disabled: PropTypes.bool
-        })).isRequired,
-        size: PropTypes.oneOf(['extra-small','small', 'medium', 'large']).isRequired
-    };
-
-    static defaultProps = {
+    static defaultProps: DefaultProps = {
         size: 'medium'
     };
 

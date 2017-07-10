@@ -22,28 +22,33 @@ type Props = {
 };
 
 type DefaultProps = {
-    randomSongActive: false,
-    randomAlbumActive: false
+    randomSongActive: boolean,
+    randomAlbumActive: boolean
 };
 
 type State = void;
 
 class Navbar extends Component<DefaultProps, Props, State> {
 
+    static defaultProps: DefaultProps = {
+        randomSongActive: false,
+        randomAlbumActive: false
+    };
+
     onClick = (evt: Event) => {
-        if(evt.target.id=='selectRandomSong') {
-            if(this.props.randomAlbumActive && this.props.setRandomAlbum) {
+        if (evt.target.id == 'selectRandomSong') {
+            if (this.props.randomAlbumActive && this.props.setRandomAlbum) {
                 this.props.setRandomAlbum(false);
             }
-            if(this.props.setRandomSong) {
+            if (this.props.setRandomSong) {
                 this.props.setRandomSong(!this.props.randomSongActive);
             }
         }
-        if(evt.target.id=='selectRandomAlbum') {
-            if(this.props.randomSongActive && this.props.setRandomSong) {
+        if (evt.target.id == 'selectRandomAlbum') {
+            if (this.props.randomSongActive && this.props.setRandomSong) {
                 this.props.setRandomSong(false);
             }
-            if(this.props.setRandomAlbum) {
+            if (this.props.setRandomAlbum) {
                 this.props.setRandomAlbum(!this.props.randomAlbumActive);
             }
         }
@@ -81,7 +86,8 @@ class Navbar extends Component<DefaultProps, Props, State> {
                                 <OkIcon checked={this.props.randomSongActive}/>
                                 Song
                             </button>
-                            <label htmlFor="selectRandomSong" className="navbar-text navbar-right" style={{marginRight: '5px'}}>
+                            <label htmlFor="selectRandomSong" className="navbar-text navbar-right"
+                                style={{marginRight: '5px'}}>
                                 If playlist is empty, play random:
                             </label>
                         </form>
@@ -90,20 +96,6 @@ class Navbar extends Component<DefaultProps, Props, State> {
             </div>
         );
     }
-
-    static propTypes = {
-        randomSongActive: PropTypes.bool,
-        randomAlbumActive: PropTypes.bool,
-        setRandomSong: PropTypes.func,
-        setRandomAlbum: PropTypes.func
-    };
-
-    /* to prevent annoying warnings, make sure that the checkbox property 'checked' is never undefined */
-    static defaultProps = {
-        randomSongActive: false,
-        randomAlbumActive: false
-    };
 }
-
 
 export default Navbar;

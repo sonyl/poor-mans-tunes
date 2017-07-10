@@ -1,6 +1,5 @@
 /* @flow */
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
@@ -79,20 +78,12 @@ type Props = {
 }
 type DefaulProps = void
 type State = {
-    db: any,
-    suggestions: string[],
+    db: Array<{label: string, artist: string, album?: string }>,
+    suggestions: Array<{label: string}>,
     value: string
 }
 
-
 class ArtistSearch extends Component<DefaulProps, Props, State> {
-    static propTypes = {
-        artists: PropTypes.arrayOf(
-            PropTypes.shape({
-                artist: PropTypes.string.isRequired
-            }).isRequired
-        ).isRequired
-    };
 
     state: State;
 

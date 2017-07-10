@@ -1,6 +1,5 @@
 /* @flow */
 import React, {Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import NavLink from '../components/NavLink';
@@ -86,13 +85,16 @@ type Props = {
     selectedArtist: Artist
 }
 type DefaultProps = void
-type State = { categories: Object[], activeIndex: number }
+type State = {
+    categories: Object[],
+    activeIndex: number
+}
 
 class ArtistList extends Component<DefaultProps, Props, State> {
 
     state: State;
 
-    onTabChange: (any)=> any;
+    onTabChange: (number)=> void;
 
     constructor(props: Props) {
         super(props);
@@ -105,7 +107,7 @@ class ArtistList extends Component<DefaultProps, Props, State> {
         this.onTabChange = this.onTabChange.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         log('componentWillReceiveProps()', ' this.props = %o, nextProps = %o', this.props, nextProps);
         if(nextProps.artists !== this.props.artists
             || nextProps.selectedArtist !== this.props.selectedArtist) {
@@ -148,6 +150,12 @@ class ArtistList extends Component<DefaultProps, Props, State> {
         });
     }
 
+    onTabChange(index) {
+        this.setState({
+            activeIndex: index
+        });
+    }
+
     render() {
         log('render', 'selectedArtist=%o', this.props.selectedArtist);
         return (
@@ -164,18 +172,7 @@ class ArtistList extends Component<DefaultProps, Props, State> {
             </div>
         );
     }
-
-    onTabChange(index) {
-        this.setState({
-            activeIndex: index
-        });
-    }
 }
-
-ArtistList.propTypes = {
-    artists: PropTypes.arrayOf(PropTypes.object),
-    selectedArtist: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {
