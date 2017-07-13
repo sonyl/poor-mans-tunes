@@ -74,14 +74,13 @@ function Duration ({ seconds }: DurationProps) {
 type AlbumLinkProps = {
     artist: ?string,
     album: ?string,
-    children?: Object,
-    activate: boolean
+    children?: Object
 };
 
-function AlbumLink({artist, album, children, activate}: AlbumLinkProps) {
+function AlbumLink({artist, album, children}: AlbumLinkProps) {
     if(artist && album) {
         return (
-            <NavLink activate={activate} to={createLinkUrl(artist, album)} style={{}}>
+            <NavLink activate={false} to={createLinkUrl(artist, album)} style={{}}>
                 {children}
             </NavLink>
         );
@@ -262,7 +261,7 @@ class Player extends Component<DefaultPlayerProps, PlayerProps, PlayerState> {
         const url = getLastFmThumbnail(albumInfo, LASTFM_IMG_SIZ_MEDIUM) || getCoverUrl(colAlbum);
         return (
             <div style={{float: 'left', width: '100%'}}>
-                <AlbumLink artist={artist} album={album} activate={false}>
+                <AlbumLink artist={artist} album={album} >
                     { url ?
                         <img src={url} className="img-responsiv img-rounded"
                             style={{width: '100px', height: 'auto', float: 'left', marginRight: '10px'}}

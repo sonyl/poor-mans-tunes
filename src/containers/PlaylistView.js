@@ -1,15 +1,16 @@
 /* @flow */
 
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import FileSaver from 'file-saver';
 import M3U from 'm3u';
 import { Parser as M3uParser } from 'm3u8-parser';
-import { createAudioUrl } from '../utils';
+import { createAudioUrl, createLog, createLinkUrl } from '../utils';
 import * as actions from '../actions/playlistActions';
 import GlyphIcon from '../components/GlyphIcon';
-import { createLog } from '../utils';
 import SplitButton from '../components/SplitButton';
+import NavLink from '../components/NavLink';
 
 import type {PlaylistEntry} from '../types';
 
@@ -60,10 +61,12 @@ const Entry = ({artist, album, song, index, removeEntry, moveSongToPositionInPla
     return (
         <div onDrop={drop}  onDragOver={allowDrop} >
             <div style={style} draggable={true} onDragStart={drag} >
-                <div style={textStyle}>
-                    {`${index + 1}. ${artist} - ${song}`}
-                    <span className="small">&nbsp;{`[Album - ${album}]`}</span>
-                </div>
+                <NavLink to={createLinkUrl(artist, album)}>
+                    <div style={textStyle}>
+                        {`${index + 1}. ${artist} - ${song}`}
+                        <span className="small">&nbsp;{`[Album - ${album}]`}</span>
+                    </div>
+                </NavLink>
                 <GlyphIcon iconName="trash" onClick={() => removeEntry(index)} style={{float: 'right', top: '-16px'}}/>
             </div>
         </div>
@@ -220,5 +223,6 @@ const mapDispatchToProps = {
     addRandomSongToPlaylist: actions.addRandomSongToPlaylist,
     replacePlaylist: actions.replacePlaylist
 };
-
-export default connect(mapStateToProps, mapDispatchToProps)(PlaylistView);
+// as long as we do not have deep redux integration (react-router-redux is somewhat incomplete in 5.0.0-alpha.6)
+// we utilize the workaround described in https://reacttraining.com/react-router/web/guides/redux-integration
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PlaylistView));
