@@ -4,6 +4,7 @@ node_modules
 /src/credentials.js
 /src/version.js
 *.iml
+*.log
 dist
 mp3
 

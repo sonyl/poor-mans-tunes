@@ -1,6 +1,8 @@
 [ignore]
+.*/dist/.*
 
 [include]
+
 ../src/types/backend-types.js
 
 [libs]

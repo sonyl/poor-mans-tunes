@@ -3,9 +3,9 @@ import fetch from 'node-fetch';
 import lyrics from 'lyric-get';
 
 const LYRICS_API = 'http://lyrics.wikia.com/api.php';
-import type { Lyrics } from './types';
+import type { Lyrics } from '../types';
 
-function addRequestParams(baseUrl: string, params: { [string]: string }): string {
+const addRequestParams = (baseUrl: string, params: { [string]: string }): string => {
 
     const keys = Object.keys(params);
     if(keys.length) {
@@ -16,9 +16,9 @@ function addRequestParams(baseUrl: string, params: { [string]: string }): string
         return baseUrl.endsWith('/') ? (baseUrl + '?' + query) : (baseUrl + '/?' + query);
     }
     return baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-}
+};
 
-export default function getLyrics(artist: string, song: string): Promise<Lyrics> {
+const getLyrics = (artist: string, song: string): Promise<Lyrics> => {
     return fetch(addRequestParams(LYRICS_API, {action: 'lyrics', artist, song, fmt:'json', func:'getSong'}))
         .then(response => {
             if(!response.ok) {
@@ -42,11 +42,11 @@ export default function getLyrics(artist: string, song: string): Promise<Lyrics>
                 lyrics.get(artist, song, (err, res) => err ? reject(err) : resolve({lyrics: res, artist, song}));
             });
         });
-}
+};
 
 // returned format is "song = {\n'song': 'xyz',\n'lyrics':'he said: \"let\\'s go home\"'"
 // which is unfortunately invalid json (jsonp?), try to convert to valid json
-function fixJson(text) {
+const fixJson = (text) => {
     if(text.startsWith('song = {')) {
         const trimmed = text.substr(7);
         const fixed = trimmed.replace(/['"\\]/g, (match, offset, string) => {
@@ -58,4 +58,31 @@ function fixJson(text) {
         });
         return JSON.parse(fixed);
     }
-}
+};
+
+
+const LyricsController = {
+    get: (req: Object, res: Object, next: ()=> any) => {
+        const {artist, song} = req.params;
+        console.log('lyrics requested: %s --- %s', artist, song);
+        getLyrics(req.params.artist, req.params.song)
+            .then(lyrics => {
+                console.log('lyrics received: %j', lyrics);
+                res.json(lyrics);
+                next();
+
+            })
+            .catch(err => {
+                console.log('lyrics error: %j', err);
+                if (err === 'not found') {
+                    res.json(404, {error: err});
+                } else {
+                    res.json(500, {error: err.message || err});
+                }
+                next();
+            });
+    }
+};
+
+export default LyricsController;
+
