@@ -1,8 +1,8 @@
 /* @flow */
 /* eslint-env node */
 import fs from 'fs';
-import express from 'express';
-import bodyParser from 'body-parser';
+import restify from 'restify';
+import restifyPlugins from 'restify-plugins';
 import history from 'connect-history-api-fallback';
 import path from 'path';
 import getLyrics from './lyricsearch';
@@ -50,9 +50,16 @@ function updateSettings() {
 const ENV = process.env.NODE_ENV || 'dev';
 console.log('Poor-Mans-Tuns starting in %s environment. Settings: %j', ENV, settings);
 
-const app = express();
-app.use(bodyParser.json());
-app.use(history({
+const server = restify.createServer({
+    name: 'Poor-mans-tunes-server'
+});
+server.use((req, res, next) => {
+    console.log('received request: %s %s %j', req.method, req.url, req.params);
+    const nextRes = next();
+    console.log('returning response: %j', nextRes);
+    return nextRes;
+});
+server.use(history({
     verbose: ENV === 'production' ? false : true,
     rewrites: [{
         from: /.*\/bundle\.js$/,
@@ -62,8 +69,10 @@ app.use(history({
         to: '/index.html'
     }]
 }));
+server.use(restifyPlugins.bodyParser());
 
-app.get('/api/status', (req: express$Request, res: express$Response) => {
+
+server.get('/api/status', (req: express$Request, res: express$Response) => {
     const full = 'full' === req.query.full || 'true' === req.query.full;
     console.log('status requested. full=', full);
     getStatus(full).then(status => {
@@ -74,7 +83,7 @@ app.get('/api/status', (req: express$Request, res: express$Response) => {
 });
 
 
-app.put('/api/status/rescan', (req: express$Request, res: express$Response) => {
+server.put('/api/status/rescan', (req: express$Request, res: express$Response) => {
     console.log('rescan requested');
 
     if(!settings.audioPath) {
@@ -110,12 +119,12 @@ app.put('/api/status/rescan', (req: express$Request, res: express$Response) => {
     });
 });
 
-app.get('/api/settings', (req: express$Request, res: express$Response) => {
+server.get('/api/settings', (req: express$Request, res: express$Response) => {
     console.log('settings parameter requested');
     res.json(settings);
 });
 
-app.delete('/api/settings/:key', (req: express$Request, res: express$Response) => {
+server.del('/api/settings/:key', (req: express$Request, res: express$Response) => {
     delete settings[req.params.key];
     console.log('Deleted parameter %j from settings =>%j:', req.params, settings);
     if(updateSettings()) {
@@ -128,7 +137,7 @@ app.delete('/api/settings/:key', (req: express$Request, res: express$Response) =
     }
 });
 
-app.put('/api/settings/:key', (req: express$Request, res: express$Response) => {
+server.put('/api/settings/:key', (req: express$Request, res: express$Response) => {
     console.log('Updated settings with %j, =>%j:', req.params, req.body.value);
     const key = req.params.key;
     let value = req.body.value;
@@ -155,7 +164,7 @@ app.put('/api/settings/:key', (req: express$Request, res: express$Response) => {
     }
 });
 
-app.post('/api/sonos/play', (req: express$Request, res: express$Response) => {
+server.post('/api/sonos/play', (req: express$Request, res: express$Response) => {
     console.log('Api sonos play =>%j:', req.body);
     const src:string = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
     if(src) {
@@ -179,12 +188,12 @@ app.post('/api/sonos/play', (req: express$Request, res: express$Response) => {
     }
 });
 
-app.get('/api/collection', (req: express$Request, res: express$Response) => {
-    console.log('collection requested!');
-    res.sendFile(COLLECTION, {root: __dirname + '/..'});
-});
+server.get('/api/collection', restifyPlugins.serveStatic({
+    directory: path.join(__dirname, '..'),
+    file: 'collection.json'
+}));
 
-app.get('/img/*', (req: express$Request, res: express$Response) => {
+server.get('/img/.*', (req: express$Request, res: express$Response) => {
     const imgPath = decodeURI(req.url.substr(4));
     console.log('image request', imgPath);
 
@@ -209,13 +218,14 @@ app.get('/img/*', (req: express$Request, res: express$Response) => {
 
 });
 
-app.get('/audio/*', (req: express$Request, res: express$Response) => {
-    const path = decodeURI(req.url.substr(6));
-    console.log('song requested!', path);
-    res.sendFile(path, {root: settings.audioPath});
+server.get('/audio/.*', (req, res, next) => {
+    return restifyPlugins.serveStatic({
+        directory: settings.audioPath,
+        file: decodeURI(req.url.substr(6))  // remove '/audio' from url
+    })(req, res, next);
 });
 
-app.get('/lyrics/:artist/:song', (req: express$Request, res: express$Response) => {
+server.get('/lyrics/:artist/:song', (req: express$Request, res: express$Response) => {
     const { artist, song } = req.params;
     console.log('lyrics requested: %s --- %s', artist, song);
     getLyrics(req.params.artist, req.params.song)
@@ -234,7 +244,7 @@ app.get('/lyrics/:artist/:song', (req: express$Request, res: express$Response) =
 });
 
 
-app.use((req: express$Request, res: express$Response) => {
+server.use((req: express$Request, res: express$Response) => {
     console.log('resource requested: %s', req.url);
     res.sendFile(req.url, {root: settings.distPath}, error => {
         if(error) {
@@ -248,7 +258,12 @@ app.use((req: express$Request, res: express$Response) => {
     });
 });
 
-app.listen(settings.port, () => console.log('server is running on localhost:', settings.port));
+server.use(restifyPlugins.serveStatic({
+    directory: settings.distPath,
+    appendRequestPath: true
+}));
+
+server.listen(settings.port, () => console.log('%s listening at %s', server.name, server.url));
 
 function getContentType(type: string): string {
     type = type || '';
