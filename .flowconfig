@@ -1,6 +1,8 @@
 [ignore]
 .*/backend/.*
 .*/node_modules/jss/.*
+.*/node_modules/fbjs/.*
+
 
 [include]
 
