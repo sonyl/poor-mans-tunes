@@ -99,6 +99,7 @@ type DefaultPlaylistViewState = void;
 export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistViewProps, DefaultPlaylistViewState> {
 
     playlistInput: HTMLInputElement;
+    handlePlaylistUpload: (Event)=>void;
 
     constructor(props: PlaylistViewProps) {
         super(props);
@@ -107,6 +108,8 @@ export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistVi
         if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
             console.warn('The File APIs are not fully supported in this browser.');
         }
+
+        this.handlePlaylistUpload = this.handlePlaylistUpload.bind(this);
     }
 
     convertToM3U(): ?string {
@@ -202,10 +205,7 @@ export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistVi
                 </div>
                 <input id="loadPlaylist" type="file" accept=".m3u" style={{display: 'none'}}
                     ref={r => this.playlistInput = r}
-                    onChange={e => {
-                        console.log('======================= On Change =====================');
-                        this.handlePlaylistUpload(e);
-                    }}
+                    onChange={ this.handlePlaylistUpload }
                 />
             </div>
         );
