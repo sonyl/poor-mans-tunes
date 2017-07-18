@@ -28,11 +28,12 @@ export type ReceiveServerSettings = {
     receivedAt: number
 }
 
+const POLL_TIMEOUT = 1000;
 
-const GETSTATUS_URL = '/api/status';
 const GETSETTINSG_URL = '/api/settings';
 const UPDATESETTINSG_URL = '/api/settings/${key}';
-const RESCAN_FILES_URL = '/api/status/rescan';
+const GETSTATUS_URL = '/api/collection/refreshes';
+const RESCAN_FILES_URL = '/api/collection/refreshes';
 const SONOS_PLAY_URL = '/api/sonos/play';
 const DEFAULT_HEADERS = { 'Accept': 'application/json' };
 
@@ -177,11 +178,14 @@ function startStatusPolling(dispatch, getState) {
             if(res instanceof Promise) {
                 res.then(result => {
                     if (result && (result === 'isFetching' || result.scanning)) {
-                        registerHandler(1000);
+                        registerHandler(POLL_TIMEOUT);
+                    }
+                    if(result.scanning === false) {
+                        dispatch(requestServerStatus(true));
                     }
                 });
             }
         }, timeout); //
     };
-    registerHandler(2000);
+    registerHandler(POLL_TIMEOUT);
 }

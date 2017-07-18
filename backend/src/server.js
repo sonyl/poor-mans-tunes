@@ -47,6 +47,7 @@ server.on('after', function (req, res, route) {
     req.log.info({res: res}, 'finished');
 });
 
+server.use(restifyPlugins.queryParser());
 server.use(restifyPlugins.bodyParser());
 
 server.use(history({
@@ -61,14 +62,14 @@ server.use(history({
 }));
 
 
-server.get('/api/status', CollectionController.getStatus);
-server.put('/api/status/rescan', CollectionController.put);
+server.get('/api/collection', CollectionController.get);
+server.get('/api/collection/refreshes', CollectionController.getStatus);
+server.put('/api/collection/refreshes', CollectionController.rescan);
 server.get('/api/settings', SettingsController.get);
 server.del('/api/settings/:key', SettingsController.del);
 server.put('/api/settings/:key', SettingsController.put);
 server.post('/api/sonos/play', SonosController.post);
 server.get('/lyrics/:artist/:song', LyricsController.get);
-server.get('/api/collection', CollectionController.get);
 server.get('/img/.*', ResourceController.getImage);
 server.get('/audio/.*', ResourceController.getAudio);
 

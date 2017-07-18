@@ -63,7 +63,7 @@ const CollectionController = {
         file: 'collection.json'
     }),
 
-    put: (req: Object, res: Object, next: ()=> any) => {
+    rescan: (req: Object, res: Object, next: ()=> any) => {
         console.log('rescan requested');
         const audioPath = getSettings().audioPath;
         if (!audioPath) {
@@ -100,9 +100,8 @@ const CollectionController = {
         });
     },
 
-    getStatus: (req: Object, res: Object, next: ()=> any) => {
-        const full = 'full' === req.query.full || 'true' === req.query.full;
-        console.log('status requested. full=', full);
+    getStatus: ({query}: Object, res: Object, next: ()=> any) => {
+        const full = 'full' === query.full || 'true' === query.full;
         getStatus(full).then(status => {
             res.json(status);
             next();
