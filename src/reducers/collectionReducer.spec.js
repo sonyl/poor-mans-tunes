@@ -1,19 +1,19 @@
 /* @flow */
 /* eslint-env node, jest */
 
-import { getArtists, getArtist, getAlbum, getAlbumByName, getRandomSong, getRandomAlbumSongs } from './collectionReducer';
+import { getArtists, getArtist, getAlbum, getAlbumByName, getRandomSong, getRandomAlbumSongs, findSongByUrl } from './collectionReducer';
 import type { CollectionState } from './collectionReducer';
 
 describe('collectionReducer', () => {
 
-    const state:CollectionState  = {
+    const collection:CollectionState  = {
         artists: [
             {
                 artist: 'Artist1',
                 albums: [
                     {
                         album: 'Album1', artist: 'Artist1', songs: [
-                            {title: 'Song1', src: 'url1', track: 1}
+                            {title: 'Song1', src: 'song1.mp3', track: 1}
                         ]
                     }
                 ]
@@ -22,12 +22,12 @@ describe('collectionReducer', () => {
                 albums: [
                     {
                         album: 'Album2', artist: 'Artist2', songs: [
-                            {title: 'Song2', src: 'url2', track: 2}
+                            {title: 'Song2', src: 'song2.mp3', track: 2}
                         ]
                     }, {
                         album: 'Album3', artist: 'Artist2', songs: [
-                            {title: 'Song3', src: 'url3', track: 3},
-                            {title: 'Song4', src: 'url4', track: 4}
+                            {title: 'Song3', src: 'song3.mp3', track: 3},
+                            {title: 'Song4', src: 'song4.mp3', track: 4}
                         ]
                     }
                 ]
@@ -41,23 +41,23 @@ describe('collectionReducer', () => {
         });
 
         it('should return the artists array if collection available',  () => {
-            expect(getArtists(state)).toEqual(state.artists);
+            expect(getArtists(collection)).toEqual(collection.artists);
         });
     });
 
     describe('getArtist', () => {
 
         it('should return null if index is invalid', () => {
-            expect(getArtist(state)).toBeNull();
+            expect(getArtist(collection)).toBeNull();
         });
 
         it('should return null if index not found', () => {
-            expect(getArtist(state, 5)).toBeNull();
+            expect(getArtist(collection, 5)).toBeNull();
         });
 
 
         it('should return the artist object if available', () => {
-            const artist = getArtist(state, 1);
+            const artist = getArtist(collection, 1);
             expect(artist && artist.artist).toBe('Artist2');
         });
 
@@ -65,27 +65,27 @@ describe('collectionReducer', () => {
 
     describe('getAlbum', () => {
         it('should return null if index is invalid', () => {
-            expect(getAlbum(state, -2, undefined)).toBeNull();
+            expect(getAlbum(collection, -2, undefined)).toBeNull();
         });
 
         it('should return null if index not found', () => {
-            expect(getAlbum(state, 1, 5)).toBeNull();
+            expect(getAlbum(collection, 1, 5)).toBeNull();
         });
 
         it('should return the album object if available', () => {
-            const album = getAlbum(state, 1, 1);
+            const album = getAlbum(collection, 1, 1);
             expect(album && album.album).toBe('Album3');
         });
     });
 
     describe('getAlbumByName', () => {
         it('should return null if artist not found', () => {
-            expect(getAlbumByName(state, 'Artist3', 'Album2')).toBeNull();
-            expect(getAlbumByName(state, 'Artist2', 'Album4')).toBeNull();
+            expect(getAlbumByName(collection, 'Artist3', 'Album2')).toBeNull();
+            expect(getAlbumByName(collection, 'Artist2', 'Album4')).toBeNull();
         });
 
         it('should return the album object if available', () => {
-            const album = getAlbumByName(state, 'Artist2', 'Album3');
+            const album = getAlbumByName(collection, 'Artist2', 'Album3');
 
             expect(album && album.album).toBe('Album3');
         });
@@ -97,7 +97,7 @@ describe('collectionReducer', () => {
         });
 
         it('should return the song object selected by random', () => {
-            const  {artist, album, songs } = getRandomSong(state) || {};
+            const  {artist, album, songs } = getRandomSong(collection) || {};
             expect(['Artist1', 'Artist2']).toContainEqual(artist);
             expect(['Album1', 'Album2', 'Album3']).toContainEqual(album);
             expect(['Song1', 'Song2', 'Song3', 'Song4']).toContainEqual(songs[0].song);
@@ -113,11 +113,35 @@ describe('collectionReducer', () => {
             let randomAlbum = {};
 
             while(randomAlbum.album !== 'Album3') {
-                randomAlbum = getRandomAlbumSongs(state);       // try until random selects 'Album3'
+                randomAlbum = getRandomAlbumSongs(collection);       // try until random selects 'Album3'
             }
 
             expect(randomAlbum && randomAlbum.artist).toBe('Artist2');
-            expect(randomAlbum && randomAlbum.songs).toEqual([{song: 'Song3', url: 'url3'}, {song: 'Song4', url: 'url4'}]);
+            expect(randomAlbum && randomAlbum.songs).toEqual([{song: 'Song3', url: 'song3.mp3'}, {song: 'Song4', url: 'song4.mp3'}]);
+        });
+    });
+
+    describe('findSongByUrl', () => {
+        it('should return undefined if url is not given', () => {
+            expect(findSongByUrl(collection, null)).toBeUndefined();
+        });
+        it('should return undefined if collection is not given', () => {
+            expect(findSongByUrl({artists: [], isFetching: false})).toBeUndefined();
+        });
+
+        it('should return undefined if url is not found', () => {
+            expect(findSongByUrl(collection, 'does not exist')).toBeUndefined();
+        });
+
+        it('should return a playlistEntry if url does match exactly', () => {
+            expect(findSongByUrl(collection, 'song4.mp3')).toEqual(
+                {'album': 'Album3', 'artist': 'Artist2', 'song': 'Song4', 'url': 'song4.mp3'}
+            );
+        });
+        it('should return a playlistEntry if url ends with a match', () => {
+            expect(findSongByUrl(collection, 'http:/context/artist/song4.mp3')).toEqual(
+                {'album': 'Album3', 'artist': 'Artist2', 'song': 'Song4', 'url': 'song4.mp3'}
+            );
         });
     });
 });

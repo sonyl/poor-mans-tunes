@@ -138,12 +138,6 @@ export function createLog(enabled: boolean, component: string): LogFunction {
     return enabled ? log : function () {};
 }
 
-export function splitAudioUrl(url?: ?string): ?string {
-    if(url && url.startsWith(audioUrl)) {
-        return url.substr(audioUrl.length);
-    }
-}
-
 /**
  *
  * @param url {string or array}

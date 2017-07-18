@@ -2,8 +2,6 @@
 import { getRandomSong, getRandomAlbumSongs, isPlaylistEmpty, isSetInSettings, findSongByUrl } from '../reducers';
 import { ADD_SONG_TO_PLAYLIST, SET_PLAYLISTENTRY_TO_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST, CLEAR_PLAYLIST,
     MOVE_SONG_TO_POSITION } from './actionKeys';
-import { splitAudioUrl } from '../utils';
-
 
 import type { Dispatch, GetState, PlaylistSong, PlaylistEntry } from '../types';
 
@@ -93,7 +91,7 @@ export const moveSongToPositionInPlaylist = (index: number, newIndex: number) =>
 
 export const replacePlaylist = (urls: Array<string>) => (dispatch: Dispatch, getState: GetState) =>{
     const state = getState();
-    const found = urls.map(u => findSongByUrl(state, splitAudioUrl(u)));
+    const found = urls.map(u => findSongByUrl(state, u));
     const purged = (found.filter(e => !!e): any);
     dispatch(setPlaylistEntriesToPlaylist(purged));
 };

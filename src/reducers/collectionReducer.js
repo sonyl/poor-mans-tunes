@@ -139,13 +139,15 @@ export const getRandomSong = (state: CollectionState) => {
 
 export const findSongByUrl = (state: CollectionState, url?: ?string): ?PlaylistEntry => {
     let found;
+
+    const compare = src => url && url.endsWith(src);
     if(url) {
-        state.artists.find(at => at.albums.find(am => am.songs.find(song => {
-            const match = Array.isArray(song.src) ? song.src.find(u => u === url) : song.src === url;
+        state.artists.find(art => art.albums.find(alb => alb.songs.find(song => {
+            const match = Array.isArray(song.src) ? song.src.find(compare) : compare(song.src);
             if(match) {
                 found = {
-                    artist: am.artist,
-                    album: am.album,
+                    artist: alb.artist,
+                    album: alb.album,
                     song: song.title,
                     url: song.src
                 };
