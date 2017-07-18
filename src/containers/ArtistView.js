@@ -1,6 +1,7 @@
 /* @flow */
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
 import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../utils';
@@ -78,4 +79,4 @@ const mapStateToProps = state => ({
     lastFmInfo: getSelectedArtistInfo(state)
 });
 
-export default connect(mapStateToProps)(ArtistView);
+export default withRouter(connect(mapStateToProps)(ArtistView));

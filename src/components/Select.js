@@ -47,7 +47,7 @@ export default class Select extends Component<DefaultProps, Props, State> {
                 <select className="form-control" id={id} onChange={(e)=>this.onChange(e)} value={this.state.selected}>
                     {
                         options.map(o => (
-                            <option>
+                            <option key={o}>
                                 {o}
                             </option>
                         ))
