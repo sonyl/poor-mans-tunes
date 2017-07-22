@@ -21,6 +21,7 @@
     "node-fetch": "^1.7.1",
     "promise-limit": "^2.4.0",
     "restify": "^5.0.0",
+    "restify-eventsource": "^2.0.0",
     "restify-plugins": "^1.6.0",
     "sonos": "^0.15.0"
   },
@@ -28,7 +29,7 @@
     "babel-cli": "^6.24.1",
     "babel-env": "^2.4.1",
     "babel-preset-flow": "^6.23.0",
-    "flow-bin": "^0.50.0",
+    "flow-bin": "^0.51.0",
     "nodemon": "^1.11.0",
     "jest": "^20.0.0"
   }
