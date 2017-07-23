@@ -1,12 +1,15 @@
 /* @flow */
-
+import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
 import musicmetadata from 'musicmetadata';
 import imgSizeOf from 'image-size';
-import promiseLimit from 'promise-limit';
-import fsp from './fs-promise';
-import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent} from './scanner-utils';
+import limitPromise from 'promise-limit';
+import fsp from '../fs-promise';
+import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent} from './fs-scan-utils';
+
+const DEFAULT_PROMISE_LIMIT = 10;
+const DEFAULT_SCAN_FILE_DELAY = 0;
 
 type Picture = {src: string, format: string, width: number, height: number, area: number};
 type Image = { img: string, width: number, height: number};
@@ -14,68 +17,7 @@ type Song = {src: string, artist: string, album: string, title: string, track: n
     tt?: number, disk?: number, td?: number, picture?: Picture };
 
 export type ScanStatistics = {percentDone: number, filesToScan: number, filesScanned: number};
-
-let scanActive = false;
-let filesToScan = 0;
-let filesScanned = 0;
-
-const fileReadLimit = promiseLimit(10);
-
-export const scanStats = (): ?ScanStatistics => {
-    if(scanActive) {
-        const percentDone = !filesToScan ? 0 : (100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan));
-        return {
-            percentDone,
-            filesToScan,
-            filesScanned
-        };
-    }
-};
-
-export const _scanFile = (path: string, updateState: boolean = true): Promise<any> => {
-    const stream = fs.createReadStream(path);
-    return new Promise((resolve, reject) => {
-        musicmetadata(stream, (err, metadata) => {
-            stream.close();
-            if(updateState) {
-                filesScanned++;
-            }
-            if(err) {
-                reject(err);
-            } else {
-                resolve(metadata);
-            }
-        });
-    });
-};
-
-export const scanFile = (path: string): Promise<any> => _scanFile(path, false);
-
-export const scanTree = (path: string, destFilename: string): Promise<any> => {
-    if(scanActive === true) {
-        throw new Error('Scan already running');
-    }
-    scanActive = true;
-    filesToScan = filesScanned = 0;
-    console.log('scanning: %s', path);
-    console.time('finished');
-    return walk(path)
-        .then(promises => Promise.all(promises))
-        .then(reduce)
-        .then(sortAndFlatten)
-        .then(findEmbeddedImage)
-        .then(selectBestImage)
-        .then(c => saveCollection(destFilename, c))
-        .then(() => {
-            scanActive = false;
-            console.timeEnd('finished');
-        })
-        .catch(error => {
-            scanActive = false;
-            console.timeEnd(error);
-            return Promise.reject(error);
-        });
-};
+export type ScannerOptions = {promiseLimit?: number, scanFileDelay?: number};
 
 const file2path = (file: string, root: string): string => file.startsWith(root) ? file.substring(root.length) : file;
 
@@ -128,14 +70,14 @@ const metaToSong = ({artist, albumartist, album, title, track, disk, year, pictu
     return song;
 };
 
-const readImgMeta = path => {
+const readImgMeta = (path: string, scanner: Scanner) => {
     if (typeof path !== 'string') {
         throw new TypeError('invalid argument type');
     }
 
     return new Promise((resolve, reject) => {
         imgSizeOf(path, (error, dimensions) => {
-            filesScanned++;
+            scanner.filesScanned++;
             if(error) {
                 reject(error);
             } else {
@@ -145,7 +87,7 @@ const readImgMeta = path => {
     });
 };
 
-const walk = root => {
+const walk = (root, scanner: Scanner) => {
     const hasImageExtension = filename => hasExtension(filename, '.jpg', '.png', '.jpeg');
     const isSupportedAudio = filename => hasExtension(filename, '.mp3', '.ogg');
 
@@ -156,11 +98,11 @@ const walk = root => {
                 if (stat.isDirectory()) {
                     return walker(file);
                 } else if (isSupportedAudio(file)) {
-                    filesToScan++;
-                    return fileReadLimit(() => _scanFile(file).then(m => metaToSong(m, file, root)));
+                    scanner.filesToScan++;
+                    return scanner.fileReadLimit(() => Scanner.scanFile(file, scanner).then(m => metaToSong(m, file, root)));
                 } else if (hasImageExtension(file)) {
-                    filesToScan++;
-                    return fileReadLimit(() => readImgMeta(file).then(m => metaToImage(m, file, root)).catch(error => {
+                    scanner.filesToScan++;
+                    return scanner.fileReadLimit(() => readImgMeta(file, scanner).then(m => metaToImage(m, file, root)).catch(error => {
                         console.log('`Error reading image: %s, %s', file, error.message);
                         return null;
                     }));
@@ -335,3 +277,106 @@ const saveCollection = (destFilename, collectionAndImages) => {
     //fs.writeFileSync(destFilename + '.raw', JSON.stringify(collectionAndImages, null, 2));
     return fsp.writeFile(destFilename, JSON.stringify(collectionAndImages.collection, null, 2));
 };
+
+const emitStatistics = (scanner: Scanner) => {
+    if(scanner.scanActive) {
+        const percentDone = !scanner.filesToScan ?
+            0 : (100 - Math.round((scanner.filesToScan - scanner.filesScanned) * 100 / scanner.filesToScan));
+        scanner.emit('status', {
+            percentDone,
+            filesToScan: scanner.filesToScan,
+            filesScanned: scanner.filesScanned
+        });
+    }
+};
+
+class Scanner extends EventEmitter {
+    scanActive: boolean;
+    filesToScan: number;
+    filesScanned: number;
+    fileReadLimit: any;
+    statSender: any;
+    options: {promiseLimit: number, scanFileDelay: number};
+
+    constructor({promiseLimit = DEFAULT_PROMISE_LIMIT, scanFileDelay = DEFAULT_SCAN_FILE_DELAY}: ScannerOptions = {}) {
+        super();
+        this.options = {
+            promiseLimit,
+            scanFileDelay
+        };
+
+        this.scanActive = false;
+        this.filesToScan = 0;
+        this.filesScanned = 0;
+        this.fileReadLimit = limitPromise(this.options.promiseLimit);
+
+        console.log('Scanner: %j', this.options);
+    }
+
+    static scanFile(path: string, scanner: ?Scanner): Promise<any> {
+        const stream = fs.createReadStream(path);
+        return new Promise((resolve, reject) => {
+            musicmetadata(stream, (err, metadata) => {
+                stream.close();
+                if(scanner) {
+                    scanner.filesScanned++;
+                }
+                if(err) {
+                    reject(err);
+                } else {
+                    const delay = scanner && scanner.options.scanFileDelay || 0;
+                    setTimeout(() => {
+                        resolve(metadata);
+                    }, delay);
+                }
+            });
+        });
+    }
+
+    scanTree(path: string, destFilename: string): Promise<any> {
+        if(this.scanActive === true) {
+            throw new Error('Scan already running');
+        }
+        this.scanActive = true;
+        this.filesToScan = this.filesScanned = 0;
+        console.log('registering stats transmitter');
+        this.statSender = setInterval(emitStatistics, 100, this);
+        console.log('scanning: %s', path);
+        console.time('finished');
+        return walk(path, this)
+            .then(promises => Promise.all(promises))
+            .then(reduce)
+            .then(sortAndFlatten)
+            .then(findEmbeddedImage)
+            .then(selectBestImage)
+            .then(c => saveCollection(destFilename, c))
+            .then(() => {
+                clearInterval(this.statSender);
+                this.scanActive = false;
+                console.timeEnd('finished');
+                this.emit('finish', {});
+            })
+            .catch(error => {
+                clearInterval(this.statSender);
+                this.scanActive = false;
+                console.timeEnd(error);
+                this.emit('error', {error});
+                return Promise.reject(error);
+            });
+    }
+
+    scanStats(): ?ScanStatistics {
+        if(this.scanActive) {
+            const { filesToScan, filesScanned } = this;
+            const percentDone = !filesToScan ? 0 : (100 - Math.round((filesToScan - filesScanned) * 100 / filesToScan));
+            return {
+                percentDone,
+                filesToScan,
+                filesScanned
+            };
+        }
+    }
+}
+
+export default Scanner;
+

@@ -7,7 +7,6 @@ export type ScanStatistics = { percentDone: number, filesToScan: number, filesSc
 export type ServerStatus = {
     status: string,
     scanning: boolean,
-    scanStatistics: ?ScanStatistics,
     collection?: CollectionInfo,
 
 };

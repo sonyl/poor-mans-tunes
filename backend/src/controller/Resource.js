@@ -3,8 +3,8 @@
 
 import restifyPlugins from 'restify-plugins';
 import { getSettings } from './Settings';
-import { hasExtension } from '../scanner-utils';
-import { scanFile } from './../scanner';
+import { hasExtension } from '../scanner/fs-scan-utils';
+import Scanner from '../scanner/Scanner';
 
 
 const getContentType = (type: string = ''): string => {
@@ -31,7 +31,7 @@ const ResourceController = {
         const audioPath = getSettings().audioPath;
 
         if(hasExtension(imgFile, '.mp3', '.ogg')){
-            scanFile(audioPath + imgFile)
+            Scanner.scanFile(audioPath + imgFile)
                 .then(meta => {
                     if(meta && meta.picture[0]) {
                         const pic = meta.picture[0];

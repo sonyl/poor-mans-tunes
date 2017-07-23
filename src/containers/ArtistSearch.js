@@ -151,6 +151,7 @@ class ArtistSearch extends Component<DefaulProps, Props, State> {
         log('onSuggestionSelected', 'suggestion=%o, opts=%o', suggestion, opts);
         if(suggestion) {
             this.props.history.push(createLinkUrl(suggestion.artist, suggestion.album));
+            this.setState({value: ''});
         }
     };
 

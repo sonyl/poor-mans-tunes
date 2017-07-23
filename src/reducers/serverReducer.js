@@ -20,11 +20,6 @@ const server = (state: ServerState = defaultState, action: Action) => {
                 }
             };
         case RECEIVE_SERVER_STATUS: {
-            // TODO: reorganize state
-            const prevCollection = state.status && state.status.status && state.status.status.collection;
-            if (action.status && !action.status.collection && state.status && prevCollection) {
-                action.status.collection = prevCollection;
-            }
             return {
                 ...state,
                 status: {

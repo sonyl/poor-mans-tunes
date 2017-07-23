@@ -6,10 +6,10 @@ import type { RequestArtist, ReceiveArtist, RequestAlbum, ReceiveAlbum } from '.
 import type { RequestSongLyrics, ReceiveSongLyrics } from '../actions/lyricsActions';
 import type { AddSongsToPlaylist, SetPlaylistEntriesToPlaylist, RemoveSongFromPlaylist, ClearPlaylist } from '../actions/playlistActions';
 import type { SelectAlbum, UnselectAlbum, SelectArtist, UnselectArtist } from '../actions/selectionActions';
-import type { RequestServerStatus, ReceiveServerStatus, RequestServerSettings, ReceiveServerSettings } from '../actions/serverActions';
+import type { RequestServerStatus, ReceiveServerStatus, RequestServerSettings, ReceiveServerSettings} from '../actions/serverActions';
 import type { PlayRandomSong, PlayRandomAlbum, SetVolume, PersistValue } from '../actions/settingsActions';
 import type { Url } from './backend-types';
-export type { Artist, Album, Song, Lyrics, ServerStatus, ServerSettings, Url, Collection } from './backend-types';
+export type { Artist, Album, Song, Lyrics, ServerStatus, ServerSettings, ScanStatistics, Url, Collection } from './backend-types';
 
 export type Action =
     | RequestCollection | ReceiveCollection | InvalidateCollection

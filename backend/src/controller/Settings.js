@@ -4,7 +4,8 @@
 import fs from 'fs';
 import path from 'path';
 
-export type Settings = {audioPath: string, distPath: string, port: number, publicBaseUrl: string};
+import type ScannerOptions from '../scanner/Scanner';
+export type Settings = {audioPath: string, distPath: string, port: number, publicBaseUrl: string, scanOptions?: ScannerOptions};
 
 const SETTINGS_FILE = path.join(__dirname, '../../settings.json');
 

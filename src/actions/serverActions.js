@@ -1,7 +1,5 @@
 /* @flow */
-import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_RESCAN_FILES,
-    REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from './actionKeys';
-
+import { REQUEST_SERVER_STATUS, RECEIVE_SERVER_STATUS, REQUEST_SERVER_SETTINGS, RECEIVE_SERVER_SETTINGS } from './actionKeys';
 import { sendNotification, sendSuccessNotification, sendDangerNotification, dismissNotification } from './notificationsActions';
 import { replaceRequestPlaceholders, addRequestParams } from './actionUtils';
 
@@ -28,8 +26,6 @@ export type ReceiveServerSettings = {
     receivedAt: number
 }
 
-const POLL_TIMEOUT = 1000;
-
 const GETSETTINSG_URL = '/api/settings';
 const UPDATESETTINSG_URL = '/api/settings/${key}';
 const GETSTATUS_URL = '/api/collection/refreshes';
@@ -46,7 +42,7 @@ const receiveServerStatus = (status: ?ServerStatus, error: any): ReceiveServerSt
     receivedAt: Date.now()
 });
 
-export const requestServerStatus = (full: boolean = false) => (dispatch: Dispatch, getState: GetState): Promise<ServerStatus | string> => {
+export const requestServerStatus = () => (dispatch: Dispatch, getState: GetState): Promise<ServerStatus | string> => {
     const status = getState();
     if(status.server.status.isFetching) {
         return Promise.resolve('isFetching');
@@ -56,7 +52,7 @@ export const requestServerStatus = (full: boolean = false) => (dispatch: Dispatc
         type: REQUEST_SERVER_STATUS
     }: RequestServerStatus));
 
-    return fetch(addRequestParams(GETSTATUS_URL, full ? { full: 'full' } : null), {headers: DEFAULT_HEADERS})
+    return fetch(GETSTATUS_URL, {headers: DEFAULT_HEADERS})
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -127,6 +123,7 @@ export const updateServerSettings = (key: string, value: string) => (dispatch: D
             dispatch(dismissNotification(sendNotificiation.alert));
             dispatch(sendSuccessNotification('Saving...', `${key} sucessfully saved`));
         }).catch(error => {
+            console.log('Catched error: %o', error);
             dispatch(dismissNotification(sendNotificiation.alert));
             dispatch(sendDangerNotification('Saving...', `${key} could not be saved`));
         });
@@ -143,8 +140,6 @@ export const requestRescanFiles = () => (dispatch: Dispatch, getState: GetState)
         }).then(json => {
             console.log('Successfull response from server:', json);
             dispatch(receiveServerStatus(json));
-            startStatusPolling(dispatch, getState);
-
         }).catch(error => {
             console.log('Error response from server:', error);
         });
@@ -168,24 +163,3 @@ export const sendSongToSonos = (song: {title: string, src: Url}) => {
             console.log('Error response from server:', error);
         });
 };
-
-
-function startStatusPolling(dispatch, getState) {
-
-    const registerHandler = timeout => {
-        setTimeout(() => {
-            const res = dispatch(requestServerStatus(false));
-            if(res instanceof Promise) {
-                res.then(result => {
-                    if (result && (result === 'isFetching' || result.scanning)) {
-                        registerHandler(POLL_TIMEOUT);
-                    }
-                    if(result.scanning === false) {
-                        dispatch(requestServerStatus(true));
-                    }
-                });
-            }
-        }, timeout); //
-    };
-    registerHandler(POLL_TIMEOUT);
-}

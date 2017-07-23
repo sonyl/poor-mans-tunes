@@ -6,7 +6,7 @@ import path  from 'path';
 import restifyPlugins from 'restify-plugins';
 import fsp from '../fs-promise';
 import { getSettings } from './Settings';
-import {scanTree, scanStats} from '../scanner';
+import Scanner from '../scanner/Scanner';
 
 import type { Collection, Artist, CollectionInfo, ServerStatus } from '../types.js';
 
@@ -16,44 +16,35 @@ const NEW_COLLECTION = './collection.new.json';
 
 let scanning = false;
 
-function getStatus(full: boolean): Promise<ServerStatus> {
-    let promise;
-    if(full) {
-        promise = fsp.readFile(COLLECTION, 'utf8').
-            then(data => {
-                let collInfo:CollectionInfo;
-                try {
-                    const collection:Collection = JSON.parse(data);
-                    collInfo = {
-                        artists: collection.length,
-                        albums: collection.reduce((acc: number, artist: Artist) => acc + artist.albums.length, 0)
-                    };
-                } catch (error) {
-                    collInfo = {
-                        text: 'error parsing collection file',
-                        detail: error.message
-                    };
-                }
-                return {
-                    status: 'ready',
-                    collection: collInfo
-                };
-            }, () => {
-                return {
-                    status: 'collection missing'
-                };
-            });
-    } else {
-        promise = fsp.stat(COLLECTION)
-            .then(stats => ({ status: 'ready' }),
-                err => ({ status: 'collection missing' }));
-    }
+export const scanner = new Scanner(getSettings().scanOptions);
 
-    return promise.then((status: ServerStatus): ServerStatus => {
-        status.scanning = scanning;
-        status.scanStatistics = scanStats();
-        return status;
-    });
+function getStatus(): Promise<ServerStatus> {
+    return fsp.readFile(COLLECTION, 'utf8').
+        then(data => {
+            let collInfo:CollectionInfo;
+            try {
+                const collection:Collection = JSON.parse(data);
+                collInfo = {
+                    artists: collection.length,
+                    albums: collection.reduce((acc: number, artist: Artist) => acc + artist.albums.length, 0)
+                };
+            } catch (error) {
+                collInfo = {
+                    text: 'error parsing collection file',
+                    detail: error.message
+                };
+            }
+            return {
+                status: 'ready',
+                scanning,
+                collection: collInfo
+            };
+        }, () => {
+            return {
+                status: 'collection missing',
+                scanning
+            };
+        });
 }
 
 
@@ -83,7 +74,7 @@ const CollectionController = {
         }
         scanning = true;
 
-        scanTree(audioPath, NEW_COLLECTION).then(() => {
+        scanner.scanTree(audioPath, NEW_COLLECTION).then(() => {
             const currPath = path.resolve('.');
             fs.renameSync(path.normalize(currPath + '/' + NEW_COLLECTION), path.normalize(currPath + '/' + COLLECTION));
             scanning = false;
@@ -91,7 +82,7 @@ const CollectionController = {
             scanning = false;
             console.log(`unable to scan tree: ${audioPath}:`, err.message);
         });
-        getStatus(false).then(status => {
+        getStatus().then(status => {
             res.json(status);
             next();
         }).catch(err => {
@@ -100,9 +91,8 @@ const CollectionController = {
         });
     },
 
-    getStatus: ({query}: Object, res: Object, next: ()=> any) => {
-        const full = 'full' === query.full || 'true' === query.full;
-        getStatus(full).then(status => {
+    getStatus: (req: Object, res: Object, next: ()=> any) => {
+        getStatus().then(status => {
             res.json(status);
             next();
         }).catch(err => {

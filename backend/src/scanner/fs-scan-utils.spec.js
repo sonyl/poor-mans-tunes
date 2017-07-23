@@ -2,7 +2,7 @@
 /* eslint-env node, jest */
 
 
-import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent } from './scanner-utils';
+import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirectory, getCommonParent } from './fs-scan-utils';
 
 describe('scanner-utils', () => {
     describe('hasExtension() ', () => {

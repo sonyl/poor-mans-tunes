@@ -1,6 +1,10 @@
 {
-    "audioPath": "/home/gerhard/Music/mp3",
+    "audioPath": "/Users/gerhard/Music/mp3",
     "distPath": "../dist",
     "port": 9001,
-    "publicBaseUrl": "http://egon.home:9001"
+    "publicBaseUrl": "http://localhost:9001",
+    "scanOptions": {
+        "promiseLimit": 10,
+        "scanFileDelay": 0
+    }
 }

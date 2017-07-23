@@ -9,7 +9,7 @@ import { getCollection, invalidateCollection } from '../actions/collectionAction
 import { requestServerStatus, requestRescanFiles, updateServerSettings } from '../actions/serverActions';
 import { setPersistedValue } from '../actions/settingsActions';
 
-import ProgressBar from '../components/ProgressBar';
+import RescanProgressBar from '../components/RescanProgressBar';
 import Select from '../components/Select';
 
 import type { ServerStatus, ServerSettings } from '../types';
@@ -28,7 +28,7 @@ type Props = {
     serverStatus: {status: ServerStatus, error?: string, lastUpdated?: string},
     invalidateCollection: ()=> void,
     getCollection: ()=> void,
-    requestServerStatus: (boolean)=> void,
+    requestServerStatus: ()=> void,
     requestRescanFiles: ()=> void,
     updateServerSettings: (string, string)=> void,
     setPersistedValue: (string, string | {})=> void
@@ -65,7 +65,7 @@ class Settings extends Component<DefaultProps, Props, State> {
             invalidateCollection();
             getCollection();
         } else if(event.target.id === 'updateStatusBtn') {
-            requestServerStatus(true);
+            requestServerStatus();
         } else if(event.target.id === 'rescanBtn') {
             requestRescanFiles();
         } else if(event.target.id === 'updateSettingsBtn') {
@@ -79,16 +79,6 @@ class Settings extends Component<DefaultProps, Props, State> {
         });
     };
 
-    renderProgressBar() {
-        const status = this.props.serverStatus && this.props.serverStatus.status;
-        if (status && status.scanning && status.scanStatistics) {
-            return (
-                <ProgressBar id='scan-progress' maxValue={100} value={status.scanStatistics.percentDone}
-                    text={status.scanStatistics.percentDone + '%'} />
-            );
-        }
-    }
-
     selectChanged(newValue: string) {
         console.log('selectChanged %s', newValue);
         this.props.setPersistedValue('selectedFont', newValue);
@@ -96,7 +86,7 @@ class Settings extends Component<DefaultProps, Props, State> {
 
     render = () => {
 
-        const {lastUpdate, serverStatus, serverSettings} = this.props;
+        const {lastUpdate, serverStatus, serverSettings, requestServerStatus} = this.props;
         const scanning = serverStatus && serverStatus.status && serverStatus.status.scanning;
         const ready = serverStatus && serverStatus.status && serverStatus.status.status ==='ready';
         let audioPathInput;
@@ -149,7 +139,7 @@ class Settings extends Component<DefaultProps, Props, State> {
                             </button>
                         </div>
                         <div className="col-xs-8" style={{'marginTop': '10px'}}>
-                            { this.renderProgressBar() }
+                            <RescanProgressBar done={()=> requestServerStatus() } active={scanning} />
                         </div>
                         <div className="col-xs-1"/>
                     </div>
