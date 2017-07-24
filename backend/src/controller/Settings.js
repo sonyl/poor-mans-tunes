@@ -41,12 +41,12 @@ const updateSettings = () => {
 };
 
 const SettingsController = {
-    get: (req: Object, res: Object, next: ()=> any) => {
+    get: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         res.json(settings);
         next();
     },
 
-    put: (req: Object, res: Object, next: ()=> any) => {
+    put: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         console.log('Updated settings with %j, =>%j:', req.params, req.body.value);
         const key = req.params.key;
         let value = req.body.value;
@@ -74,7 +74,7 @@ const SettingsController = {
         next();
     },
 
-    del: (req: Object, res: Object, next: ()=> any) => {
+    del: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         delete settings[req.params.key];
         console.log('Deleted parameter %j from settings =>%j:', req.params, settings);
         if(updateSettings()) {

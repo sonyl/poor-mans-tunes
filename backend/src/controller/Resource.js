@@ -26,7 +26,7 @@ const getContentType = (type: string = ''): string => {
 
 
 const ResourceController = {
-    getImage: (req: Object, res: Object, next: ()=> any) => {
+    getImage: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         const imgFile = decodeURI(req.url.substr(4)); // remove '/img' from url
         const audioPath = getSettings().audioPath;
 
@@ -52,7 +52,7 @@ const ResourceController = {
             })(req, res, next);
         }
     },
-    getAudio: (req: Object, res: Object, next: ()=> any) => {
+    getAudio: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         return restifyPlugins.serveStatic({
             directory: getSettings().audioPath,
             file: decodeURI(req.url.substr(6))  // remove '/audio' from url

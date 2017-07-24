@@ -54,7 +54,7 @@ const CollectionController = {
         file: 'collection.json'
     }),
 
-    rescan: (req: Object, res: Object, next: ()=> any) => {
+    rescan: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         console.log('rescan requested');
         const audioPath = getSettings().audioPath;
         if (!audioPath) {
@@ -80,7 +80,7 @@ const CollectionController = {
             scanning = false;
         }).catch(err => {
             scanning = false;
-            console.log(`unable to scan tree: ${audioPath}:`, err.message);
+            console.log(`unable to scan tree: ${audioPath}: %j`, err);
         });
         getStatus().then(status => {
             res.json(status);
@@ -91,7 +91,7 @@ const CollectionController = {
         });
     },
 
-    getStatus: (req: Object, res: Object, next: ()=> any) => {
+    getStatus: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         getStatus().then(status => {
             res.json(status);
             next();

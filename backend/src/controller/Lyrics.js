@@ -62,7 +62,7 @@ const fixJson = (text) => {
 
 
 const LyricsController = {
-    get: (req: Object, res: Object, next: ()=> any) => {
+    get: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         const {artist, song} = req.params;
         console.log('lyrics requested: %s --- %s', artist, song);
         getLyrics(req.params.artist, req.params.song)

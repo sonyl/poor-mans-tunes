@@ -342,7 +342,7 @@ class Scanner extends EventEmitter {
         console.log('registering stats transmitter');
         this.statSender = setInterval(emitStatistics, 100, this);
         console.log('scanning: %s', path);
-        console.time('finished');
+        console.time('scan duration');
         return walk(path, this)
             .then(promises => Promise.all(promises))
             .then(reduce)
@@ -353,13 +353,13 @@ class Scanner extends EventEmitter {
             .then(() => {
                 clearInterval(this.statSender);
                 this.scanActive = false;
-                console.timeEnd('finished');
+                console.timeEnd('scan duration');
                 this.emit('finish', {});
             })
             .catch(error => {
                 clearInterval(this.statSender);
                 this.scanActive = false;
-                console.timeEnd(error);
+                console.timeEnd('scan duration');
                 this.emit('error', {error});
                 return Promise.reject(error);
             });

@@ -34,7 +34,7 @@ export const playSong = (song: string): Promise<any>  => {
 
 const SonosController = {
 
-    post: (req: Object, res: Object, next: ()=> any) => {
+    post: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
         console.log('Api sonos play =>%j:', req.body);
         const src: string = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
         if (src) {
