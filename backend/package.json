@@ -21,7 +21,6 @@
     "node-fetch": "^1.7.1",
     "promise-limit": "^2.4.0",
     "restify": "^5.0.0",
-    "restify-eventsource": "^2.0.0",
     "restify-plugins": "^1.6.0",
     "sonos": "^0.15.0"
   },
