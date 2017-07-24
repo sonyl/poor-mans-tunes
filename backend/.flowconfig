@@ -6,6 +6,5 @@
 ../src/types/backend-types.js
 
 [libs]
-/flow-typed/
 
 [options]
