@@ -138,7 +138,6 @@ export const requestRescanFiles = () => (dispatch: Dispatch, getState: GetState)
                 throw new Error('Error fetching data: ' + response.statusText);
             }
         }).then(json => {
-            console.log('Successfull response from server:', json);
             dispatch(receiveServerStatus(json));
         }).catch(error => {
             console.log('Error response from server:', error);

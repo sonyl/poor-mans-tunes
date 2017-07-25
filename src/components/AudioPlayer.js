@@ -17,7 +17,7 @@ type Props = {
     hidden: boolean,
     className: string,
     attributes: Object,
-    progressFrequency: number,
+    progressDelay: number,
     onPlay: ()=>void,
     onPause: ()=>void,
     onEnded: ()=>void,
@@ -32,7 +32,7 @@ type DefaultProps = {
     hidden: boolean,
     className: string,
     attributes: Object,
-    progressFrequency: number,
+    progressDelay: number,
     onPlay: () => void,
     onPause: () => void,
     onEnded: () => void,
@@ -53,7 +53,7 @@ export default class AudioPlayer extends Component<DefaultProps, Props, State> {
         hidden: false,
         className: '',
         attributes: {},
-        progressFrequency: 1000,
+        progressDelay: 1000,
         onPlay: function() {},
         onPause: function() {},
         onEnded: function() {},
@@ -132,13 +132,15 @@ export default class AudioPlayer extends Component<DefaultProps, Props, State> {
     }
 
     onReady = () => {
-        log('onReady', 'canPlay event received, this.isReady=', this.isReady);
-        this.player.play();
-        this.isReady = true;
-        const duration = this.getDuration();
+        log('onReady', 'onReady event received, this.isReady=%s, currentTime=%s', this.isReady, this.player.currentTime);
+        if(!this.isReady) {
+            this.player.play();
+            this.isReady = true;
+            const duration = this.getDuration();
 
-        if (duration) {
-            this.props.onDuration(duration);
+            if (duration) {
+                this.props.onDuration(duration);
+            }
         }
     };
 
@@ -278,7 +280,7 @@ export default class AudioPlayer extends Component<DefaultProps, Props, State> {
             this.prevLoaded = loaded;
             this.prevPlayed = played;
         }
-        this.progressTimeout = setTimeout(this.progress, this.props.progressFrequency);
+        this.progressTimeout = setTimeout(this.progress, this.props.progressDelay);
     };
 
     render () {
