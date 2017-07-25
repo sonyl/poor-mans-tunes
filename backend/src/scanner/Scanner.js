@@ -10,6 +10,7 @@ import { hasExtension, hasExtensionOf, getAlbumDirectories, getAlbumMainDirector
 
 const DEFAULT_PROMISE_LIMIT = 10;
 const DEFAULT_SCAN_FILE_DELAY = 0;
+const DEFAULT_STATS_UPDATE_DELAY = 500;
 
 type Picture = {src: string, format: string, width: number, height: number, area: number};
 type Image = { img: string, width: number, height: number};
@@ -340,7 +341,7 @@ class Scanner extends EventEmitter {
         this.scanActive = true;
         this.filesToScan = this.filesScanned = 0;
         console.log('registering stats transmitter');
-        this.statSender = setInterval(emitStatistics, 100, this);
+        this.statSender = setInterval(emitStatistics, DEFAULT_STATS_UPDATE_DELAY, this);
         console.log('scanning: %s', path);
         console.time('scan duration');
         return walk(path, this)
