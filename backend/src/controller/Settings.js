@@ -41,12 +41,11 @@ const updateSettings = () => {
 };
 
 const SettingsController = {
-    get: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    get: (req: express$Request, res: express$Response) => {
         res.json(settings);
-        next();
     },
 
-    put: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    put: (req: express$Request, res: express$Response) => {
         console.log('Updated settings with %j, =>%j:', req.params, req.body.value);
         const key = req.params.key;
         let value = req.body.value;
@@ -60,29 +59,27 @@ const SettingsController = {
             if (updateSettings()) {
                 res.json(settings);
             } else {
-                res.json(500, {
+                res.status(500).json({
                     error: 'could not persist settings',
                     settings
                 });
             }
         } else {
-            res.json(500, {
+            res.status(500).json({
                 error: 'empty value not allowed',
                 settings
             });
         }
-        next();
     },
 
-    del: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    del: (req: express$Request, res: express$Response) => {
         delete settings[req.params.key];
         console.log('Deleted parameter %j from settings =>%j:', req.params, settings);
         if(updateSettings()) {
             res.json(settings);
         } else {
-            res.json(500, { error: 'could not persist settings', settings });
+            res.status(500).json({ error: 'could not persist settings', settings });
         }
-        next();
     }
 };
 

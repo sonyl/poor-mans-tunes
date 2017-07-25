@@ -3,7 +3,6 @@
 
 import fs from 'fs';
 import path  from 'path';
-import restifyPlugins from 'restify-plugins';
 import fsp from '../fs-promise';
 import { getSettings } from './Settings';
 import Scanner from '../scanner/Scanner';
@@ -49,21 +48,19 @@ function getStatus(): Promise<ServerStatus> {
 
 
 const CollectionController = {
-    get: restifyPlugins.serveStatic({
-        directory: path.join(__dirname, '../..'),
-        file: 'collection.json'
-    }),
+    get: (req: express$Request, res: express$Response) => {
+        console.log('collection requested!');
+        res.sendFile(COLLECTION, {root: '.'});
+    },
 
-    rescan: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    rescan: (req: express$Request, res: express$Response) => {
         console.log('rescan requested');
         const audioPath = getSettings().audioPath;
         if (!audioPath) {
-            res.json(500, { error: 'settings incorrect, please specify audioPath' });
-            next();
+            res.status(500).json({ error: 'settings incorrect, please specify audioPath' });
             return;
         } else if (scanning) {
-            res.json(409, { error: 'scan already running' });
-            next();
+            res.status(409).json({ error: 'scan already running' });
             return;
         }
 
@@ -84,20 +81,16 @@ const CollectionController = {
         });
         getStatus().then(status => {
             res.json(status);
-            next();
         }).catch(err => {
             res.json({error: err.message});
-            next();
         });
     },
 
-    getStatus: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    getStatus: (req: express$Request, res: express$Response) => {
         getStatus().then(status => {
             res.json(status);
-            next();
         }).catch(err => {
             res.json({ error: err.message });
-            next();
         });
     }
 };

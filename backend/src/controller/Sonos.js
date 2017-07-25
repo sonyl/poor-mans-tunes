@@ -34,7 +34,7 @@ export const playSong = (song: string): Promise<any>  => {
 
 const SonosController = {
 
-    post: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    post: (req: express$Request, res: express$Response) => {
         console.log('Api sonos play =>%j:', req.body);
         const src: string = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
         if (src) {
@@ -44,16 +44,13 @@ const SonosController = {
                     res.json({
                         status: 'ok'
                     });
-                    next();
                 },
                 err => {
                     console.log('Error starting song on sonos:', err);
-                    res.json(500, { error: err.message || err });
-                    next();
+                    res.status(500).json({ error: err.message || err });
                 });
         } else {
-            res.json(400, { error: 'empty src not allowed' });
-            next();
+            res.status(400).json({ error: 'empty src not allowed' });
         }
     }
 };

@@ -1,7 +1,6 @@
 /* @flow */
 /* eslint-env node */
 
-import restifyPlugins from 'restify-plugins';
 import { getSettings } from './Settings';
 import { hasExtension } from '../scanner/fs-scan-utils';
 import Scanner from '../scanner/Scanner';
@@ -26,7 +25,7 @@ const getContentType = (type: string = ''): string => {
 
 
 const ResourceController = {
-    getImage: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    getImage: (req: express$Request, res: express$Response) => {
         const imgFile = decodeURI(req.url.substr(4)); // remove '/img' from url
         const audioPath = getSettings().audioPath;
 
@@ -37,26 +36,19 @@ const ResourceController = {
                         const pic = meta.picture[0];
                         res.setHeader('Content-Type', getContentType(pic.format));
                         res.send(pic.data);
-                        next();
                     } else {
                         throw new Error('no artwork found');
                     }
                 }).catch(error => {
-                    res.json(500, { error: error.message });
-                    next();
+                    res.status(500).json({ error: error.message });
                 });
         } else {
-            return restifyPlugins.serveStatic({
-                directory: audioPath,
-                file: imgFile
-            })(req, res, next);
+            res.sendFile(imgFile, { root: audioPath });
         }
     },
-    getAudio: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
-        return restifyPlugins.serveStatic({
-            directory: getSettings().audioPath,
-            file: decodeURI(req.url.substr(6))  // remove '/audio' from url
-        })(req, res, next);
+    getAudio: (req: express$Request, res: express$Response) => {
+        const file = decodeURI(req.url.substr(6)); // remove '/audio' from url
+        res.sendFile(file, { root: getSettings().audioPath });
     }
 };
 

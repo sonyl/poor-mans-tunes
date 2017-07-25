@@ -12,7 +12,7 @@ type Event = {
     retry?: number
 }
 
-declare class ExtResponse extends restify$Response {
+declare class ExtResponse extends express$Response {
     SSEHandlers: {
         status: (Data)=> void,
         finish: (Data)=> void
@@ -45,7 +45,8 @@ const buildEventStream = (events: Event | Event[]): string => {
     return message;
 };
 
-export default (req: restify$Request, res: ExtResponse, next: restify$NextFunction) => {
+export default (req: express$Request, _res: express$Response) => {
+    const res: ExtResponse = (_res: any);
     console.log('initialiseSSE, res.finished=', res.finished);
 
     function statusHandler(event) {

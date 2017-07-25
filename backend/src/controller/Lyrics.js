@@ -62,24 +62,22 @@ const fixJson = (text) => {
 
 
 const LyricsController = {
-    get: (req: restify$Request, res: restify$Response, next: restify$NextFunction) => {
+    get: (req: express$Request, res: express$Response) => {
         const {artist, song} = req.params;
         console.log('lyrics requested: %s --- %s', artist, song);
         getLyrics(req.params.artist, req.params.song)
             .then(lyrics => {
                 console.log('lyrics received: %j', lyrics);
                 res.json(lyrics);
-                next();
 
             })
             .catch(err => {
                 console.log('lyrics error: %j', err);
                 if (err === 'not found') {
-                    res.json(404, {error: err});
+                    res.status(404).json({error: err});
                 } else {
-                    res.json(500, {error: err.message || err});
+                    res.status(500).json({error: err.message || err});
                 }
-                next();
             });
     }
 };
