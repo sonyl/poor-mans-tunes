@@ -8,7 +8,7 @@ import { getSettings } from './Settings';
 import Scanner from '../scanner/Scanner';
 
 import type { Collection, Artist, CollectionInfo, ServerStatus } from '../types.js';
-
+import type { SseResponse, SseEvent } from '../sse.js';
 
 const COLLECTION = './collection.json';
 const NEW_COLLECTION = './collection.new.json';
@@ -46,6 +46,13 @@ function getStatus(): Promise<ServerStatus> {
         });
 }
 
+interface MySseResponse extends SseResponse {
+    SSEHandlers: {
+        status: (SseEvent)=> any,
+        finish: (SseEvent)=> any
+    }
+}
+
 
 const CollectionController = {
     get: (req: express$Request, res: express$Response) => {
@@ -60,7 +67,13 @@ const CollectionController = {
             res.status(500).json({ error: 'settings incorrect, please specify audioPath' });
             return;
         } else if (scanning) {
-            res.status(409).json({ error: 'scan already running' });
+            // res.status(409).json({ error: 'scan already running' });
+            // return;
+            getStatus().then(status => {
+                res.json(status);
+            }).catch(err => {
+                res.json({error: err.message});
+            });
             return;
         }
 
@@ -92,6 +105,42 @@ const CollectionController = {
         }).catch(err => {
             res.json({ error: err.message });
         });
+    },
+
+
+    sendEvents: (req: express$Request, _res: express$Response) => {
+        const res: MySseResponse = (_res: any);
+
+        console.log(res.sendSseEvent);
+
+        function statusHandler(event) {
+            console.log('Scan statistics: %j', event);
+            console.log('getStatsHandler, res.finished=', this.finished);
+            this.sendSseEvent({
+                event: 'status',
+                data: event
+            });
+        }
+        function finishHandler(event) {
+            console.log('Scan finished: %j', event);
+            this.sendSseEvent({
+                event: 'finish',
+                data: event
+            });
+            res.end();
+            scanner.removeListener('status', this.SSEHandlers.status);
+            scanner.removeListener('finish', this.SSEHandlers.finish);
+            scanner.removeListener('error', this.SSEHandlers.finish);
+        }
+
+        res.SSEHandlers = {
+            status: statusHandler.bind(res),
+            finish: finishHandler.bind(res)
+        };
+        scanner.on('status', res.SSEHandlers.status);
+        scanner.on('finish', res.SSEHandlers.finish);
+        scanner.on('error', res.SSEHandlers.finish);
+
     }
 };
 

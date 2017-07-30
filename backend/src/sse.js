@@ -1,27 +1,24 @@
 /* @flow */
 /* eslint-env node */
 
-import { scanner } from './controller/Collection';
+export type SseEventData = {} | string | number | boolean;
 
-type Data = {} | string | number;
-
-type Event = {
-    data: Data,
+export type SseEvent = {
+    data: SseEventData,
     event?: string,
     id?: string | number,
     retry?: number
 }
 
-declare class ExtResponse extends express$Response {
-    SSEHandlers: {
-        status: (Data)=> void,
-        finish: (Data)=> void
-    }
+declare class _SseResponse extends express$Response {
+    sendSseEvent: (event: SseEvent)=> void;
 }
 
-const buildEventStream = (events: Event | Event[]): string => {
+export type SseResponse = _SseResponse;
+
+const createEventString = (events: SseEvent | SseEvent[]): string => {
     if (Array.isArray(events)) {
-        return events.map(e => buildEventStream(e)).join('');
+        return events.map(e => createEventString(e)).join('');
     }
 
     const {event, id, retry=1} = events;
@@ -39,48 +36,28 @@ const buildEventStream = (events: Event | Event[]): string => {
     if (typeof data === 'object') {
         data = JSON.stringify(data);
     }
+    if (typeof data === 'boolean') {
+        data = data.toString();
+    }
 
     message += `data: ${data}\n\n`;
 
     return message;
 };
 
-export default (req: express$Request, _res: express$Response) => {
-    const res: ExtResponse = (_res: any);
+export default (req: express$Request, _res: express$Response, next: express$NextFunction) => {
+    const res: SseResponse = (_res: any);
     console.log('initialiseSSE, res.finished=', res.finished);
 
-    function statusHandler(event) {
-        console.log('Scan statistics: %j', event);
-        console.log('getStatsHandler, res.finished=', this.finished);
-        this.write(buildEventStream({
-            event: 'status',
-            data: event
-        }));
-    }
-    function finishHandler(event) {
-        console.log('Scan finished: %j', event);
-        this.write(buildEventStream({
-            event: 'finish',
-            data: event
-        }));
-        this.end();
-        scanner.removeListener('status', this.SSEHandlers.status);
-        scanner.removeListener('finish', this.SSEHandlers.finish);
-        scanner.removeListener('error', this.SSEHandlers.finish);
-    }
-
-    res.SSEHandlers = {
-        status: statusHandler.bind(res),
-        finish: finishHandler.bind(res)
+    res.sendSseEvent = (event: SseEvent) => {
+        res.write(createEventString(event));
     };
 
-    scanner.on('status', res.SSEHandlers.status);
-    scanner.on('finish', res.SSEHandlers.finish);
-    scanner.on('error', res.SSEHandlers.finish);
-
+    req.socket.setTimeout(0); // no timeout
     res.header('Content-Type', 'text/event-stream');
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
     res.header('Access-Control-Allow-Origin', '*');
     res.write('retry: 10000\n\n');
+    next();
 };

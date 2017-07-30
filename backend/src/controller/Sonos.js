@@ -38,9 +38,10 @@ const SonosController = {
         console.log('Api sonos play =>%j:', req.body);
         const src: string = Array.isArray(req.body.src) ? req.body.src[0] : req.body.src;
         if (src) {
-            playSong(createAudioUrl(getSettings().publicBaseUrl, src)).then(
+            const url = createAudioUrl(getSettings().publicBaseUrl, src);
+            playSong(url).then(
                 () => {
-                    console.log('Successfully started song on sonos:', src);
+                    console.log('Successfully started song on sonos: %s => %s', src, url);
                     res.json({
                         status: 'ok'
                     });

@@ -10,7 +10,6 @@ import SonosController from './controller/Sonos';
 import LyricsController from './controller/Lyrics';
 import initialiseSSE from './sse';
 
-
 const ENV = process.env.NODE_ENV || 'dev';
 console.log('Poor-Mans-Tuns starting in %s environment.', ENV);
 
@@ -30,6 +29,7 @@ app.use(history({
 app.get('/api/collection', CollectionController.get);
 app.get('/api/collection/refreshes', CollectionController.getStatus);
 app.put('/api/collection/refreshes', CollectionController.rescan);
+app.get('/api/scanstats', initialiseSSE, CollectionController.sendEvents);
 app.get('/api/settings', SettingsController.get);
 app.delete('/api/settings/:key', SettingsController.del);
 app.put('/api/settings/:key', SettingsController.put);
@@ -37,7 +37,6 @@ app.post('/api/sonos/play', SonosController.post);
 app.get('/lyrics/:artist/:song', LyricsController.get);
 app.get('/img/*', ResourceController.getImage);
 app.get('/audio/*', ResourceController.getAudio);
-app.get('/api/scanstats', initialiseSSE);
 
 // fallback: serve static content
 app.use((req: express$Request, res: express$Response) => {
