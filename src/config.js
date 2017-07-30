@@ -16,7 +16,7 @@ const config = {
         collectionUrl: '/api/collection',
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/',
         skipLastFmArtist: false,
-        skipLastFmAlbum: true
+        skipLastFmAlbum: false
     },
 
     test: {
