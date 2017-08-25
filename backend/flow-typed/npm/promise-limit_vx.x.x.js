@@ -2,10 +2,11 @@
 // flow-typed version: <<STUB>>/promise-limit_v^2.4.0/flow_v0.51.0
 
 
-type Limit = (()=> Promise<T>)=> Promise<T>;
-type PromiseLimit = (number)=> Limit;
+type limit<T> = (()=> Promise<T>)=> Promise<T>;
+declare function PromiseLimit$Function<T>(number): limit<T>;
 
 declare module 'promise-limit' {
-  declare module.exports: PromiseLimit;
+
+  declare export default typeof PromiseLimit$Function;
 }
 
