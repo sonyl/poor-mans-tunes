@@ -8,7 +8,23 @@ develop: {
         lastFmBase: 'http://ws.audioscrobbler.com/2.0/'
 },
 */
-const config = {
+
+type EnvConfig = {
+    contextRoot: string,
+    baseUrl?: string,
+    collectionUrl: string,
+    lastFmBase: string,
+    skipLastFmArtist?: boolean,
+    skipLastFmAlbum?: boolean
+};
+
+type Config = {
+    develop: EnvConfig,
+    test: EnvConfig,
+    production: EnvConfig
+}
+
+const config : Config = {
     develop: {
         contextRoot: '',
         baseUrl:  'http://localhost:9000',
@@ -34,8 +50,6 @@ const config = {
     }
 };
 
-type Config={abc: string};
-
 export default function getConfig(defaults: any = {}) {
-    return Object.assign(defaults, config[process.env.NODE_ENV || 'develop']);
+    return (Object.assign(defaults, config[process.env.NODE_ENV || 'develop']): EnvConfig);
 }
