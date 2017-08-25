@@ -295,7 +295,7 @@ class Scanner extends EventEmitter {
     scanActive: boolean;
     filesToScan: number;
     filesScanned: number;
-    fileReadLimit: any;
+    fileReadLimit: PromiseLimit$Function<Object>;
     statSender: any;
     options: {promiseLimit: number, scanFileDelay: number};
 
