@@ -4,17 +4,23 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { createLinkUrl, createLog } from '../utils';
+import { addSongsToPlaylist } from '../actions/playlistActions';
 import { getArtists } from '../reducers';
 import GlyphIcon from '../components/GlyphIcon';
 
-import type { Collection } from '../types';
+import type { Collection, PlaylistSong, Url } from '../types';
+
+type DbEntry = {label: string, artist: string, album?: string, song?: string, url?: Url };
+type SearchDb = DbEntry[];
+
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'ArtistSearch');
 
+
 const theme = {
     input: {
-        width: '300px'
+        width: '350px'
     },
     containerOpen: {
 
@@ -43,12 +49,22 @@ const theme = {
 };
 
 
-function reorganize(artists = []) {
-    const db = artists.map(a => ({label: a.artist, artist: a.artist}));
+function reorganize(artists: Collection = []): SearchDb {
+    const db: SearchDb = artists.map(a => ({label: a.artist, artist: a.artist}));
     artists.forEach(a => {
         const albums = a.albums || [];
         albums.forEach(al => {
             db.push({label: `${a.artist} : ${al.album}`, artist: a.artist, album: al.album});
+        });
+    });
+    artists.forEach(a => {
+        const albums = a.albums || [];
+        albums.forEach(al => {
+            const songs = al.songs;
+            songs.forEach(song => {
+                db.push({label: `${a.artist} : ${al.album} : ${song.title}`,
+                    artist: a.artist, album: al.album, song: song.title, url: song.src});
+            });
         });
     });
     return db;
@@ -74,11 +90,12 @@ const renderInputComponent = inputProps => (
 
 type Props = {
     artists: Collection,
-    history: History
+    history: History,
+    addSongsToPlaylist: (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong, top: boolean)=> void
 }
 type DefaulProps = void
 type State = {
-    db: Array<{label: string, artist: string, album?: string }>,
+    searchDb: SearchDb,
     suggestions: Array<{label: string}>,
     value: string
 }
@@ -91,29 +108,33 @@ class ArtistSearch extends Component<DefaulProps, Props, State> {
         super(props);
 
         this.state = {
-            db: reorganize(props.artists),
+            searchDb: reorganize(props.artists),
             suggestions: [],
             value: ''
         };
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        this.setState({db: reorganize(nextProps.artists)});
+        log('componentWillReceiveProps', 'nextProps:', nextProps);
+        this.setState({searchDb: reorganize(nextProps.artists)});
     }
 
     getSuggestions = value => {
-        const { db} = this.state;
+        const { searchDb } = this.state;
         if( !value ) {
             return [];
         }
 
         const regExp = new RegExp(value, 'i');
         const suggestions = [], MAX=10;
-        for(let i = 0; i < db.length && suggestions.length < MAX; i++) {
-            const entry = db[i];
-            if(entry.album) {
+        for(let i = 0; i < searchDb.length && suggestions.length < MAX; i++) {
+            const entry = searchDb[i];
+            if(entry.song) {
+                if(regExp.test(entry.song)) {
+                    suggestions.push(entry);
+                }
+            } else if(entry.album) {
                 if(regExp.test(entry.album)) {
-
                     suggestions.push(entry);
                 }
             } else {
@@ -150,7 +171,11 @@ class ArtistSearch extends Component<DefaulProps, Props, State> {
     onSuggestionSelected = (event, {suggestion, ...opts}) => {
         log('onSuggestionSelected', 'suggestion=%o, opts=%o', suggestion, opts);
         if(suggestion) {
-            this.props.history.push(createLinkUrl(suggestion.artist, suggestion.album));
+            const {artist, album, song, url} = suggestion;
+            this.props.history.push(createLinkUrl(artist, album));
+            if(artist && album && song && url) {
+                this.props.addSongsToPlaylist(artist, album, {song, url}, true);
+            }
             this.setState({value: ''});
         }
     };
@@ -162,7 +187,7 @@ class ArtistSearch extends Component<DefaulProps, Props, State> {
 
         // Autosuggest will pass through all these props to the input element.
         const inputProps = {
-            placeholder: 'Type an artist or album name',
+            placeholder: 'Type an artist or album name or song title',
             value,
             onChange: this.onChange
         };
@@ -187,4 +212,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default withRouter(connect(mapStateToProps)(ArtistSearch));
+export default withRouter(connect(mapStateToProps, { addSongsToPlaylist })(ArtistSearch));
