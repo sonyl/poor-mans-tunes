@@ -50,3 +50,22 @@ button.btn.navbar-btn.navbar-right {
 div.container-0-0 {
   z-index: 1000;
 }
+
+/* style slider for ms browsers */
+input[type=range] {
+  &::-ms-track {
+    /*remove default tick marks*/
+    color: transparent;
+  }
+  &::-ms-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: @text-color;
+  }
+  &::-ms-tooltip {
+    /*remove default value tool tip*/
+    display: none;
+  }
+}
