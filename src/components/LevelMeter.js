@@ -28,7 +28,7 @@ class RingBuffer {
 
     constructor(size = 100) {
         this.maxSize = size;
-        this.buffer = Array(size).fill(DB_MIN_SCALE);
+        this.buffer = new Array(size).fill(DB_MIN_SCALE);
         this.ptr = 0;
     }
 
@@ -45,7 +45,7 @@ class RingBuffer {
 }
 
 type Props = {
-    audio: HTMLMediaElement,
+    audio: ?HTMLMediaElement,
     audioContext: AudioContext,
     backgroundColor: string,
     okColor: string,
@@ -54,24 +54,17 @@ type Props = {
     textColor: string
 };
 
-type DefaultProps = {
-    audioContext: AudioContext,
-    backgroundColor: string,
-    okColor: string,
-    warnColor: string,
-    alarmColor: string
-};
-
 type State = void;
 
-export default class LevelMeter extends Component<DefaultProps, Props, State> {
+export default class LevelMeter extends Component<Props, State> {
 
-    static defaultProps: DefaultProps = {
+    static defaultProps = {
         audioContext: new (window.AudioContext || window.webkitAudioContext)(),
         backgroundColor: '#555',
         okColor: 'green',
         warnColor: 'yellow',
-        alarmColor: 'red'
+        alarmColor: 'red',
+        textColor: 'white'
     };
 
     leftPeakBuffer: RingBuffer;
@@ -80,7 +73,7 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
     meterNode: ScriptProcessorNode;
     sourceNode: MediaElementAudioSourceNode;
 
-    canvas: HTMLCanvasElement;
+    canvas: ?HTMLCanvasElement;
 
     channelPeak: number[];
 
@@ -123,10 +116,12 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
         this.sourceNode && this.sourceNode.disconnect();
 
         const {audioContext, audio } = this.props;
-        try {
-            this.sourceNode = audioContext.createMediaElementSource(audio);
-        } catch(error) {
-            log('audioOnPlay', 'ERROR:', error);
+        if(audio) {
+            try {
+                this.sourceNode = audioContext.createMediaElementSource(audio);
+            } catch (error) {
+                log('audioOnPlay', 'ERROR:', error);
+            }
         }
         this.sourceNode.connect(audioContext.destination);
 
@@ -135,7 +130,7 @@ export default class LevelMeter extends Component<DefaultProps, Props, State> {
         this.meterNode.connect(audioContext.destination);
     };
 
-    connect( { audioContext, audio }: {audioContext: AudioContext, audio: HTMLMediaElement}) {
+    connect( { audioContext, audio }: {audioContext: AudioContext, audio: ?HTMLMediaElement}) {
         log('connect', 'audio provided: %s', !!audio);
         if(audio) {
             audio.addEventListener('play', this.audioOnPlay);

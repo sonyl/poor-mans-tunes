@@ -17,18 +17,15 @@ type ClickHandler = (buttonName: string, label: string)=> void;
 
 type Props = {
     className?: string,
-    actions: {label: string, onClick: ClickHandler, disabled?: boolean}[],
-    size: 'extra-small' | 'small' | 'medium' | 'large'
-};
-type DefaultProps = {
+    actions: {label: string, icon?: any, onClick: ClickHandler, disabled?: boolean}[],
     size: 'extra-small' | 'small' | 'medium' | 'large'
 };
 type State = {
     open: boolean
 };
 
-export default class SplitButton extends Component<DefaultProps, Props, State> {
-    static defaultProps: DefaultProps = {
+export default class SplitButton extends Component<Props, State> {
+    static defaultProps: {
         size: 'medium'
     };
 
@@ -47,7 +44,7 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
         this.setState({open: !this.state.open});
     }
 
-    onClick(e: Event & { currentTarget: HTMLButtonElement }) {
+    onClick(e: SyntheticEvent<HTMLButtonElement>) {
         e.preventDefault();
         const name = e.currentTarget.name;
 
@@ -79,15 +76,12 @@ export default class SplitButton extends Component<DefaultProps, Props, State> {
 
         function getLabel(index) {
             if(actions[index]) {
-                if(actions[index].icon && actions[index].label) {
+                if(actions[index].icon) {
                     return (<span>{actions[index].icon} &nbsp; {actions[index].label}</span>);
-                }
-                if(actions[index].label) {
+                } else  {
                     return (<span>{actions[index].label}</span>);
                 }
-                if(actions[index].icon) {
-                    return (<span>{actions[index].icon}</span>);
-                }
+
             }
         }
 

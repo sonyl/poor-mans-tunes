@@ -8,20 +8,15 @@ type Props = {
     title: string,
     body: string
 };
-type DefaultProps = void;
 type State = void;
 
-class Modal extends Component<DefaultProps, Props, State> {
+class Modal extends Component<Props, State> {
 
     modal: ScaleModal;
 
     constructor(props: Props) {
         super(props);
     }
-
-    show = () => {
-        if(this.modal) this.modal.show();
-    };
 
     hide = () => {
         if(this.modal) this.modal.hide();

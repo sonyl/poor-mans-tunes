@@ -1,5 +1,5 @@
-// flow-typed signature: 391d316459a3519782bf9c83ede70a77
-// flow-typed version: <<STUB>>/image-size_v^0.6.0/flow_v0.51.0
+// flow-typed signature: 9b84ce970e4cdba686efb29ef9911e33
+// flow-typed version: <<STUB>>/image-size_v^0.6.1/flow_v0.56.0
 
 
 declare type imageSize$Dimensions = {
@@ -15,5 +15,3 @@ declare module 'image-size' {
 
     declare module.exports: sizeOf
 }
-
-

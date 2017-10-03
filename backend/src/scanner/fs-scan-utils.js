@@ -81,7 +81,7 @@ export const getAlbumMainDirectory = (albumDirs: {[string]: number}): ?string =>
  * @returns the common parent directory of the different path or undefined if it does not exists
  */
 export const getCommonParent = (albumDirs: {[string]: number}): ?string => {
-    const dirs = Object.keys(albumDirs);
+    const dirs: Array<string> = Object.keys(albumDirs);
     if(dirs.length < 2) {
         return;
     }

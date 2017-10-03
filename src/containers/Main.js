@@ -94,16 +94,15 @@ type Props = {
     setPlayRandomAlbum: (boolean)=> void,
 }
 
-type DefaultProps = void;
 type State = {
     activeTab: string
 };
 
-class Main extends Component<DefaultProps, Props, State> {
+class Main extends Component<Props, State> {
 
     state: State;
 
-    modal: Object;
+    modal: ?Object;
 
     constructor(props: Props) {
         super(props);
@@ -230,7 +229,7 @@ class Main extends Component<DefaultProps, Props, State> {
 
                 <Modal ref={ modal => this.modal = modal }
                     title={(lyrics && lyrics.artist && lyrics.song) ? (lyrics.artist + ': ' + lyrics.song) : 'Could not fetch lyrics: ' }
-                    body={lyrics && (lyrics.lyrics || lyrics.error)} />
+                    body={lyrics && (lyrics.lyrics || lyrics.error || '')} />
 
                 <Footer
                     message={'Poor Man\'s Tunes: \xA9 2017 Build: ' + version.buildDate + ' (env: ' + version.env + ')'}

@@ -1,8 +1,8 @@
 /* @flow */
 
-import React from 'react';
+import * as React from 'react';
 
-type FooterProps = { message: React.Element<*> | string, artistCnt: number, albumCnt: number, songCnt: number};
+type FooterProps = { message: React.Node | string, artistCnt: number, albumCnt: number, songCnt: number};
 
 const Footer = ({message, artistCnt, albumCnt, songCnt}: FooterProps) => (
     <div className='footer well well-sm' style={{marginTop: '15px'}}>

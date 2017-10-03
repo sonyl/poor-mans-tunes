@@ -1,5 +1,5 @@
 /* @flow */
-import React, { Component }  from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { removeSongAtIndexFromPlaylist } from '../actions/playlistActions';
 import { sendNotification } from '../actions/notificationsActions';
@@ -74,7 +74,7 @@ function Duration ({ seconds }: DurationProps) {
 type AlbumLinkProps = {
     artist: ?string,
     album: ?string,
-    children?: Object
+    children?: React.Node
 };
 
 function AlbumLink({artist, album, children}: AlbumLinkProps) {
@@ -88,7 +88,6 @@ function AlbumLink({artist, album, children}: AlbumLinkProps) {
     return null;
 }
 
-type DefaultPlayerProps = void;
 type PlayerProps = {
     modal: Object,
     url: ?Url,
@@ -116,10 +115,10 @@ type PlayerState = {
 };
 
 
-class Player extends Component<DefaultPlayerProps, PlayerProps, PlayerState> {
+class Player extends React.Component<PlayerProps, PlayerState> {
 
     state: PlayerState;
-    player: AudioPlayer;
+    player: ?AudioPlayer;
 
     constructor(props: PlayerProps) {
         super(props);
@@ -196,7 +195,7 @@ class Player extends Component<DefaultPlayerProps, PlayerProps, PlayerState> {
 
     restart = () => {
         this.setState({ played: 0.0 });
-        this.player.seekTo(0.0);
+        this.player && this.player.seekTo(0.0);
     };
 
     setVolume = (e: {value: number}) => {
@@ -220,7 +219,7 @@ class Player extends Component<DefaultPlayerProps, PlayerProps, PlayerState> {
     onSeekMouseUp = e => {
         if(this.props.url) {
             this.setState({seeking: false});
-            this.player.seekTo(parseFloat(e.target.value));
+            this.player && this.player.seekTo(parseFloat(e.target.value));
         }
     };
 

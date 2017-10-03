@@ -14,12 +14,11 @@ type Props = {
     step: number,
     value: string | number
 };
-type DefaultProps = void;
 type State = {
     value: string | number
 };
 
-export default class Slider extends Component<DefaultProps, Props, State> {
+export default class Slider extends Component<Props, State> {
 
     state: State;
 
@@ -31,9 +30,9 @@ export default class Slider extends Component<DefaultProps, Props, State> {
         };
     }
 
-    handleChange(e: Event & { currentTarget: HTMLInputElement}) {
-        this.setState({value: e.currentTarget.value});
-        const value = parseFloat(e.currentTarget.value);
+    handleChange({currentTarget}: SyntheticEvent<HTMLInputElement>) {
+        this.setState({value: currentTarget.value});
+        const value = parseFloat(currentTarget.value);
         this.props.onChange && this.props.onChange({value});
     }
 

@@ -10,17 +10,14 @@ type Props = {
     options: string[],
     selected: string,
     onChange: (string)=>void
-}
-type DefaultProps = {
-    className: string
 };
 type State = {
     selected: string;
 };
 
-export default class Select extends Component<DefaultProps, Props, State> {
+export default class Select extends Component<Props, State> {
 
-    static defaultProps: DefaultProps = {
+    static defaultProps = {
         className: ''
     };
 
@@ -32,8 +29,8 @@ export default class Select extends Component<DefaultProps, Props, State> {
         this.state = {selected: props.selected};
     }
 
-    onChange({target}: SyntheticInputEvent) {
-        const selected = target.value;
+    onChange({currentTarget}: SyntheticEvent<HTMLSelectElement>) {
+        const selected = currentTarget.value;
         this.setState({selected});
         this.props.onChange(selected);
     }

@@ -26,28 +26,13 @@ type Props = {
     onDuration: (number)=>void
 };
 
-type DefaultProps = {
-    playing: boolean,
-    volume: number,
-    hidden: boolean,
-    className: string,
-    attributes: Object,
-    progressDelay: number,
-    onPlay: () => void,
-    onPause: () => void,
-    onEnded: () => void,
-    onError: (string) => void,
-    onProgress: (Progress) => void,
-    onDuration: (number) => void
-}
-
 type State = void;
 
-export default class AudioPlayer extends Component<DefaultProps, Props, State> {
+export default class AudioPlayer extends Component<Props, State> {
 
     /* to prevent annoying warnings, make sure that the checkbox property 'checked' is never undefined */
 
-    static defaultProps: DefaultProps = {
+    static defaultProps = {
         playing: false,
         volume: 0.8,
         hidden: false,

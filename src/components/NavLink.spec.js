@@ -1,9 +1,16 @@
 /* @flow */
 /* eslint-env node, jest */
 import React from 'react';
-import { mount } from 'enzyme';
+import { configure, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
+
 import { MemoryRouter } from 'react-router-dom';
 import NavLink from './NavLink';
+
+
+// see: http://airbnb.io/enzyme/docs/installation/index.html
+configure({ adapter: new Adapter() });
+
 
 function setup(props = {to: 'http://dummy.com'}) {
 

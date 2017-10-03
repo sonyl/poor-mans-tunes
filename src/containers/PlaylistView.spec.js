@@ -3,11 +3,15 @@
 import React from 'react';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { shallow, mount } from 'enzyme';
+import { configure, shallow, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
 import configureMockStore from 'redux-mock-store';
 import ConnectedPlaylistView, { PlaylistView } from './PlaylistView';
 
 const mockStore = configureMockStore();
+
+// see: http://airbnb.io/enzyme/docs/installation/index.html
+configure({ adapter: new Adapter() });
 
 function setup(playlist = []) {
 

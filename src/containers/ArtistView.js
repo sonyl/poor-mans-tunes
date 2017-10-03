@@ -1,5 +1,5 @@
 /* @flow */
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ import { getSelectedArtistInfo, getSelectedArtist } from '../reducers';
 import { sanitizeHtml, createLinkUrl, getLastFmThumbnail, createLog, LASTFM_IMG_SIZE_XLARGE  } from '../utils';
 import NavLink from '../components/NavLink';
 
+//import type { MapStateToProps } from 'react-redux';
 import type { Artist, LastFmInfo} from '../types';
 
 const ENABLE_LOG = false;
@@ -73,10 +74,15 @@ const ArtistView = ({artist, lastFmInfo}: Props) => {
     );
 };
 
+const mapStateToProps = (state) => {
+    return {
+        artist: getSelectedArtist(state),
+        lastFmInfo: getSelectedArtistInfo(state)
+    };
+};
 
-const mapStateToProps = state => ({
-    artist: getSelectedArtist(state),
-    lastFmInfo: getSelectedArtistInfo(state)
+const dummyDispatchToMakeFlowHappy = (dispatch: Dispatch) => ({
+    dispatch: dispatch
 });
 
-export default withRouter(connect(mapStateToProps)(ArtistView));
+export default withRouter(connect(mapStateToProps, dummyDispatchToMakeFlowHappy)(ArtistView));

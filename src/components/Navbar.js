@@ -20,16 +20,11 @@ type Props = {
     setRandomAlbum: (boolean)=>void
 };
 
-type DefaultProps = {
-    randomSongActive: boolean,
-    randomAlbumActive: boolean
-};
-
 type State = void;
 
-class Navbar extends Component<DefaultProps, Props, State> {
+class Navbar extends Component<Props, State> {
 
-    static defaultProps: DefaultProps = {
+    static defaultProps = {
         randomSongActive: false,
         randomAlbumActive: false
     };

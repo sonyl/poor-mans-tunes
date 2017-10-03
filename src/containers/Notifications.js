@@ -13,19 +13,15 @@ type Props = {
     alerts: Alert[],
     dismissAlert: (Alert)=>void;
 }
-type DefaultProps = {
-    position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left',
-    timeout: number,
-}
 type State = void;
 
-class Notifications extends Component<DefaultProps, Props, State> {
-    static defaultProps: DefaultProps = {
+class Notifications extends Component<Props, State> {
+    static defaultProps = {
         position: 'top-right',
         timeout: 2000
     };
 
-    onAlertDismiss = alert => {
+    onAlertDismiss = (alert: Alert) => {
         this.props.dismissAlert(alert);
     };
 

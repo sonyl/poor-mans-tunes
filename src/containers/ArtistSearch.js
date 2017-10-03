@@ -93,14 +93,13 @@ type Props = {
     history: History,
     addSongsToPlaylist: (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong, top: boolean)=> void
 }
-type DefaulProps = void
 type State = {
     searchDb: SearchDb,
     suggestions: Array<{label: string}>,
     value: string
 }
 
-class ArtistSearch extends Component<DefaulProps, Props, State> {
+class ArtistSearch extends Component<Props, State> {
 
     state: State;
 

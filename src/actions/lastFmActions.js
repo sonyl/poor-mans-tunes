@@ -29,7 +29,7 @@ const receiveArtist = (artist: string, lastFmInfo: ?LastFmInfo, error: any): Rec
 });
 
 
-export const requestArtistIfNotExists = (artist: string) => (dispatch: Dispatch, getState: GetState) => {
+export const requestArtistIfNotExists = (artist: string) => (dispatch: Dispatch, getState: GetState): Promise<any> => {
     if(!artist) {
         return Promise.reject(new Error('required argument \'artist\' missing'));
     }
@@ -94,7 +94,7 @@ const receiveAlbum = (artist: string, album: string, lastFmInfo: ?LastFmInfo, er
     receivedAt: Date.now()
 });
 
-export const requestAlbumIfNotExists = (artist: string, album: string) => (dispatch: Dispatch, getState: GetState) => {
+export const requestAlbumIfNotExists = (artist: string, album: string) => (dispatch: Dispatch, getState: GetState): Promise<any> => {
     if(!artist || !album) {
         return Promise.reject(new Error('required argument \'artist\' or \'album\' missing'));
     }

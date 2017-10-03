@@ -33,12 +33,11 @@ type Props = {
     updateServerSettings: (string, string)=> void,
     setPersistedValue: (string, string | {})=> void
 };
-type DefaultProps = void;
 type State = {
     audioPath: string
 };
 
-class Settings extends Component<DefaultProps, Props, State> {
+class Settings extends Component<Props, State> {
 
     state: State;
 

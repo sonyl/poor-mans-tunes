@@ -92,13 +92,12 @@ type PlaylistViewProps = {
     clearPlaylist: ()=> void,
     replacePlaylist: (urls: Array<string>)=> void
 };
-type DefaultPlaylistViewProps = void;
 type DefaultPlaylistViewState = void;
 
 // export for testing purpose only
-export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistViewProps, DefaultPlaylistViewState> {
+export class PlaylistView extends Component<PlaylistViewProps, DefaultPlaylistViewState> {
 
-    playlistInput: HTMLInputElement;
+    playlistInput: ?HTMLInputElement;
     handlePlaylistUpload: (Event)=>void;
 
     constructor(props: PlaylistViewProps) {
@@ -138,16 +137,19 @@ export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistVi
 
     loadPlaylist() {
         log('loadPlaylist', 'selected', );
-        this.playlistInput.click();
+        this.playlistInput && this.playlistInput.click();
     }
 
     handlePlaylistUpload(e: Event) {
+        if(!this.playlistInput) {
+            return;
+        }
         const files = this.playlistInput.files;
         log('handlePlaylistUpload', 'files:', files);
-        if(files && files[0]) {
+        if (files && files[0]) {
             const file = files[0];
             log('handlePlaylistUpload', 'selected: name: %s, size: %d, mime-type: %s', file.name, file.size, file.type);
-            if(file.size > 100*1024) {
+            if (file.size > 100 * 1024) {
                 alert('file is too big');
                 return;
             }
@@ -156,7 +158,7 @@ export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistVi
                 const parser = new M3uParser();
                 parser.push(text);
                 log('handlePlaylistUpload', 'parsed: %o', parser.manifest);
-                if(Array.isArray(parser.manifest.segments)) {
+                if (Array.isArray(parser.manifest.segments)) {
                     const urls = parser.manifest.segments.map(s => decodeURI(s.uri));
                     this.props.replacePlaylist(urls);
                 }
@@ -165,7 +167,9 @@ export class PlaylistView extends Component<DefaultPlaylistViewProps, PlaylistVi
                 log('handlePlaylistUpload', 'error: %o', error);
             });
         }
-        this.playlistInput.value = '';    // re-arm for next onChange()
+        if(this.playlistInput) {
+            this.playlistInput.value = '';    // re-arm for next onChange()
+        }
     }
 
     renderPlaylist() {

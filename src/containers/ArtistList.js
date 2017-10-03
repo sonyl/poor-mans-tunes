@@ -7,6 +7,8 @@ import { createLinkUrl, createLog } from '../utils';
 import { getArtists, getSelectedArtist } from '../reducers';
 
 import type { Collection, Artist } from '../types';
+//import type { MapStateToProps } from 'react-redux';
+
 
 const CATEGORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z', '0..9'];
 const IGNORE = ['The ', 'the ', 'Die ', 'die '];
@@ -84,13 +86,12 @@ type Props = {
     artists: Collection,
     selectedArtist: Artist
 }
-type DefaultProps = void
 type State = {
     categories: Object[],
     activeIndex: number
 }
 
-class ArtistList extends Component<DefaultProps, Props, State> {
+class ArtistList extends Component<Props, State> {
 
     state: State;
 
@@ -174,11 +175,13 @@ class ArtistList extends Component<DefaultProps, Props, State> {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        artists: getArtists(state),
-        selectedArtist: getSelectedArtist(state)
-    };
-}
+const mapStateToProps = (state) => ({
+    artists: getArtists(state),
+    selectedArtist: getSelectedArtist(state)
+});
 
-export default connect(mapStateToProps)(ArtistList);
+const dummyDispatchToMakeFlowHappy = (dispatch: Dispatch) => ({
+    dispatch: dispatch
+});
+
+export default connect(mapStateToProps, dummyDispatchToMakeFlowHappy )(ArtistList);

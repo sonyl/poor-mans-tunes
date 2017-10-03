@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { createLog } from '../utils';
 
 declare type Handler = (Object) => void;
@@ -26,13 +26,12 @@ export type WithEventSourceConfig = {
 };
 
 type State = {events: {[string]: mixed}};
-type DefaultProps = void;
 type Props = {
     active: boolean
 };
 
-const withEventSource = (config: WithEventSourceConfig) => (WrappedComponent: ReactClass<*>) =>
-    class extends Component<DefaultProps, Props, State> {
+const withEventSource = (config: WithEventSourceConfig) => (WrappedComponent: React.ComponentType<any>) =>
+    class extends React.Component<Props, State> {
         state: State;
         evtSource: ?EventSource;
 

@@ -57,14 +57,13 @@ module.exports = {
                 ],
                 use: [{
                     loader: 'react-hot-loader'
-                    }, {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['react', 'es2015'],
-                            plugins: ['transform-object-rest-spread', 'transform-class-properties']
-                        }
+                }, {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['react', 'es2015'],
+                        plugins: ['transform-object-rest-spread', 'transform-class-properties']
                     }
-                ]
+                }]
             },
             {
                 test: /\.less$/,
