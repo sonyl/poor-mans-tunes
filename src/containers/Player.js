@@ -14,10 +14,11 @@ import ProgressBar from '../components/ProgressBar';
 import GlyphIcon from '../components/GlyphIcon';
 import NavLink from '../components/NavLink';
 import LevelMeter from '../components/LevelMeter';
+import Modal from '../components/Modal';
 import { createLinkUrl, sendDesktopNotification, getLastFmThumbnail, getCoverUrl, createAudioUrls, createLog,
     LASTFM_IMG_SIZ_MEDIUM } from '../utils';
 
-import type {Dispatch, Url} from '../types';
+import type {Dispatch, Url, LastFmInfo, Album} from '../types';
 
 const ENABLE_LOG = false;
 const log = createLog(ENABLE_LOG, 'Player');
@@ -89,15 +90,15 @@ function AlbumLink({artist, album, children}: AlbumLinkProps) {
 }
 
 type PlayerProps = {
-    modal: Object,
+    modal: Modal,
     url: ?Url,
     artist: ?string,
     album: ?string,
     song: ?string,
     title: ?string,
     volume: number,
-    albumInfo: Object,
-    colAlbum: Object,
+    albumInfo: LastFmInfo,
+    colAlbum: Album,
     lyricsAvail: boolean,
 
     setVolume: (number)=>void,

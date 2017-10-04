@@ -18,6 +18,10 @@ class Modal extends Component<Props, State> {
         super(props);
     }
 
+    show = () => {
+        if(this.modal) this.modal.show();
+    };
+
     hide = () => {
         if(this.modal) this.modal.hide();
     };
