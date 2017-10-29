@@ -22,7 +22,7 @@ if(process.env.NODE_ENV === 'production'){
 
     entry = [
         'webpack-dev-server/client?http://127.0.0.1:9000/',
-        'webpack/hot/only-dev-server',
+        'react-hot-loader/patch',
         'whatwg-fetch',
         'bootstrap-webpack!./bootstrap.config.js',
         './src'
@@ -56,8 +56,6 @@ module.exports = {
                     path.resolve(__dirname, 'src')
                 ],
                 use: [{
-                    loader: 'react-hot-loader'
-                }, {
                     loader: 'babel-loader',
                     options: {
                         presets: ['react', 'es2015'],

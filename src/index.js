@@ -47,6 +47,9 @@ if (process.env.NODE_ENV === 'production') {
 const contextRoot = getConfig().contextRoot || '';
 
 if(module.hot) {        // enable hot reload of reducers
+    // $FlowFixMe
+    module.hot.accept('./containers/Main', () => render(Main));
+
     module.hot.accept('./reducers/', () => {
         // eslint-disable-next-line      we need 'require' for dynamic imports
         const nextRootReducer = require('./reducers/index').default;
