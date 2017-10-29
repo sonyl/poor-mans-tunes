@@ -22,13 +22,13 @@
     "musicmetadata": "^2.0.5",
     "node-fetch": "^1.7.3",
     "promise-limit": "^2.4.0",
-    "sonos": "^0.16.0"
+    "sonos": "^0.17.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-env": "^2.4.1",
     "babel-preset-flow": "^6.23.0",
-    "flow-bin": "^0.56.0",
+    "flow-bin": "^0.57.3",
     "jest": "^20.0.0",
     "nodemon": "^1.12.1"
   }

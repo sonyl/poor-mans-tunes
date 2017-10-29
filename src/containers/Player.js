@@ -97,15 +97,15 @@ type PlayerProps = {
     song: ?string,
     title: ?string,
     volume: number,
-    albumInfo: LastFmInfo,
-    colAlbum: Album,
+    albumInfo: ?LastFmInfo,
+    colAlbum: ?Album,
     lyricsAvail: boolean,
 
     setVolume: (number)=>void,
     nextSong: ()=>void,
     requestAlbum: (string, string)=> void,
     sendNotification: (string, ?string)=> void,
-    requestSongLyricsIfNotExists: (artist: ?string, song: ?string)=> Promise<any>
+    requestSongLyricsIfNotExists: (artist: ?string, song: ?string)=> Promise<void>
 };
 type PlayerState = {
     playing: boolean,

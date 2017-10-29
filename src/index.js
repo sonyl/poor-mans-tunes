@@ -1,6 +1,6 @@
 /* @flow */
 /* global process:false module:false, require:false */
-import React from 'react';
+import * as React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
@@ -54,12 +54,12 @@ if(module.hot) {        // enable hot reload of reducers
     });
 }
 
-render(
+let elem = document.getElementById('app');
+elem && render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
-            <BrowserRouter basename={contextRoot} >
-                <Route path="/" component={Main} />
+            <BrowserRouter basename={contextRoot}>
+                <Route path="/" component={Main}/>
             </BrowserRouter>
         </ConnectedRouter>
-    </Provider>, document.getElementById('app')
-);
+    </Provider>, elem);

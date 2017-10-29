@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, { Component }  from 'react';
+import * as React from 'react';
 import ScaleModal from 'boron/ScaleModal';
 import { sanitizeHtml } from '../utils';
 
@@ -10,7 +10,7 @@ type Props = {
 };
 type State = void;
 
-class Modal extends Component<Props, State> {
+class Modal extends React.Component<Props, State> {
 
     modal: ScaleModal;
 

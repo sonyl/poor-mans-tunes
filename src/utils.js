@@ -84,7 +84,7 @@ export const LASTFM_IMG_SIZE_XLARGE = 3;
 export const LASTFM_IMG_SIZE_MEGA = 4;
 export const LASTFM_IMG_SIZE_ULTRA = 5;
 
-export const getLastFmThumbnail = (lastFmInfo: LastFmInfo, maxSize: number=LASTFM_IMG_SIZE_ULTRA) => {
+export const getLastFmThumbnail = (lastFmInfo: ?LastFmInfo, maxSize: number=LASTFM_IMG_SIZE_ULTRA) => {
     const image = lastFmInfo && lastFmInfo.image;
     if(image) {
         let size = maxSize + 1;
@@ -97,7 +97,7 @@ export const getLastFmThumbnail = (lastFmInfo: LastFmInfo, maxSize: number=LASTF
     return null;
 };
 
-export const getCoverUrl = (album: Album) => {
+export const getCoverUrl = (album: ?Album) => {
     // const coverUrl = album && album.coverUrl;
     // return coverUrl ? baseUrl + coverUrl : null;
     const audioSrc = album && album.picture && (album.picture.src || album.picture.img);
