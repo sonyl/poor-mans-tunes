@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "../node_modules/jest/bin/jest.js",
+    "test": "jest",
+    "test:watch": "npm test -- --watch",
     "devserver": "nodemon --watch src --exec babel-node -- ./src/server.js",
     "build": "babel src -d dist",
     "serve": "NODE_ENV=production node dist/server.js",
@@ -29,7 +30,7 @@
     "babel-env": "^2.4.1",
     "babel-preset-flow": "^6.23.0",
     "flow-bin": "^0.57.3",
-    "jest": "^20.0.0",
+    "jest": "^21.2.1",
     "nodemon": "^1.12.1"
   }
 }
