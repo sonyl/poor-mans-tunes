@@ -43,7 +43,7 @@ export default class AudioPlayer extends Component<Props, State> {
         onPause: function() {},
         onEnded: function() {},
         onError: function() {},
-        onProgress: function(Progress): void {},
+        onProgress: function(progress: Progress): void {},
         onDuration: function() {}
     };
 

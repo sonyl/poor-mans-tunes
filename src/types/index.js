@@ -4,7 +4,8 @@ import type { RequestCollection, ReceiveCollection, InvalidateCollection } from 
 import type { SendNotification, DismissNotification } from '../actions/notificationsActions';
 import type { RequestArtist, ReceiveArtist, RequestAlbum, ReceiveAlbum } from '../actions/lastFmActions';
 import type { RequestSongLyrics, ReceiveSongLyrics } from '../actions/lyricsActions';
-import type { AddSongsToPlaylist, SetPlaylistEntriesToPlaylist, RemoveSongFromPlaylist, ClearPlaylist } from '../actions/playlistActions';
+import type { AddSongsToPlaylist, SetPlaylistEntriesToPlaylist, RemoveSongFromPlaylist, ClearPlaylist,
+    MoveSongToPositionInPlaylist } from '../actions/playlistActions';
 import type { SelectAlbum, UnselectAlbum, SelectArtist, UnselectArtist } from '../actions/selectionActions';
 import type { RequestServerStatus, ReceiveServerStatus, RequestServerSettings, ReceiveServerSettings} from '../actions/serverActions';
 import type { PlayRandomSong, PlayRandomAlbum, SetVolume, PersistValue } from '../actions/settingsActions';
@@ -16,7 +17,7 @@ export type Action =
     | SendNotification | DismissNotification
     | RequestArtist | ReceiveArtist | RequestAlbum | ReceiveAlbum
     | RequestSongLyrics | ReceiveSongLyrics
-    | AddSongsToPlaylist | SetPlaylistEntriesToPlaylist | RemoveSongFromPlaylist | ClearPlaylist
+    | AddSongsToPlaylist | SetPlaylistEntriesToPlaylist | RemoveSongFromPlaylist | ClearPlaylist | MoveSongToPositionInPlaylist
     | SelectArtist | UnselectArtist | SelectAlbum | UnselectAlbum
     | RequestServerStatus | ReceiveServerStatus | RequestServerSettings | ReceiveServerSettings
     | PlayRandomSong | PlayRandomAlbum | SetVolume | PersistValue;

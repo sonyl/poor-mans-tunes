@@ -27,6 +27,12 @@ export type ClearPlaylist = {
     type: 'CLEAR_PLAYLIST'
 }
 
+export type MoveSongToPositionInPlaylist = {
+    type: 'MOVE_SONG_TO_POSITION',
+    index: number,
+    newIndex: number
+}
+
 export const addSongsToPlaylist = (artist: string, album: string, songs: PlaylistSong[] | PlaylistSong,
     top: boolean=false): AddSongsToPlaylist => (
     {
