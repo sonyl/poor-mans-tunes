@@ -2,7 +2,7 @@
 /* eslint-env node, jest */
 import React from 'react';
 import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
+import Adapter from 'enzyme-adapter-react-16';
 
 import { MemoryRouter } from 'react-router-dom';
 import NavLink from './NavLink';

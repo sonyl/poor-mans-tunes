@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import ScaleModal from 'boron/ScaleModal';
+import ScaleModal from 'reboron/ScaleModal';
 import { sanitizeHtml } from '../utils';
 
 type Props = {
